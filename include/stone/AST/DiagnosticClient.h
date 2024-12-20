@@ -6,7 +6,7 @@
 
 namespace stone {
 namespace diags {
-  
+
 /// The level of the diagnostic, after it has been through mapping.
 enum class DiagnosticLevel {
   None = 0,

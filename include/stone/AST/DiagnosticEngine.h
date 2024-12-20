@@ -31,14 +31,13 @@ class raw_ostream;
 } // namespace llvm
 
 namespace stone {
-class IdentifierInfo;
+class Identifier;
 class LangOptions;
 
 namespace diags {
 
 class InFlightDiagnostic;
 class DiagnosticClient;
-
 
 struct DiagnosticStorage final {};
 

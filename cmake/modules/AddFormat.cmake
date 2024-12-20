@@ -1,8 +1,12 @@
 set(stone_include_files
 	${STONE_SOURCE_DIR}/include/stone/Frontend/*.h
+	${STONE_SOURCE_DIR}/include/stone/Compile/*.h
+	${STONE_SOURCE_DIR}/include/stone/AST/*.h
 )
 set(stone_lib_files
 	${STONE_SOURCE_DIR}/lib/AST/*.cpp
+	${STONE_SOURCE_DIR}/lib/Compile/*.cpp
+	${STONE_SOURCE_DIR}/lib/Frontend/*.cpp
 )
 set(stone_tools_files
 	${STONE_SOURCE_DIR}/tools/frontend/*.cpp  

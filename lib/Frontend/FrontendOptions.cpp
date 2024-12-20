@@ -1,7 +1,7 @@
-#include "stone/Frontend/Frontend.h"
+#include "stone/Frontend/FrontendOptions.h"
 
+using namespace stone;
 
+FrontendAction::FrontendAction(FrontendActionKind kind) : kind(kind) {}
 
-FrontendOptions::FrontendOptions(){
-
-}
+FrontendOptions::FrontendOptions() : action(FrontendActionKind::None) {}

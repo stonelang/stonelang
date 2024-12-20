@@ -7,9 +7,10 @@ set(LLVM_LINK_COMPONENTS
   )
 
 add_stone_library(StoneAST
-  AST.cpp   
+  ASTContext.cpp   
   DiagnosticEngine.cpp
   DiagnosticID.cpp
+  Identifier.cpp
   LINK_LIBS
 
   DEPENDS

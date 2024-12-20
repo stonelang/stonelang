@@ -1,14 +1,14 @@
 #ifndef STONE_AST_DIAGNOSTIC_EMITTER_H
 #define STONE_AST_DIAGNOSTIC_EMITTER_H
 
-#include "stone/Basic/SrcLoc.h"
+#include "stone/Basic/SourceLocation.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/DiagnosticClient.h"
 
 #include "llvm/ADT/PointerUnion.h"
 
 namespace stone {
-class SrcLoc;
+class SourceLocation;
 class LangOptions;
 class DiagnosticOptions;
 
@@ -17,13 +17,13 @@ namespace diags {
 class DiagnosticInfo;
 class StoredDiagnostic;
 
-class PresumedLoc {
+class PresumedSourceLocation {
   //   unsigned BufferID;
   //   unsigned Line, Col;
 
   // public:
-  //   PresumedLoc() = default;
-  //   PresumedLoc(unsigned BufferID, unsigned Line, unsigned Col)
+  //   PresumedSourceLocation() = default;
+  //   PresumedSourceLocation(unsigned BufferID, unsigned Line, unsigned Col)
   //       : Filename(FN), BufferID(BufferID), Line(Line), Col(Col) {}
 
   // public:
@@ -51,22 +51,7 @@ class PresumedLoc {
   //   }
 };
 
-class FullSrcLoc : public SrcLoc {
-  // const SrcMgr& SM;
-
-  // public:
-  // /// Creates a FullSourceLoc where isValid() returns \c false.
-  // FullSourceLoc() = default;
-
-  // explicit FullSourceLoc(SrcLoc Loc, const SrcMgr &SM)
-  //     : SrcLoc(Loc), SrcMgr(&SM) {}
-
-  // const SrcMgr &GetSrcMgr() const {
-  //   return SM;
-  // }
-
-  // unsigned GetBufferID() const;
-};
+class FullSourceLocation : public SourceLocation {};
 
 using DiagnosticInfoOrStoredDiagnotic =
     llvm::PointerUnion<const DiagnosticInfo *, const StoredDiagnostic *>;
@@ -83,7 +68,7 @@ protected:
   /// This will be invalid in cases where there is no (known) previous
   /// diagnostic location, or that location itself is invalid or comes from
   /// a different source manager than SM.
-  SrcLoc LastLoc;
+  SourceLocation LastLoc;
 
   /// The level of the last diagnostic emitted.
   ///
@@ -96,13 +81,15 @@ protected:
   virtual ~DiagnosticEmitter();
 
 protected:
-  virtual void EmitDiagnosticMessage(FullSrcLoc Loc, PresumedLoc PLoc,
+  virtual void EmitDiagnosticMessage(FullSourceLocation Loc,
+                                     PresumedSourceLocation PLoc,
                                      DiagnosticLevel Level,
                                      llvm::StringRef Message,
                                      ArrayRef<CharSrcRange> Ranges,
                                      DiagnosticInfoOrStoredDiagnotic Info) = 0;
 
-  virtual void EmitDiagnosticLoc(FullSrcLoc Loc, PresumedLoc PLoc,
+  virtual void EmitDiagnosticLoc(FullSourceLocation Loc,
+                                 PresumedSourceLocation PLoc,
                                  DiagnosticLevel Level,
                                  ArrayRef<CharSrcRange> Ranges) = 0;
 
@@ -112,7 +99,7 @@ protected:
   virtual void EndDiagnostic(DiagnosticInfoOrStoredDiagnotic D,
                              DiagnosticLevel Level) {}
 
-  virtual void EmitCodeContext(FullSrcLoc Loc, DiagnosticLevel Level,
+  virtual void EmitCodeContext(FullSourceLocation Loc, DiagnosticLevel Level,
                                llvm::SmallVectorImpl<CharSrcRange> &Ranges,
                                llvm::ArrayRef<FixIt> FixIts) = 0;
 };

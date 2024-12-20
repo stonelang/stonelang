@@ -8,6 +8,3 @@
 #include "stone/AST/Type.h"
 
 #endif
-
-
-

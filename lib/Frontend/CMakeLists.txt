@@ -10,8 +10,6 @@ set(LLVM_LINK_COMPONENTS
   )
 
 add_stone_library(StoneFrontend
-
- FrontendAction.cpp     
  FrontendInstance.cpp   
  FrontendInvocation.cpp 
  FrontendOptions.cpp

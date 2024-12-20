@@ -1,5 +1,5 @@
 #include "stone/Frontend/Frontend.h"
 
-FrontendInvocation::FrontendInvocation(){
+using namespace stone;
 
-}
+FrontendInvocation::FrontendInvocation() {}

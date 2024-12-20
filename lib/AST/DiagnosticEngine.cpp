@@ -8,5 +8,5 @@ enum LocalDiagID : uint32_t {
              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
   ENUM,
 #include "stone/AST/AllDiagnosticKind.inc"
-  NumDiags
+  TotalDiags
 };
