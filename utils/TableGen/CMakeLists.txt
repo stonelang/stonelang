@@ -26,4 +26,4 @@ add_tablegen(stone-tblgen STONE
   TableGen.cpp
   )
 
-target_link_libraries(stone-tblgen PRIVATE stoneSupport_tablegen)
+target_link_libraries(stone-tblgen PRIVATE StoneSupport_tablegen)
