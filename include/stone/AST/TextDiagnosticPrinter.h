@@ -11,6 +11,7 @@
 namespace stone {
 namespace diags {
 
+
 class TextDiagnosticPrinter final : public DiagnosticClient {
 
   llvm::raw_ostream &OS;

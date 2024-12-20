@@ -26,7 +26,6 @@ include(GNUInstallDirs)
 include(GetDarwinLinkerVersion)
 
 
-
 set(STONE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(STONE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -372,9 +371,12 @@ include(AddFormat)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+
 include_directories(BEFORE
   ${CMAKE_CURRENT_BINARY_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_BINARY_DIR}/tools/clang/include
+  ${CMAKE_SOURCE_DIR}/tools/clang/include
   )
 
 if (NOT LLVM_INSTALL_TOOLCHAIN_ONLY)

@@ -9,11 +9,11 @@ set(LLVM_LINK_COMPONENTS
   Support
   )
 
-set(stoneSupport_sources
+set(stone_support_sources
   RISCVVIntrinsicUtils.cpp
   )
 
-add_stone_library(stoneSupport ${stoneSupport_sources})
+add_stone_library(stoneSupport ${stone_support_sources})
 
 if (TARGET obj.stoneSupport)
   add_library(stoneSupport_tablegen ALIAS obj.stoneSupport)
@@ -26,7 +26,7 @@ else()
   # libLLVM-*.so).
   add_llvm_library(stoneSupport_tablegen
     BUILDTREE_ONLY STATIC DISABLE_LLVM_LINK_LLVM_DYLIB
-    ${stoneSupport_sources})
+    ${stone_support_sources})
 endif()
 
 set(LLVM_COMMON_DEPENDS ${LLVM_COMMON_DEPENDS_OLD})

@@ -12,6 +12,8 @@ set(LLVM_LINK_COMPONENTS
 add_stone_library(StoneCompile
    
   Compile.cpp
+  Parser.cpp
+  Sem.cpp
   
   DEPENDS
   StoneOptions

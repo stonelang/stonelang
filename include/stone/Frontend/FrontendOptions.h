@@ -164,6 +164,7 @@ enum class FrontendActionKind : uint8_t {
 class FrontendAction final {
   FrontendActionKind kind;
 
+  void SetActionKind(FrontendActionKind actionKind) { kind = actionKind;}
 public:
   FrontendAction(FrontendActionKind kind);
 
