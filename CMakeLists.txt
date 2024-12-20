@@ -402,15 +402,15 @@ if (NOT LLVM_INSTALL_TOOLCHAIN_ONLY)
                              COMPONENT stone-headers)
   endif()
 
-  add_custom_target(bash-autocomplete DEPENDS utils/bash-autocomplete.sh)
+  #add_custom_target(bash-autocomplete DEPENDS utils/bash-autocomplete.sh)
   set_target_properties(bash-autocomplete PROPERTIES FOLDER "Stone/Misc")
   install(FILES utils/bash-autocomplete.sh
           DESTINATION "${CMAKE_INSTALL_DATADIR}/stone"
           COMPONENT bash-autocomplete)
   if(NOT LLVM_ENABLE_IDE)
-    add_llvm_install_targets(install-bash-autocomplete
-                             DEPENDS bash-autocomplete
-                             COMPONENT bash-autocomplete)
+    #add_llvm_install_targets(install-bash-autocomplete
+    #                         DEPENDS bash-autocomplete
+    #                         COMPONENT bash-autocomplete)
   endif()
 endif()
 

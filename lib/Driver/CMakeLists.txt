@@ -11,7 +11,7 @@ set(LLVM_LINK_COMPONENTS
 
 add_stone_library(StoneDriver
    
-  Options.cpp
+  Driver.cpp
   
 
   DEPENDS

@@ -6,7 +6,7 @@ set(LLVM_LINK_COMPONENTS
   TargetParser
   )
 
-add_stone_library(stoneAST
+add_stone_library(StoneAST
   AST.cpp   
   DiagnosticEngine.cpp
   DiagnosticID.cpp
@@ -18,7 +18,7 @@ add_stone_library(stoneAST
 )
 
 
-target_link_libraries(stoneAST
+target_link_libraries(StoneAST
   PRIVATE
   ${LLVM_ATOMIC_LIB}
 )

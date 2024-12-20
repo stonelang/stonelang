@@ -11,7 +11,8 @@ set(LLVM_LINK_COMPONENTS
 
 add_stone_library(StoneCodeGen
   
-  
+  CodeGenContext.cpp
+
   DEPENDS
   StoneOptions
    

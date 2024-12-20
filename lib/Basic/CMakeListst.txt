@@ -9,17 +9,16 @@ set(LLVM_LINK_COMPONENTS
   WindowsDriver
   )
 
-add_stone_library(StoneFrontend
-
- FrontendAction.cpp     
- FrontendInstance.cpp   
- FrontendInvocation.cpp 
- FrontendOptions.cpp
-
+add_stone_library(StoneBasic
+   
+  SourceLocation.cpp
+  SourceManager.cpp
+  
   DEPENDS
   StoneOptions
-
+  
+  
   LINK_LIBS
  
   ${system_libs}
-  )
+)
