@@ -4,7 +4,8 @@ set(stone_compile_sources
   LINK_LIBS
   StoneCodeGen
   StoneParse
-  StoneSupport
+  StoneOption
+  StoneCore
   StoneFrontend
   clangFrontend
 
