@@ -5,7 +5,7 @@ set(stone_frontend_sources
   
   LINK_LIBS
 
-  StoneSupport
+  StoneOption
   clangFrontend
 
   DEPENDS

@@ -8,7 +8,7 @@ set(stone_ast_sources
 	Decl.cpp
 
 	LINK_LIBS
-	StoneSupport
+	StoneOption
 )
 add_stone_library(StoneAST
 	${stone_ast_sources}
