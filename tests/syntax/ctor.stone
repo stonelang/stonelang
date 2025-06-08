@@ -1,0 +1,11 @@
+join Syntax;
+
+public struct Boson{}
+
+join Boson {
+ 	public fun Boson() using Boson(0) {
+	}
+ 	public fun Boson(float64 mass) {
+		this.mass = mass; 
+	}
+}

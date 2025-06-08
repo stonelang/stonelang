@@ -1,0 +1,8 @@
+
+struct Electron {
+}
+join Electron fun Electron()   {
+} 
+join Electron fun ~Electron()   {
+
+}

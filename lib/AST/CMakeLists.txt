@@ -9,6 +9,7 @@ set(stone_ast_sources
 	ASTContext.cpp
 	Decl.cpp
 	DeclContext.cpp
+	Module.cpp
 	Type.cpp
 
 	LINK_LIBS

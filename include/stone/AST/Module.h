@@ -2,6 +2,7 @@
 #define STONE_AST_MODULE_H
 
 #include "stone/AST/AST.h"
+#include "stone/AST/Decl.h"
 #include "stone/AST/DeclContext.h"
 
 #include "llvm/ADT/SmallVector.h"
@@ -28,11 +29,9 @@ class SourceFile final : public ModuleFile {
 public:
 };
 
-class ModuleDecl
-    : public DeclContext, public TypeDecl, public ASTAllocation<ModuleDecl> 
-
-
-};
+class ModuleDecl : public DeclContext,
+                   public TypeDecl,
+                   public ASTAllocation<ModuleDecl> {};
 
 } // namespace stone
 
