@@ -1,12 +1,8 @@
 #ifndef STONE_AST_TYPE_H
 #define STONE_AST_TYPE_H
 
-#include <cstdint>
-#include <cstring>
-#include <optional>
-#include <string>
-#include <type_traits>
-#include <utility>
+#include "stone/AST/AST.h"
+#include "stone/AST/TypeAlignment.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -14,7 +10,10 @@ namespace stone {
 
 class Type;
 
-class Type {
+class alignas(1 << TypeAlignInBits) Type
+    : public ASTAllocation<std::aligned_storage<8, 8>::type> {
+  friend class ASTContext;
+
 public:
 };
 

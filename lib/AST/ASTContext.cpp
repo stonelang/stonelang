@@ -1,4 +1,5 @@
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/AST.h"
 #include "stone/AST/Type.h"
 
 using namespace stone;
@@ -11,3 +12,9 @@ ASTContext::ASTContext() {
 }
 
 ASTContext::~ASTContext() {}
+
+void *stone::AllocateInASTContext(size_t bytes, const ASTContext &astContext,
+                                  unsigned alignment) {
+  //return astContext.AllocateMemory(bytes, alignment);
+    
+}
