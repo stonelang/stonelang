@@ -5,7 +5,10 @@ set(LLVM_LINK_COMPONENTS
  )
 
 set(stone_ast_sources
+	AST.cpp
+	ASTContext.cpp
 	Decl.cpp
+	Type.cpp
 
 	LINK_LIBS
 	StoneOption
