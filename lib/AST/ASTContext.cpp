@@ -19,16 +19,15 @@ ASTContext::ASTContext() : identifierTable(allocator) {
 
 ASTContext::~ASTContext() {}
 
-void *stone::AllocateInASTContext(size_t bytes, const ASTContext &astContext,
-                                  unsigned alignment) {
-  return astContext.AllocateMemory(bytes, alignment);
-}
-
 Identifier ASTContext::GetIdentifier(llvm::StringRef text) const {
   if (text.empty() || text.data() == nullptr || text.size() == 0) {
     return Identifier();
   }
-
   auto it = identifierTable.insert({text, 0}).first;
   return Identifier(it->getKeyData());
+}
+
+void *stone::AllocateInASTContext(size_t bytes, const ASTContext &astContext,
+                                  unsigned alignment) {
+  return astContext.AllocateMemory(bytes, alignment);
 }

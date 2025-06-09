@@ -66,6 +66,15 @@ ABSTRACT_TYPE(Builtin, ObjectType)
   BUILTIN_TYPE(Null, BuiltinType)
 TYPE_RANGE(Builtin, Int, Null)
 
+
+
+// === Sugared Types (Aliases and String) ===
+ABSTRACT_SUGARED_TYPE(Sug, ObjectType)
+  TYPE_SPECIFIER(String, SugType)
+  TYPE_SPECIFIER(Using, SugType)
+TYPE_RANGE(Sug, String, Using)
+
+
 // === Deduced Types ===
 ABSTRACT_TYPE(Deduced, Type)
   TYPE_SPECIFIER(Auto, DeducedType)
@@ -96,12 +105,6 @@ ABSTRACT_TYPE(Nominal, ObjectType)
   TYPE_SPECIFIER(Interface, NominalType)
 TYPE_RANGE(Nominal, Enum, Interface)
 LAST_TYPE(Interface)
-
-// === Sugared Types (Aliases and String) ===
-ABSTRACT_SUGARED_TYPE(Sug, ObjectType)
-  TYPE_SPECIFIER(String, SugType)
-  TYPE_SPECIFIER(Using, SugType)
-TYPE_RANGE(Sug, String, Using)
 
 // === Cleanup ===
 #undef TYPE

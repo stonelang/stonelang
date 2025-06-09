@@ -10,6 +10,7 @@
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Support/Casting.h"
+#include "llvm/ADT/FoldingSet.h"
 
 namespace stone {
 
@@ -249,6 +250,56 @@ public:
   /// StringType(TypeState *TS) : BuiltinType(TypeKind::String, TS) {}
 };
 
-/// PtrType, MoveType, SafeType, OwnType
+class DeducedType : public Type {
+protected:
+  friend class ASTContext; // ASTContext creates these
+};
+// own auto in = new int
+class AutoType final : public DeducedType, public llvm::FoldingSetNode {
+public:
+};
+
+class AccessType : public ObjectType {
+public:
+  AccessType(TypeKind kind, TypeState *TS) : ObjectType(kind, TS) {}
+};
+
+// === Pointer Types ===
+class PointerType : public AccessType {
+public:
+  PointerType(TypeKind kind, TypeState *TS) : AccessType(kind, TS) {}
+};
+
+class PtrType final : public PointerType {
+public:
+  PtrType(TypeState *TS) : PointerType(TypeKind::Ptr, TS) {}
+};
+
+class MoveType final : public PointerType {
+public:
+  MoveType(TypeState *TS) : PointerType(TypeKind::Move, TS) {}
+};
+
+class OwnType final : public PointerType {
+public:
+  OwnType(TypeState *TS) : PointerType(TypeKind::Own, TS) {}
+};
+
+class SafeType final : public PointerType {
+public:
+  SafeType(TypeState *TS) : PointerType(TypeKind::Safe, TS) {}
+};
+
+// === Reference Types ===
+class ReferenceType : public AccessType {
+public:
+  ReferenceType(TypeKind kind, TypeState *TS) : AccessType(kind, TS) {}
+};
+
+class RefType final : public ReferenceType {
+public:
+  RefType(TypeState *TS) : ReferenceType(TypeKind::Ref, TS) {}
+};
+
 } // namespace stone
 #endif
