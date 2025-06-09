@@ -53,8 +53,7 @@ public:
 
 class BuiltinType : public ObjectType {
 public:
-  BuiltinType(TypeKind kind, TypeState *typeState)
-      : ObjectType(kind, typeState) {}
+  explicit BuiltinType(TypeKind kind, TypeState *TS);
 };
 
 class CharType final : public BuiltinType {
