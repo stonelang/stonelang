@@ -2,4 +2,5 @@
 
 using namespace stone;
 
-FrontendInstance::FrontendInstance() {}
+FrontendInstance::FrontendInstance(FrontendInvocation &invocation)
+    : invocation(invocation) {}

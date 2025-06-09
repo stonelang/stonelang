@@ -1,0 +1,21 @@
+// thinking of string
+
+struct string {
+    ptr uint8 data;
+    uint32 len;
+}
+
+join string
+public fun Chars() -> Iterator<char> {
+    // UTF-8 decoder here
+}
+
+join string
+public fun ToString() -> own String {
+    // Allocate, copy, return
+}
+
+// join Core;
+struct String {
+
+}

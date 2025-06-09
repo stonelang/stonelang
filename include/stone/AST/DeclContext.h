@@ -3,6 +3,9 @@
 
 #include "stone/AST/AST.h"
 
+#include "llvm/ADT/PointerUnion.h"
+#include "llvm/Support/Casting.h"
+
 namespace stone {
 class Decl;
 class Expr;

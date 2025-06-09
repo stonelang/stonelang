@@ -1,0 +1,9 @@
+join Syntax;
+
+
+test public fun Add() -> void {
+
+	expect(a match b);
+	if (a match b and a is string) { ... }
+	expect(x match 42 or y not match 0);
+}

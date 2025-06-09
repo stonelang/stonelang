@@ -16,9 +16,9 @@ list(REMOVE_ITEM LLVM_COMMON_DEPENDS stone-tablegen-targets)
 
 
 set(stone_option_sources
-
-  Options.cpp
-
+  Help.cpp
+  LangOptions.cpp
+  
 	LINK_LIBS 
 	StoneCore
 

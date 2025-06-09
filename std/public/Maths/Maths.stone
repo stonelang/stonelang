@@ -1,0 +1,12 @@
+join Maths;
+
+type[T where T using FloatingPoint]
+public struct Complex{
+    T real;
+    T imag;
+}
+
+type[T where T using FloatingPoint]
+public struct Imaginary {
+    T imag;
+}

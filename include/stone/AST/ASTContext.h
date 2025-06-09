@@ -21,32 +21,6 @@ class ASTContext final {
   mutable IdentifierTable identifierTable;
 
 public:
-  const Type *BuiltinFloat16Type;  /// 32-bit IEEE floating point
-  const Type *BuiltinFloat32Type;  /// 32-bit IEEE floating point
-  const Type *BuiltinFloat64Type;  /// 64-bit IEEE floating point
-  const Type *BuiltinFloat128Type; /// 128-bit IEEE floating point
-  const Type *BuiltinFloatType;    /// 128-bit IEEE floating point
-
-  const Type *BuiltinInt8Type;
-  const Type *BuiltinInt16Type;
-  const Type *BuiltinInt32Type;
-  const Type *BuiltinInt64Type;
-  const Type *BuiltinInt128Type;
-  const Type *BuiltinIntType;
-
-  const Type *BuiltinUInt8Type;
-  const Type *BuiltinUInt16Type;
-  const Type *BuiltinUInt32Type;
-  const Type *BuiltinUInt64Type;
-  const Type *BuiltinUInt128Type;
-  const Type *BuiltinUIntType;
-
-  const Type *BuiltinAutoType;
-  const Type *BuiltinVoidType;
-  const Type *BuiltinNullType;
-  const Type *BuiltinBoolType;
-
-public:
   ASTContext(const ASTContext &) = delete;
   ASTContext &operator=(const ASTContext &) = delete;
 
@@ -55,12 +29,15 @@ public:
 
 public:
   // Declare the set of builtin identifiers.
+#define BUILTIN_TYPE(ID, Parent) const Type *Builtin##ID##Type;
+#include "stone/AST/TypeNode.def"
+
+  // Declare the set of builtin identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
   Identifier Builtin##Name##Identifier;
 #include "stone/AST/BuiltinIdentifiers.def"
   Identifier GetIdentifier(llvm::StringRef text) const;
 
-public:
 public:
   /// Allocate memory from the ASTContext bump pointer.
   void *AllocateMemory(size_t bytes, unsigned alignment = 8) const {
@@ -73,9 +50,6 @@ public:
   template <typename T> T *AllocateMemory(size_t num = 1) const {
     return static_cast<T *>(AllocateMemory(num * sizeof(T), alignof(T)));
   }
-
-  /// Deallocate
-  void Deallocate(void *Ptr) const {}
 
   /// Memory allocator
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }

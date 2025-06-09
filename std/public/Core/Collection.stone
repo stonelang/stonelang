@@ -1,0 +1,4 @@
+join Core;
+
+type[T] public struct Collection {
+}

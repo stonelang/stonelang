@@ -55,7 +55,7 @@
 #endif
 
 
-DECL(Join, Decl)
+DECL(Join,  Decl)
 DECL(Space, Decl)
 // Declaration hierarchy starts here
 ABSTRACT_DECL(Value, Decl)

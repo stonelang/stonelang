@@ -1,0 +1,8 @@
+join Syntax;
+
+auto[T, U] struct Map {
+}
+
+fun TestAuto() {
+	using[int, string] Map m = new Map();
+}

@@ -14,6 +14,8 @@ static inline unsigned AlignOfModuleFile();
 class ModuleDecl;
 class SourceFile;
 class ModuleFile;
+class JoinDecl;
+class ASTContext;
 
 enum class ModuleFileKind : uint8_t { Syntax, Builtin };
 
@@ -27,11 +29,19 @@ public:
 
 class SourceFile final : public ModuleFile {
 public:
+  Decl *GetFirstDecl();
 };
 
-class ModuleDecl : public DeclContext,
-                   public TypeDecl,
-                   public ASTAllocation<ModuleDecl> {};
+class ModuleDecl final : public DeclContext,
+                         public TypeDecl,
+                         public ASTAllocation<ModuleDecl> {
+public:
+  // JoinDecl*
+  ModuleDecl();
+
+public:
+  ModuleFile *GetFirstModuleFile();
+};
 
 } // namespace stone
 

@@ -3,8 +3,19 @@
 
 namespace stone {
 
+enum class FrontendMode : unsigned {
+  None = 0,
+#define FRONTEND_MODE(A) A,
+#include "stone/Option/Mode.def"
+};
 class FrontendOptions final {
+  FrontendMode frontendMode;
+
 public:
+  FrontendOptions();
+
+public:
+  FrontendMode GetMode() { return frontendMode; }
 };
 
 } // namespace stone

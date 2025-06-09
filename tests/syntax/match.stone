@@ -1,0 +1,88 @@
+join Syntax;
+
+
+enum Day {
+}
+
+
+fun TestMatch() {
+
+match (A) {
+  case (B) {
+  }
+  case (C) {
+  }
+  case (D){
+    next;
+  }
+  case(E){
+    next case(B);
+  }
+  case() {
+  }
+}
+
+if(a match b){
+}
+
+}
+
+
+own ref Mutex lock = new Mutex();
+auto state = Init;
+
+thread fun Run() {
+  continue() {
+    lock.Acquire();
+    match(state) {
+      case (Init) {
+        Setup();
+        state = Waiting;
+        next;
+      }
+      case (Waiting) {
+        if ready() {
+          state = Processing;
+          next;
+        } else {
+          lock.Release();
+          Sleep();
+          continue;
+        }
+      }
+      case (Processing) {
+        DoWork();
+        state = Done;
+        next;
+      }
+      case (Done) {
+        Cleanup();
+        lock.Release();
+      }
+      case(){
+      }
+    }
+  }
+}
+
+test fun RetryOnNoConnection() {
+  continue() {
+    match (state) {
+      case (Connect) {
+        auto result = Net.Connect() catch (NetException e) {
+          if (e.NoConnection()) {
+            Wait(1);
+            next case (Connect);
+          }
+        };
+        expect(result.IsSuccess());
+      }
+
+      case () {
+        panic("Unhandled state!");
+      }
+    }
+  }
+}
+
+

@@ -2,6 +2,7 @@
 #define STONE_AST_DECL_H
 
 #include "stone/AST/AST.h"
+#include "stone/AST/Identifier.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/TypeAlignment.h"
 #include "llvm/Support/Casting.h"
@@ -38,6 +39,21 @@ public:
 };
 
 class TypeDecl : public ValueDecl {};
+
+class JoinDecl : public ValueDecl {
+  Identifier moduleName;
+
+public:
+  JoinDecl(Identifier moduleName);
+
+public:
+  Identifier GetModuleName() { return moduleName; }
+};
+
+class SpaceDecl : public ValueDecl {
+public:
+  SpaceDecl(Identifier name);
+};
 
 } // namespace stone
 #endif
