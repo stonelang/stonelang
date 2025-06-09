@@ -2,8 +2,8 @@
 #define STONE_AST_TYPE_H
 
 #include "stone/AST/AST.h"
-#include "stone/AST/TypeAlignment.h"
 #include "stone/AST/InlineBitfield.h"
+#include "stone/AST/TypeAlignment.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -41,9 +41,16 @@ public:
   TypeState *GetTypeState();
 };
 
-class BuiltinType : public Type {
+class ObjectType : public Type {
 public:
-  BuiltinType(TypeKind kind, TypeState *typeState) : Type(kind, typeState) {}
+  ObjectType(TypeKind kind, TypeState *typeState) : Type(kind, typeState) {}
+  ObjectType(TypeState *typeState) : ObjectType(TypeKind::Object, typeState) {}
+};
+
+class BuiltinType : public ObjectType {
+public:
+  BuiltinType(TypeKind kind, TypeState *typeState)
+      : ObjectType(kind, typeState) {}
 };
 
 enum class NumberBitWidth : uint8_t {

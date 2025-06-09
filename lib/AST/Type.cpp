@@ -1,9 +1,7 @@
 #include "stone/AST/Type.h"
 #include "stone/AST/TypeState.h"
 
-
 using namespace stone;
-
 
 NumberBitWidth NumberType::GetBitWidth() const {
   switch (GetKind()) {

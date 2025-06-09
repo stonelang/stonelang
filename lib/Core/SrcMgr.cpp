@@ -372,7 +372,6 @@ void CharSrcRange::print(raw_ostream &OS, const SrcMgr &SM,
   }
 }
 
-
 void CharSrcRange::dump(const SrcMgr &SM) const { print(llvm::errs(), SM); }
 
 std::optional<unsigned> SrcMgr::resolveOffsetForEndOfLine(unsigned BufferId,
