@@ -237,13 +237,18 @@ public:
   bool IsFalse() const { return kind == tok::kw_false; }
   bool IsTrue() const { return kind == tok::kw_true; }
   bool IsChar() const { return kind == tok::kw_char; }
+  bool IsString() const { return kind == tok::kw_string; }
+
+
   bool IsIntegerLiteral() const { return kind == tok::integer_literal; }
   bool IsStringLiteral() const { return kind == tok::integer_literal; }
   bool IsFloatLiteral() const { return kind == tok::integer_literal; }
+
   bool IsEOF() const { return kind == tok::eof; }
   bool IsNull() const { return kind == tok::kw_null; }
-  bool IsThis() const { return kind == tok::kw_this; }
 
+
+  bool IsThis() const { return kind == tok::kw_this; }
   bool IsPtr() const { return kind == tok::kw_ptr; }
   bool IsNew() const { return kind == tok::kw_new; }
   bool IsDelete() const { return kind == tok::kw_delete; }
@@ -263,6 +268,26 @@ public:
   bool IsCase() const { return kind == tok::kw_case; }
   bool IsContinue() const { return kind == tok::kw_continue; }
   bool IsNext() const { return kind == tok::kw_next; }
+
+  bool IsInt() const { return kind == tok::kw_int; }
+  bool IsInt8() const { return kind == tok::kw_int8; }
+  bool IsInt16() const { return kind == tok::kw_int16; }
+  bool IsInt32() const { return kind == tok::kw_int32; }
+  bool IsInt64() const { return kind == tok::kw_int64; }
+  bool IsInt128() const { return kind == tok::kw_int128; }
+
+  bool IsUInt() const { return kind == tok::kw_uint; }
+  bool IsUInt8() const { return kind == tok::kw_uint8; }
+  bool IsUInt16() const { return kind == tok::kw_uint16; }
+  bool IsUInt32() const { return kind == tok::kw_uint32; }
+  bool IsUInt64() const { return kind == tok::kw_uint64; }
+  bool IsUInt128() const { return kind == tok::kw_uint128; }
+
+  bool IsFloat() const { return kind == tok::kw_float; }
+  bool IsFloat16() const { return kind == tok::kw_float16; }
+  bool IsFloat32() const { return kind == tok::kw_float32; }
+  bool IsFloat64() const { return kind == tok::kw_float64; }
+  bool IsFloat128() const { return kind == tok::kw_float128; }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }
