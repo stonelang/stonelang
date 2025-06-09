@@ -2,7 +2,7 @@
 #define STONE_FRONTEND_FRONTENDINSTANCE_H
 
 #include "stone/AST/ASTContext.h"
-#include "stone/AST/Module.h"
+#include "stone/AST/ModuleDecl.h"
 #include "stone/Frontend/FrontendInvocation.h"
 
 namespace stone {

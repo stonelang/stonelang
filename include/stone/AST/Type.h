@@ -10,13 +10,11 @@ namespace stone {
 
 class Type;
 
-class alignas(1 << TypeAlignInBits) Type
-    : public ASTAllocation<std::aligned_storage<8, 8>::type> {
+class alignas(1 << TypeAlignInBits) Type : public ASTAllocation<Type> {
   friend class ASTContext;
 
 public:
 };
- 
 
 class BuiltinType : public Type {
 public:

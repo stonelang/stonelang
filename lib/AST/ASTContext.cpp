@@ -7,9 +7,9 @@ using namespace stone;
 
 ASTContext::ASTContext() : identifierTable(allocator) {
 
-// #define BUILTIN_TYPE(ID, Parent)                                               \
+  // #define BUILTIN_TYPE(ID, Parent)                                               \
 //   Builtin##ID##Type = new (*this) ID##Type(new (*this) BuiltinTypeState(*this));
-// #include "stone/AST/TypeNode.def"
+  // #include "stone/AST/TypeNode.def"
 
   // Initialize all of the known identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \

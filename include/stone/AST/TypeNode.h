@@ -40,68 +40,68 @@
 
 // === Builtin Types ===
 ABSTRACT_TYPE(Builtin, Type)
-  ABSTRACT_TYPE(Number, BuiltinType)
-    SIGNED_BUILTIN_TYPE(Int, NumberType)
-    SIGNED_BUILTIN_TYPE(Int8, NumberType)
-    SIGNED_BUILTIN_TYPE(Int16, NumberType)
-    SIGNED_BUILTIN_TYPE(Int32, NumberType)
-    SIGNED_BUILTIN_TYPE(Int64, NumberType)
-    SIGNED_BUILTIN_TYPE(Int128, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt8, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt16, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt32, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt64, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt128, NumberType)
-    BUILTIN_TYPE(Float, NumberType)
-    BUILTIN_TYPE(Float16, NumberType)
-    BUILTIN_TYPE(Float32, NumberType)
-    BUILTIN_TYPE(Float64, NumberType)
-    BUILTIN_TYPE(Float128, NumberType)
-  UNSIGNED_BUILTIN_TYPE(Bool, BuiltinType)
-  UNSIGNED_BUILTIN_TYPE(Char, BuiltinType)
-  BUILTIN_TYPE(Null, BuiltinType)
-  BUILTIN_TYPE(Void, BuiltinType)
+ABSTRACT_TYPE(Number, BuiltinType)
+SIGNED_BUILTIN_TYPE(Int, NumberType)
+SIGNED_BUILTIN_TYPE(Int8, NumberType)
+SIGNED_BUILTIN_TYPE(Int16, NumberType)
+SIGNED_BUILTIN_TYPE(Int32, NumberType)
+SIGNED_BUILTIN_TYPE(Int64, NumberType)
+SIGNED_BUILTIN_TYPE(Int128, NumberType)
+UNSIGNED_BUILTIN_TYPE(UInt, NumberType)
+UNSIGNED_BUILTIN_TYPE(UInt8, NumberType)
+UNSIGNED_BUILTIN_TYPE(UInt16, NumberType)
+UNSIGNED_BUILTIN_TYPE(UInt32, NumberType)
+UNSIGNED_BUILTIN_TYPE(UInt64, NumberType)
+UNSIGNED_BUILTIN_TYPE(UInt128, NumberType)
+BUILTIN_TYPE(Float, NumberType)
+BUILTIN_TYPE(Float16, NumberType)
+BUILTIN_TYPE(Float32, NumberType)
+BUILTIN_TYPE(Float64, NumberType)
+BUILTIN_TYPE(Float128, NumberType)
+UNSIGNED_BUILTIN_TYPE(Bool, BuiltinType)
+UNSIGNED_BUILTIN_TYPE(Char, BuiltinType)
+BUILTIN_TYPE(Null, BuiltinType)
+BUILTIN_TYPE(Void, BuiltinType)
 TYPE_RANGE(Builtin, Int, Void)
 
 // === Deduced Types ===
 ABSTRACT_TYPE(Deduced, Type)
-  TYPE_SPECIFIER(Auto, DeducedType)
+TYPE_SPECIFIER(Auto, DeducedType)
 TYPE_RANGE(Deduced, Auto, Auto)
 
 // === Function Types ===
 ABSTRACT_TYPE(Function, Type)
-  TYPE_SPECIFIER(Fun, FunctionType)
+TYPE_SPECIFIER(Fun, FunctionType)
 TYPE_RANGE(Function, Fun, Fun)
 
 // === Access Types (Pointer & Reference) ===
 ABSTRACT_TYPE(Access, Type)
 
-  ABSTRACT_TYPE(Pointer, AccessType)
-    TYPE_SPECIFIER(Ptr, PointerType)          // ptr T
-    TYPE_SPECIFIER(Move, PointerType)         // move ptr T
-    TYPE_SPECIFIER(Own, PointerType)          // own ptr T
-    TYPE_SPECIFIER(Safe, PointerType)         // safe ptr T
-    TYPE_RANGE(Pointer, Ptr, Safe)
+ABSTRACT_TYPE(Pointer, AccessType)
+TYPE_SPECIFIER(Ptr, PointerType)  // ptr T
+TYPE_SPECIFIER(Move, PointerType) // move ptr T
+TYPE_SPECIFIER(Own, PointerType)  // own ptr T
+TYPE_SPECIFIER(Safe, PointerType) // safe ptr T
+TYPE_RANGE(Pointer, Ptr, Safe)
 
-  ABSTRACT_TYPE(Reference, AccessType)
-    TYPE_SPECIFIER(Ref, ReferenceType)        // ref T
-    TYPE_RANGE(Reference, Ref, Ref)
+ABSTRACT_TYPE(Reference, AccessType)
+TYPE_SPECIFIER(Ref, ReferenceType) // ref T
+TYPE_RANGE(Reference, Ref, Ref)
 
 TYPE_RANGE(Access, Ptr, Ref)
 
 // === Nominal Types ===
 ABSTRACT_TYPE(Nominal, Type)
-  TYPE_SPECIFIER(Enum, NominalType)
-  TYPE_SPECIFIER(Struct, NominalType)
-  TYPE_SPECIFIER(Interface, NominalType)
+TYPE_SPECIFIER(Enum, NominalType)
+TYPE_SPECIFIER(Struct, NominalType)
+TYPE_SPECIFIER(Interface, NominalType)
 TYPE_RANGE(Nominal, Enum, Interface)
 LAST_TYPE(Interface)
 
 // === Sugared Types (Aliases and String) ===
 ABSTRACT_SUGARED_TYPE(Sug, Type)
-  TYPE_SPECIFIER(String, SugType)
-  TYPE_SPECIFIER(Using, SugType)
+TYPE_SPECIFIER(String, SugType)
+TYPE_SPECIFIER(Using, SugType)
 TYPE_RANGE(Sug, String, Using)
 
 // === Cleanup ===

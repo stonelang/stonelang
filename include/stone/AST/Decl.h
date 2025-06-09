@@ -31,28 +31,43 @@ enum : uint8_t {
 // Introduces a name and associates it with a type such as:
 // int x where x is the declaration, int is the type.
 class alignas(1 << DeclAlignInBits) Decl : public ASTAllocation<Decl> {
+  DeclKind kind;
+
 public:
+  Decl();
+
+public:
+  DeclKind GetKind() const { return kind; }
+  bool IsJoin() const { return kind == DeclKind::Join; }
+
+public:
+  static bool classof(const Decl *D) {
+    return D->GetKind() >= DeclKind::FirstValueDecl &&
+           D->GetKind() <= DeclKind::LastValueDecl;
+  }
 };
 
 class ValueDecl : public Decl {
 public:
 };
 
-class TypeDecl : public ValueDecl {};
+class TypeDecl : public ValueDecl {
+public:
+};
+
+class TemplateDecl {};
+
+class UsingDecl : public ValueDecl {};
 
 class JoinDecl : public ValueDecl {
-  Identifier moduleName;
 
 public:
-  JoinDecl(Identifier moduleName);
-
-public:
-  Identifier GetModuleName() { return moduleName; }
+  JoinDecl();
 };
 
 class SpaceDecl : public ValueDecl {
 public:
-  SpaceDecl(Identifier name);
+  SpaceDecl();
 };
 
 } // namespace stone
