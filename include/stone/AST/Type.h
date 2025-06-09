@@ -9,8 +9,8 @@
 #include "llvm/ADT/APInt.h"
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
-#include "llvm/Support/Casting.h"
 #include "llvm/ADT/FoldingSet.h"
+#include "llvm/Support/Casting.h"
 
 namespace stone {
 
@@ -259,9 +259,9 @@ class AutoType final : public DeducedType, public llvm::FoldingSetNode {
 public:
 };
 
-class AccessType : public ObjectType {
+class AccessType : public Type {
 public:
-  AccessType(TypeKind kind, TypeState *TS) : ObjectType(kind, TS) {}
+  AccessType(TypeKind kind, TypeState *TS) : Type(kind, TS) {}
 };
 
 // === Pointer Types ===

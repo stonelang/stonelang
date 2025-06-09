@@ -221,6 +221,7 @@ public:
   bool IsAuto() const { return kind == tok::kw_auto; }
   bool IsStruct() const { return kind == tok::kw_struct; }
   bool IsInterface() const { return kind == tok::kw_interface; }
+  bool IsObject() const { return kind == tok::kw_object; }
   bool IsStone() const { return kind == tok::kw_stone; }
   bool IsInline() const { return kind == tok::kw_inline; }
   bool IsEnum() const { return kind == tok::kw_enum; }
@@ -244,9 +245,12 @@ public:
   bool IsThis() const { return kind == tok::kw_this; }
 
   bool IsPtr() const { return kind == tok::kw_ptr; }
+  bool IsNew() const { return kind == tok::kw_new; }
+  bool IsDelete() const { return kind == tok::kw_delete; }
   bool IsOwn() const { return kind == tok::kw_own; }
   bool IsSafe() const { return kind == tok::kw_own; }
   bool IsRef() const { return kind == tok::kw_ref; }
+  bool IsAim() const { return kind == tok::kw_aim; }
 
   bool IsThrow() const { return kind == tok::kw_throw; }
   bool IsCatch() const { return kind == tok::kw_catch; }
