@@ -5,6 +5,10 @@
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/TypeAlignment.h"
 
+#include "llvm/ADT/APFloat.h"
+#include "llvm/ADT/APInt.h"
+#include "llvm/ADT/APSInt.h"
+#include "llvm/ADT/ArrayRef.h"
 #include "llvm/Support/Casting.h"
 
 namespace stone {
@@ -53,6 +57,21 @@ public:
       : ObjectType(kind, typeState) {}
 };
 
+class CharType final : public BuiltinType {
+public:
+  CharType(TypeState *TS) : BuiltinType(TypeKind::Char, TS) {}
+};
+
+class BoolType final : public BuiltinType {
+public:
+  BoolType(TypeState *TS) : BuiltinType(TypeKind::Bool, TS) {}
+};
+
+class NullType final : public BuiltinType {
+public:
+  NullType(TypeState *TS) : BuiltinType(TypeKind::Null, TS) {}
+};
+
 enum class NumberBitWidth : uint8_t {
   Platform, // Platform-dependent
   Size8,    // 8 bits
@@ -74,10 +93,151 @@ public:
 public:
   NumberBitWidth GetBitWidth() const;
 };
+class IntType : public NumberType {
+  friend ASTContext;
 
-class Int32Type final : public NumberType {
 public:
-  Int32Type(TypeState *typeState) : NumberType(TypeKind::Int32, typeState) {}
+  IntType(TypeState *TS) : NumberType(TypeKind::Int, TS) {}
+
+public:
+  static IntType *Create(const ASTContext &AC);
+};
+
+class Int8Type : public NumberType {
+  friend ASTContext;
+
+public:
+  Int8Type(TypeState *TS) : NumberType(TypeKind::Int8, TS) {}
+};
+
+class Int16Type : public NumberType {
+  friend ASTContext;
+
+public:
+  Int16Type(TypeState *TS) : NumberType(TypeKind::Int16, TS) {}
+};
+
+class Int32Type : public NumberType {
+  friend ASTContext;
+
+public:
+  Int32Type(TypeState *TS) : NumberType(TypeKind::Int32, TS) {}
+};
+
+class Int64Type : public NumberType {
+  friend ASTContext;
+
+public:
+  Int64Type(TypeState *TS) : NumberType(TypeKind::Int64, TS) {}
+};
+
+class Int128Type : public NumberType {
+  friend ASTContext;
+
+public:
+  Int128Type(TypeState *TS) : NumberType(TypeKind::Int128, TS) {}
+};
+
+class UIntType : public NumberType {
+  friend class ASTContext;
+
+public:
+  UIntType(TypeState *TS) : NumberType(TypeKind::UInt, TS) {}
+};
+class UInt8Type : public NumberType {
+  friend class ASTContext;
+
+public:
+  UInt8Type(TypeState *TS) : NumberType(TypeKind::UInt8, TS) {}
+};
+class UInt16Type : public NumberType {
+  friend class ASTContext;
+
+public:
+  UInt16Type(TypeState *TS) : NumberType(TypeKind::UInt16, TS) {}
+};
+
+class UInt32Type : public NumberType {
+  friend class ASTContext;
+
+public:
+  UInt32Type(TypeState *TS) : NumberType(TypeKind::UInt32, TS) {}
+};
+
+class UInt64Type final : public NumberType {
+  friend class ASTContext;
+
+public:
+  UInt64Type(TypeState *TS) : NumberType(TypeKind::UInt64, TS) {}
+};
+class UInt128Type final : public NumberType {
+  friend class ASTContext;
+
+public:
+  UInt128Type(TypeState *TS) : NumberType(TypeKind::UInt128, TS) {}
+};
+
+class FloatType : public NumberType {
+  friend ASTContext;
+
+public:
+  FloatType(TypeState *TS) : NumberType(TypeKind::Float, TS) {}
+
+public:
+  const llvm::fltSemantics &GetAPFloatSemantics() const;
+
+public:
+  static FloatType *Create(const ASTContext &astContext);
+
+  static bool classof(const Type *T) { return T->GetKind() == TypeKind::Float; }
+};
+
+class Float16Type : public NumberType {
+  friend ASTContext;
+
+public:
+  Float16Type(TypeState *TS) : NumberType(TypeKind::Float16, TS) {}
+};
+
+class Float32Type : public NumberType {
+  friend ASTContext;
+
+public:
+  Float32Type(TypeState *TS) : NumberType(TypeKind::Float32, TS) {}
+};
+
+class Float64Type : public NumberType {
+  friend ASTContext;
+
+public:
+  Float64Type(TypeState *TS) : NumberType(TypeKind::Float64, TS) {}
+};
+class Float128Type : public NumberType {
+  friend ASTContext;
+
+public:
+  Float128Type(TypeState *TS) : NumberType(TypeKind::Float128, TS) {}
+};
+
+class NominalType : public ObjectType {
+public:
+  NominalType(TypeKind kind, TypeState *TS) : ObjectType(kind, TS) {}
+};
+
+class StructType final : public NominalType {
+public:
+  StructType(TypeState *TS) : NominalType(TypeKind::Struct, TS) {}
+};
+
+class InterfaceType final : public NominalType {
+public:
+  InterfaceType(TypeState *TS) : NominalType(TypeKind::Interface, TS) {}
+};
+
+class EnumType final : public NominalType {
+
+public:
+  EnumType(TypeState *TS) : NominalType(TypeKind::Enum, TS) {}
 };
 
 class SugType : public Type {
