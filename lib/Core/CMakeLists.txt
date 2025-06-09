@@ -10,7 +10,10 @@ set( LLVM_LINK_COMPONENTS
   )
 set(stone_core_sources
 	About.cpp
+  FileSystem.cpp
+  FileSystemStatCache.cpp
   InputFile.cpp
+  SrcMgr.cpp
   Statistics.cpp
 )
 add_stone_library(StoneCore
