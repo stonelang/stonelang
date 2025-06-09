@@ -70,5 +70,9 @@ public:
   SpaceDecl();
 };
 
+class TrustDecl final : public Decl {
+public:
+};
+
 } // namespace stone
 #endif

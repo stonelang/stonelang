@@ -239,14 +239,12 @@ public:
   bool IsChar() const { return kind == tok::kw_char; }
   bool IsString() const { return kind == tok::kw_string; }
 
-
   bool IsIntegerLiteral() const { return kind == tok::integer_literal; }
   bool IsStringLiteral() const { return kind == tok::integer_literal; }
   bool IsFloatLiteral() const { return kind == tok::integer_literal; }
 
   bool IsEOF() const { return kind == tok::eof; }
   bool IsNull() const { return kind == tok::kw_null; }
-
 
   bool IsThis() const { return kind == tok::kw_this; }
   bool IsPtr() const { return kind == tok::kw_ptr; }
@@ -268,6 +266,10 @@ public:
   bool IsCase() const { return kind == tok::kw_case; }
   bool IsContinue() const { return kind == tok::kw_continue; }
   bool IsNext() const { return kind == tok::kw_next; }
+
+  bool IsTrust() const { return kind == tok::kw_trust; }
+  bool IsExpect() const { return kind == tok::kw_expect; }
+  bool IsTest() const { return kind == tok::kw_test; }
 
   bool IsInt() const { return kind == tok::kw_int; }
   bool IsInt8() const { return kind == tok::kw_int8; }

@@ -8,9 +8,7 @@ namespace stone {
 class Decl;
 class Expr;
 class Stmt;
-
 class Type;
-
 class ASTContext;
 class DeclContext;
 

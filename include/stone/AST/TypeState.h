@@ -3,6 +3,7 @@
 
 #include "stone/AST/AST.h"
 #include "stone/AST/TypeAlignment.h"
+#include "stone/AST/TypeInfluencer.h"
 
 namespace stone {
 
