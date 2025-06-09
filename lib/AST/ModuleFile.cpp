@@ -9,3 +9,7 @@ ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl *owner)
 Decl *SourceFile::GetFirstDecl() const { return nullptr; }
 
 bool SourceFile::HasFirstDecl() const { return GetFirstDecl() != nullptr; }
+
+llvm::ArrayRef<Decl *> SourceFile::GetTopLevelDecls() const {
+  return topLevelDecls;
+}

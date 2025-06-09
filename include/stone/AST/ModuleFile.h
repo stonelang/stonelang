@@ -32,7 +32,16 @@ public:
   bool IsClangModule() const { return kind == ModuleFileKind::ClangModule; }
 };
 
+enum class SourceFileStage : uint8_t {
+  None = 1 << 0,
+  Parsed = 1 << 1,
+  TypeChecked = 1 << 2,
+  EmittedIR = 1 << 3,
+};
+
 class SourceFile final : public ModuleFile {
+
+  std::vector<Decl *> topLevelDecls;
 
 public:
   SourceFile();
@@ -43,6 +52,10 @@ public:
 public:
   Decl *GetFirstDecl() const;
   bool HasFirstDecl() const;
+
+public:
+  void AddTopLevelDecl(Decl *D) { topLevelDecls.push_back(D); }
+  llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
 };
 
 class BuiltinFile final : public ModuleFile {

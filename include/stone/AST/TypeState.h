@@ -10,16 +10,26 @@ class alignas(1 << TypeAlignInBits) TypeState
     : public ASTAllocation<TypeState> {
 
   friend class ASTContext;
-  const ASTContext &astContext;
+  ASTContext &astContext;
+
+  // The canonical type associated with this TypeSate
+  Type *canType = nullptr;
 
 public:
-  explicit TypeState(const ASTContext &astContext) : astContext(astContext) {}
+  explicit TypeState(ASTContext &astContext) : astContext(astContext) {}
+
+public:
+  Type *GetCanType() const { return canType; }
+  void SetCanType(Type *ty) {
+    assert(ty && "TypeState cannot be assigned a null Type!");
+    canType = ty;
+  }
 };
 
 class BuiltinTypeState final : public TypeState {
 
 public:
-  BuiltinTypeState(const ASTContext &astContext) : TypeState(astContext) {}
+  BuiltinTypeState(ASTContext &astContext) : TypeState(astContext) {}
 };
 
 } // namespace stone
