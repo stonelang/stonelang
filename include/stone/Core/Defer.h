@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_DEFER_H
-#define STONE_BASIC_DEFER_H
+#ifndef STONE_CORE_DEFER_H
+#define STONE_CORE_DEFER_H
 
 #include "llvm/ADT/ScopeExit.h"
 
