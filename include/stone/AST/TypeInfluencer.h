@@ -201,4 +201,4 @@ public:
 };
 
 } // namespace stone
-#endif 
+#endif

@@ -10,7 +10,6 @@
 #define TYPE_ATTRIBUTE_INFLUENCER(ID, Parent) TYPE_INFLUENCER(ID, Parent)
 #endif
 
-
 #ifndef TYPE_INFLUENCER_RANGE
 #define TYPE_INFLUENCER_RANGE(ID, First, Last)
 #endif
@@ -19,7 +18,7 @@
 #define LAST_TYPE_INFLUENCER(ID)
 #endif
 
-ABSTRACT_TYPE_INFLUENCER(TypeModifier, TypeInfluencer)
+ABSTRACT_TYPE_INFLUENCER(TypeModifier,  TypeInfluencer)
     TYPE_MODIFIER_INFLUENCER(Pure,      TypeModifier)
     TYPE_MODIFIER_INFLUENCER(Stone,     TypeModifier)
     TYPE_MODIFIER_INFLUENCER(Own,       TypeModifier)
@@ -33,7 +32,7 @@ ABSTRACT_TYPE_INFLUENCER(TypeAttribute,     TypeInfluencer)
     TYPE_ATTRIBUTE_INFLUENCER(Nullable,     TypeAttribute)
     TYPE_ATTRIBUTE_INFLUENCER(NotNullable,  TypeAttribute)
     TYPE_ATTRIBUTE_INFLUENCER(Align,        TypeAttribute)
-    TYPE_INFLUENCER_RANGE(TypeAttribute, Nullable, Align)
+    TYPE_INFLUENCER_RANGE(TypeAttribute,    Nullable, Align)
 
 LAST_TYPE_INFLUENCER(Align)
 
