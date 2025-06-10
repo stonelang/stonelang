@@ -59,7 +59,6 @@ public:
   DeclInfluencer(DeclInfluencerKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
 
 public:
-
   DeclInfluencerKind GetKind() const { return kind; }
   SrcLoc GetLoc() const { return loc; }
 

@@ -36,6 +36,9 @@ public:
   llvm::PointerType *IntPtrTy;   ///  int*
 
 public:
+  CodeGenModule(CodeGeneration &codeGeneration);
+
+public:
   void EmitModuleDecl(const ModuleDecl *moduleDecl);
 };
 

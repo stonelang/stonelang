@@ -61,5 +61,7 @@ public:
   }
 };
 
+class ASTScope {};
+
 } // namespace stone
 #endif

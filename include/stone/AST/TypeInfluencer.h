@@ -6,7 +6,7 @@
 #include "stone/AST/Identifier.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/Visibility.h"
-#include "stone/Core/SrcLoc.h"
+#include "stone/Lang/SrcLoc.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"

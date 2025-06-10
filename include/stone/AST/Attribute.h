@@ -1,7 +1,7 @@
 #ifndef STONE_AST_ATTRIBUTE_H
 #define STONE_AST_ATTRIBUTE_H
 
-#include "stone/Core/SrcLoc.h"
+#include "stone/Lang/SrcLoc.h"
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"

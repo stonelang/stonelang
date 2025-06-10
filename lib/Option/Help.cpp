@@ -1,5 +1,0 @@
-#include "stone/Option/Help.h"
-
-using namespace stone;
-
-void stone::PrintHelp(const LangOptions &langOpts, bool showHidden) {}

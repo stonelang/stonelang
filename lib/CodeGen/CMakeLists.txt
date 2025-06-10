@@ -9,7 +9,9 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_codegen_sources
-		CodeGenInstance.cpp
+		CodeGeneration.cpp 
+		CodeGenModule.cpp  
+		CodeGenPassing.cpp
 		 
 		LINK_LIBS
 		StoneAST

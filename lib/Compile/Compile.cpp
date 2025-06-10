@@ -1,5 +1,5 @@
 #include "stone/Compile/Compile.h"
-#include "stone/Frontend/FrontendObservation.h"
+#include "stone/Compile/FrontendObservation.h"
 
 using namespace stone;
 
@@ -8,16 +8,12 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   return 0;
 }
+/// \return status of compile
+Status stone::Compile(Compiling &compiling) {}
 
-/// \return true if compilie is successful
-bool stone::PerformCompile(FrontendInstance &instance) { return false; }
-
-/// \retyrb true if we compiled an ir file.
-bool stone::PerformCompileLLVM(FrontendInstance &instance) { return false; }
+/// \return true if we compiled an ir file.
+Status stone::PerformCompileLLVM(Compiling &compiling) {}
 
 /// \return true if syntax analysis is successful
-bool stone::PerformParse(FrontendInstance &instance,
-                         std::function<bool(FrontendInstance &)>) {
-
-  // instance.GetFrontendModule().AddSource(sourcefe);
-}
+Status stone::PerformParse(Compiling &compiling,
+                           std::function<bool(Compiling &compiling)>) {}

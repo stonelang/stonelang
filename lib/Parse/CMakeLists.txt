@@ -4,7 +4,11 @@ set(stone_parse_sources
   
   LINK_LIBS
   StoneAST
-  StoneCore
+
+
+  DEPENDS
+  StoneOptions
+
 
 )
 add_stone_library(StoneParse
