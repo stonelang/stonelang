@@ -11,14 +11,17 @@ class Compiling final {
 
   std::unique_ptr<Frontend> frontend;
   mutable ModuleDecl *mod = nullptr;
+  FrontendObserver *observer = nullptr;
 
 public:
   Compiling(const Compiling &) = delete;
   void operator=(const Compiling &) = delete;
+  explicit Compiling(std::unique_ptr<Frontend> frontend);
 
 public:
-  explicit Compiling(std::unique_ptr<Frontend> frontend);
   bool Setup();
+  void SetFrontendObserver(FrontendObserver *obs) { observer = obs; }
+  FrontendObserver *GetFrontendObserver() { return observer; }
 
 public:
   ModuleDecl *GetModule() { return mod; }

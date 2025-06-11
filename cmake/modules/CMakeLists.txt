@@ -23,9 +23,9 @@ export(TARGETS ${STONE_EXPORTS} FILE ${stone_cmake_builddir}/StoneTargets.cmake)
 
 
 
-#CLANG
-#set(CLANG_SOURCE_DIR "${CMAKE_SOURCE_DIR}/tools/clang/include")
-#set(CLANG_BINARY_DIR_DIR "${CMAKE_BINARY_DIR}/tools/clang/include")
+#CSUPPORT
+#set(CSUPPORT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/tools/clang/include")
+#set(CSUPPORT_BINARY_DIR_DIR "${CMAKE_BINARY_DIR}/tools/clang/include")
 
 #STONE
 #set(STONE_SOURCE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}")

@@ -1,11 +1,11 @@
-#ifndef STONE_PARSE_PARSER_H
-#define STONE_PARSE_PARSER_H
+#ifndef STONE_PARSE_PARSEROBSERVER_H
+#define STONE_PARSE_PARSEROBSERVER_H
 
-#include "stone/AST/AST.h"
+#include "stone/AST/ASTSession.h"
 #include "stone/AST/DeclState.h"
 #include "stone/AST/TypeState.h"
-#include "stone/Lang/Token.h"
 #include "stone/Parse/ParserResult.h"
+#include "stone/Support/Token.h"
 
 namespace stone {
 class Parser;

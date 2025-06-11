@@ -1,7 +1,7 @@
 #ifndef STONE_AST_STMT_H
 #define STONE_AST_STMT_H
 
-#include "stone/AST/AST.h"
+#include "stone/AST/ASTUnit.h"
 
 namespace stone {
 
@@ -13,7 +13,7 @@ enum class StmtKind : uint8_t {
 #include "stone/AST/StmtNode.def"
 };
 
-class Stmt : public ASTAllocation<Stmt> {
+class alignas(8) Stmt : public ASTUnit {
   StmtKind kind;
 
 public:
@@ -28,6 +28,7 @@ public:
 
 public:
   StmtKind GetKind() const { return kind; }
+  ASTUnitKind GetUnitKind() override const { return ASTUnitKind::Stmt; }
 };
 
 } // namespace stone

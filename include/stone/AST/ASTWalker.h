@@ -11,8 +11,9 @@ namespace stone {
 class Decl;
 class Stmt;
 class Expr;
-class ModuleDecl;
 class Type;
+class ModuleDecl;
+class ASTUnit;
 
 /// An abstract class used to traverse an AST.
 class ASTWalker {

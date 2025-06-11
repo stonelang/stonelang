@@ -5,7 +5,6 @@
 #include <type_traits>
 
 namespace stone {
-
 class ParserStatus;
 /// A wrapper for a parser AST node result (Decl, Stmt, Expr,
 /// etc.)

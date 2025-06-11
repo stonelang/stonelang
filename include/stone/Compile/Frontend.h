@@ -1,12 +1,11 @@
 #ifndef STONE_COMPILE_FRONTEND_H
 #define STONE_COMPILE_FRONTEND_H
 
-#include "stone/AST/TypeCheckerOptions.h"
 #include "stone/Compile/FrontendOptions.h"
-#include "stone/Lang/CodeGenOptions.h"
-#include "stone/Lang/DiagnosticOptions.h"
-#include "stone/Lang/LangOptions.h"
-#include "stone/Lang/Status.h"
+#include "stone/Support/CodeGenOptions.h"
+#include "stone/Support/DiagnosticOptions.h"
+#include "stone/Support/LangOptions.h"
+#include "stone/Support/Status.h"
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/FileSystemOptions.h"
@@ -20,6 +19,8 @@ namespace stone {
 
 using ConfigurationFileBuffers =
     llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
+using MemoryBuffers =
+    llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
 
 struct ModuleBuffers final {
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
@@ -35,10 +36,9 @@ struct ModuleBuffers final {
         moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
 };
 
-using MemoryBuffers =
-    llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
-
 class Frontend final {
+  // friend class FrontendImpl;
+
   FrontendOptions frontendOpts;
   LangOptions langOpts;
   CodeGenOptions codeGenOpts;
@@ -48,7 +48,7 @@ class Frontend final {
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
 
 public:
-  Frontend();
+  Frontend(const FrontendObservation *observation);
   Status ParseArgStrings(llvm::ArrayRef<const char *> args);
 
 public:

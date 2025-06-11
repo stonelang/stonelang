@@ -1,6 +1,8 @@
 #ifndef STONE_CODEGEN_CODEGENPASSING_H
 #define STONE_CODEGEN_CODEGENPASSING_H
 
+#include "stone/Support/CodeGenOptions.h"
+
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"

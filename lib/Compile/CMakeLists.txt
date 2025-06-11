@@ -3,7 +3,6 @@ set(stone_compile_sources
   Compiling.cpp
   Frontend.cpp
   FrontendOptions.cpp
-
   
   LINK_LIBS
   StoneCodeGen

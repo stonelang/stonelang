@@ -1,7 +1,7 @@
 #ifndef STONE_AST_DECL_H
 #define STONE_AST_DECL_H
 
-#include "stone/AST/AST.h"
+#include "stone/AST/ASTUnit.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/TypeAlignment.h"
@@ -10,10 +10,6 @@
 #include <stdint.h>
 
 namespace stone {
-
-class DeclContext;
-class ASTContext;
-using DeclContextOrASTContext = llvm::PointerUnion<DeclContext *, ASTContext *>;
 
 enum class DeclKind : uint8_t {
   None = 0,
@@ -30,20 +26,25 @@ enum : uint8_t {
 
 // Introduces a name and associates it with a type such as:
 // int x where x is the declaration, int is the type.
-class alignas(1 << DeclAlignInBits) Decl : public ASTAllocation<Decl> {
+class alignas(1 << DeclAlignInBits) Decl : public ASTUnit {
   DeclKind kind;
+  ASTSession &session
 
-public:
-  Decl();
+      public : Decl(DeclKind kind, ASTSession &session);
 
 public:
   DeclKind GetKind() const { return kind; }
   bool IsJoin() const { return kind == DeclKind::Join; }
 
+  ASTUnitKind GetUnitKind() override const { return ASTUnitKind::Decl; }
+
 public:
   static bool classof(const Decl *D) {
     return D->GetKind() >= DeclKind::FirstValueDecl &&
            D->GetKind() <= DeclKind::LastValueDecl;
+  }
+  static bool classof(const ASTUnit *unit) {
+    return unit->GetUniKind() == ASTKind::Decl;
   }
 };
 

@@ -14,17 +14,18 @@ class alignas(1 << TypeAlignInBits) TypeState
   ASTContext &astContext;
 
   // The canonical type associated with this TypeSate
-  Type *canType = nullptr;
+  Type *canonicalType = nullptr;
 
 public:
   explicit TypeState(ASTContext &astContext) : astContext(astContext) {}
 
 public:
-  Type *GetCanType() const { return canType; }
-  void SetCanType(Type *ty) {
-    assert(ty && "TypeState cannot be assigned a null Type!");
-    canType = ty;
+  Type *GetCanonicalType() const { return canonicalType; }
+  void SetCanonicalType(Type *CT) {
+    assert(CT && "TypeState cannot be assigned a null Type!");
+    canonicalType = CT;
   }
+  bool IsCanonical() const { return GetCanonicalType() != nullptr; }
 };
 
 class BuiltinTypeState final : public TypeState {

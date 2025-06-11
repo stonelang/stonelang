@@ -5,7 +5,7 @@ using namespace stone;
 
 BuiltinType::BuiltinType(TypeKind kind, TypeState *TS) : ObjectType(kind, TS) {
   // Bits.Type.IsBuiltin = true;
-  TS->SetCanType(this);
+  TS->SetCanonicalType(this);
 }
 
 NumberBitWidth NumberType::GetBitWidth() const {

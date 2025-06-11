@@ -1,7 +1,7 @@
 #ifndef STONE_AST_EXPR_H
 #define STONE_AST_EXPR_H
 
-#include "stone/AST/AST.h"
+#include "stone/AST/ASTUnit.h"
 #include "stone/AST/ASTWalker.h"
 
 namespace stone {
@@ -15,7 +15,7 @@ enum class ExprKind : uint8_t {
 
 };
 
-class Expr : public ASTAllocation<Expr> {
+class alignas(8) Expr : public ASTUnit {
   ExprKind kind;
 
 public:
@@ -32,7 +32,19 @@ public:
 
 public:
   ExprKind GetKind() const { return kind; }
+
+  ASTUnitKind GetUnitKind() override const { return ASTUnitKind::Expr; }
+
   /// This recursively walks the AST rooted at this expression.
-  Expr *Walk(ASTWalker &walker);
-  Expr *Walk(ASTWalker &&walker) { return Walk(walker); }
+  // Expr *Walk(ASTWalker &walker);
+  // Expr *Walk(ASTWalker &&walker) { return Walk(walker); }
+
+public:
+  // static bool classof(const Expr *E) {
+  //   return D->GetKind() >= ExprKind::FirstValueDecl &&
+  //          D->GetKind() <= ExprKind::LastValueDecl;
+  // }
+  static bool classof(const ASTUnit *unit) {
+    return unit->GetUniKind() == ASTKind::Expr;
+  }
 };

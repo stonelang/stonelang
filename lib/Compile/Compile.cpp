@@ -1,5 +1,5 @@
 #include "stone/Compile/Compile.h"
-#include "stone/Compile/FrontendObservation.h"
+#include "stone/Compile/FrontendObserver.h"
 
 using namespace stone;
 

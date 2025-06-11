@@ -5,21 +5,21 @@ set(LLVM_LINK_COMPONENTS
  )
 
 set(stone_ast_sources
-	AST.cpp
-	ASTContext.cpp
+	ASTBuilder.cpp
+	ASTSession.cpp
+	ASTUnit.cpp
 	Decl.cpp
-	DeclContext.cpp
 	Expr.cpp
 	ModuleDecl.cpp
 	ModuleFile.cpp
 	Stmt.cpp
 	Type.cpp
-	TypeChecking.cpp
+	TypeChecker.cpp
 	Visibility.cpp
 
-
 	LINK_LIBS
-	StoneLang
+	StoneSupport
+
 )
 add_stone_library(StoneAST
 	${stone_ast_sources}

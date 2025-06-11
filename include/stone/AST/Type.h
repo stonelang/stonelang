@@ -1,7 +1,7 @@
 #ifndef STONE_AST_TYPE_H
 #define STONE_AST_TYPE_H
 
-#include "stone/AST/AST.h"
+#include "stone/AST/ASTUnit.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/TypeAlignment.h"
 
@@ -32,7 +32,7 @@ enum : uint8_t {
       stone::CountBitsUsed(static_cast<unsigned>(TypeKind::Last_Type))
 };
 
-class alignas(1 << TypeAlignInBits) Type : public ASTAllocation<Type> {
+class alignas(1 << TypeAlignInBits) Type : public ASTUnit {
   friend ASTContext;
   TypeKind kind;
   TypeState *typeState = nullptr;
