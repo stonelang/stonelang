@@ -75,7 +75,11 @@ public:
   /// entity.
   bool ProfileEntities = false;
 
-  LibraryLevel DefaultLibraryLevel = LibraryLevel::API;
+  /// Enable 'availability' restrictions for App Extensions.
+  bool EnableAppExtensionRestrictions = false;
+
+  /// The libray level to use
+  LibraryLevel CurrentLibraryLevel = LibraryLevel::API;
 
 public:
   /// The map of aliases and underlying names of imported or referenced modules.

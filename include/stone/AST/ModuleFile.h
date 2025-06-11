@@ -19,13 +19,14 @@ enum class ModuleFileKind : uint8_t {
 };
 
 class ModuleFile : public ASTUnit {
-private:
   ModuleFileKind kind;
+  ASTSession &GetASTSession(ModuleDecl *parent);
 
 public:
   ModuleFile(ModuleFileKind kind, ModuleDecl *parent);
 
 public:
+  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::ModuleFile; }
   bool IsSource() const { return kind == ModuleFileKind::Source; }
   bool IsBuiltin() const { return kind == ModuleFileKind::Builtin; }
   bool IsClangModule() const { return kind == ModuleFileKind::ClangModule; }

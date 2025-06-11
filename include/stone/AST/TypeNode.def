@@ -2,32 +2,16 @@
 #define TYPE(ID, Parent)
 #endif
 
-#ifndef TYPE_SPECIFIER
-#define TYPE_SPECIFIER(ID, Parent) TYPE(ID, Parent)
-#endif
-
-#ifndef ALWAYS_CANONICAL_TYPE
-#define ALWAYS_CANONICAL_TYPE(ID, Parent) TYPE_SPECIFIER(ID, Parent)
-#endif
-
 #ifndef BUILTIN_TYPE
-#define BUILTIN_TYPE(ID, Parent) ALWAYS_CANONICAL_TYPE(ID, Parent)
-#endif
-
-#ifndef SIGNED_BUILTIN_TYPE
-#define SIGNED_BUILTIN_TYPE(ID, Parent) BUILTIN_TYPE(ID, Parent)
-#endif
-
-#ifndef UNSIGNED_BUILTIN_TYPE
-#define UNSIGNED_BUILTIN_TYPE(ID, Parent) BUILTIN_TYPE(ID, Parent)
+#define BUILTIN_TYPE(ID, Parent) TYPE(ID, Parent)
 #endif
 
 #ifndef ABSTRACT_TYPE
 #define ABSTRACT_TYPE(ID, Parent)
 #endif
 
-#ifndef ABSTRACT_SUGARED_TYPE
-#define ABSTRACT_SUGARED_TYPE(ID, Parent) ABSTRACT_TYPE(ID, Parent)
+#ifndef ABSTRACT_SUG_TYPE
+#define ABSTRACT_SUG_TYPE(ID, Parent) ABSTRACT_TYPE(ID, Parent)
 #endif
 
 #ifndef TYPE_RANGE
@@ -39,81 +23,74 @@
 #endif
 
 // === Object Root ===
-TYPE_SPECIFIER(Object, ObjectType)
-
+TYPE(Object, Type)
 // === Builtin Types (Boxable) ===
 ABSTRACT_TYPE(Builtin, ObjectType)
   ABSTRACT_TYPE(Number, BuiltinType)
-    SIGNED_BUILTIN_TYPE(Int, NumberType)
-    SIGNED_BUILTIN_TYPE(Int8, NumberType)
-    SIGNED_BUILTIN_TYPE(Int16, NumberType)
-    SIGNED_BUILTIN_TYPE(Int32, NumberType)
-    SIGNED_BUILTIN_TYPE(Int64, NumberType)
-    SIGNED_BUILTIN_TYPE(Int128, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt8, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt16, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt32, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt64, NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt128, NumberType)
+    BUILTIN_TYPE(Int, NumberType)
+    BUILTIN_TYPE(Int8, NumberType)
+    BUILTIN_TYPE(Int16, NumberType)
+    BUILTIN_TYPE(Int32, NumberType)
+    BUILTIN_TYPE(Int64, NumberType)
+    BUILTIN_TYPE(Int128, NumberType)
+    BUILTIN_TYPE(UInt, NumberType)
+    BUILTIN_TYPE(UInt8, NumberType)
+    BUILTIN_TYPE(UInt16, NumberType)
+    BUILTIN_TYPE(UInt32, NumberType)
+    BUILTIN_TYPE(UInt64, NumberType)
+    BUILTIN_TYPE(UInt128, NumberType)
     BUILTIN_TYPE(Float, NumberType)
     BUILTIN_TYPE(Float16, NumberType)
     BUILTIN_TYPE(Float32, NumberType)
     BUILTIN_TYPE(Float64, NumberType)
     BUILTIN_TYPE(Float128, NumberType)
-  UNSIGNED_BUILTIN_TYPE(Bool, BuiltinType)
-  UNSIGNED_BUILTIN_TYPE(Char, BuiltinType)
-  BUILTIN_TYPE(Null, BuiltinType)
+    BUILTIN_TYPE(Bool, BuiltinType)
+    BUILTIN_TYPE(Char, BuiltinType)
+    BUILTIN_TYPE(Null, BuiltinType)
 TYPE_RANGE(Builtin, Int, Null)
 
-
-
 // === Sugared Types (Aliases and String) ===
-ABSTRACT_SUGARED_TYPE(Sug, ObjectType)
-  TYPE_SPECIFIER(String, SugType)
-  TYPE_SPECIFIER(Using, SugType)
+ABSTRACT_SUG_TYPE(Sug, ObjectType)
+  TYPE(String, SugType)
+  TYPE(Using, SugType)
 TYPE_RANGE(Sug, String, Using)
 
 
 // === Deduced Types ===
 ABSTRACT_TYPE(Deduced, Type)
-  TYPE_SPECIFIER(Auto, DeducedType)
+  TYPE(Auto, DeducedType)
 TYPE_RANGE(Deduced, Auto, Auto)
 
 // === Function Types ===
 ABSTRACT_TYPE(Function, Type)
-  TYPE_SPECIFIER(Fun, FunctionType)
+  TYPE(Fun, FunctionType)
 TYPE_RANGE(Function, Fun, Fun)
 
 // === Access Types (Non-boxable, modifiers) ===
 ABSTRACT_TYPE(Access, Type)
   ABSTRACT_TYPE(Pointer, AccessType)
-    TYPE_SPECIFIER(Ptr, PointerType)
-    TYPE_SPECIFIER(Move, PointerType)
-    TYPE_SPECIFIER(Own, PointerType)
-    TYPE_SPECIFIER(Safe, PointerType)
+    TYPE(Ptr, PointerType)
+    TYPE(Move, PointerType)
+    TYPE(Own, PointerType)
+    TYPE(Safe, PointerType)
     TYPE_RANGE(Pointer, Ptr, Safe)
   ABSTRACT_TYPE(Reference, AccessType)
-    TYPE_SPECIFIER(Ref, ReferenceType)
+    TYPE(Ref, ReferenceType)
     TYPE_RANGE(Reference, Ref, Ref)
 TYPE_RANGE(Access, Ptr, Ref)
 
 // === Nominal Types (User-defined, Boxable) ===
 ABSTRACT_TYPE(Nominal, ObjectType)
-  TYPE_SPECIFIER(Enum, NominalType)
-  TYPE_SPECIFIER(Struct, NominalType)
-  TYPE_SPECIFIER(Interface, NominalType)
+  TYPE(Enum, NominalType)
+  TYPE(Struct, NominalType)
+  TYPE(Interface, NominalType)
 TYPE_RANGE(Nominal, Enum, Interface)
 LAST_TYPE(Interface)
 
 // === Cleanup ===
 #undef TYPE
-#undef TYPE_SPECIFIER
-#undef ALWAYS_CANONICAL_TYPE
 #undef BUILTIN_TYPE
-#undef SIGNED_BUILTIN_TYPE
-#undef UNSIGNED_BUILTIN_TYPE
 #undef ABSTRACT_TYPE
-#undef ABSTRACT_SUGARED_TYPE
+#undef ABSTRACT_SUG_TYPE
 #undef TYPE_RANGE
 #undef LAST_TYPE

@@ -28,9 +28,9 @@ public:
   // void Visit(ASTVisitor& visitor);
 
   virtual ASTUnitKind GetUnitKind() const = 0;
-
+  bool HasParent() const { return parent != nullptr; }
   ASTUnit *GetParent() const { return parent; }
-  ASTSession &GetSession() const { return session; }
+  ASTSession &GetASTSession() const { return session; }
 
 public:
   bool IsDecl() const { return GetUnitKind() == ASTUnitKind::Decl; }

@@ -3,12 +3,17 @@
 
 using namespace stone;
 
-ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl *owner)
-    : ASTUnit(owner->GetSession(), owner), kind(kind) {}
+ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl *parent)
+    : ASTUnit(GetASTSession(parent), parent), kind(kind) {}
+
+ASTSession &ModuleFile::GetASTSession(ModuleDecl *parent) {
+  assert(parent && "Cannot get session from null ModuleDecl");
+  return parent->GetASTSession();
+}
 
 SourceFile::SourceFile(SourceFileKind kind, unsigned srcBufferID,
                        ModuleDecl *parent)
-    : ModuleFile(ModuleFileKind::Source, parent){}, kind(kind),
+    : ModuleFile(ModuleFileKind::Source, parent), kind(kind),
       srcBufferID(srcBufferID) {}
 
 Decl *SourceFile::GetFirstDecl() const { return nullptr; }

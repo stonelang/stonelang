@@ -6,7 +6,7 @@
 using namespace stone;
 
 ModuleDecl::ModuleDecl(ASTSession &session)
-    : TypeDecl(DeclKind::ModuleDecl, session) {}
+    : TypeDecl(DeclKind::Module, session) {}
 
 ModuleFile *ModuleDecl::GetFirstModuleFile() const { return nullptr; }
 

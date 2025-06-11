@@ -83,7 +83,7 @@ static bool isPlatformActiveForTarget(PlatformKind Platform,
 
 bool stone::IsPlatformActive(PlatformKind Platform, const LangOptions &langOpts,
                              bool ForTargetVariant) {
-  llvm::Triple TT = langOpts.DefaultTargetTriple;
+  llvm::Triple TT = langOpts.CurrentTargetTriple;
 
   if (ForTargetVariant) {
     assert(langOpts.TargetVariant && "Must have target variant triple");
@@ -95,7 +95,7 @@ bool stone::IsPlatformActive(PlatformKind Platform, const LangOptions &langOpts,
 }
 
 PlatformKind stone::TargetPlatform(const LangOptions &langOpts) {
-  if (langOpts.DefaultTargetTriple.isMacOSX()) {
+  if (langOpts.CurrentTargetTriple.isMacOSX()) {
     // return (langOpts.EnableAppExtensionRestrictions
     //             ? PlatformKind::macOSApplicationExtension
     //             : PlatformKind::macOS);
@@ -114,7 +114,7 @@ PlatformKind stone::TargetPlatform(const LangOptions &langOpts) {
   //           : PlatformKind::watchOS);
   // }
 
-  if (langOpts.DefaultTargetTriple.isiOS()) {
+  if (langOpts.CurrentTargetTriple.isiOS()) {
 
     // if (tripleIsMacCatalystEnvironment(langOpts.Target))
     //   return (langOpts.EnableAppExtensionRestrictions

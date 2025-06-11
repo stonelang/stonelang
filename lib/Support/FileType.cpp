@@ -167,7 +167,6 @@ bool stone::IsAfterLLVM(FileType ty) {
   case FileType::Object:
     return true;
   case FileType::Stone:
-  case FileType::Image:
   case FileType::None:
     return false;
   case FileType::INVALID:
@@ -186,7 +185,6 @@ bool stone::IsPartOfStoneCompilation(FileType ty) {
   case FileType::IR:
   case FileType::BC:
   case FileType::Object:
-  case FileType::Image:
   case FileType::None:
     return false;
   case FileType::INVALID:
@@ -204,7 +202,6 @@ bool stone::IsPartOfLLVMCompilation(FileType ty) {
   case FileType::Stone:
   case FileType::Assembly:
   case FileType::Object:
-  case FileType::Image:
   case FileType::None:
     return false;
   case FileType::INVALID:
@@ -234,7 +231,6 @@ bool stone::ShouldCompileFileType(FileType ty) {
 bool stone::CanLinkFileType(FileType ty) {
   switch (ty) {
   case FileType::Object:
-  case FileType::Image:
     return true;
   default:
     return false;

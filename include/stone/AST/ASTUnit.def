@@ -2,8 +2,6 @@
 #define AST_UNIT(Kind)
 #endif
 
-
-// ASTUnit.def
 AST_UNIT(Decl)
 AST_UNIT(Expr)
 AST_UNIT(Stmt)

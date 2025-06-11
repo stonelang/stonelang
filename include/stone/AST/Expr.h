@@ -49,10 +49,9 @@ public:
   }
 };
 
-
-// if: error then "error" 
-//                 else if warning then "warn" 
-//                 else if debug then "debug" 
+// if: error then "error"
+//                 else if warning then "warn"
+//                 else if debug then "debug"
 //                 else "ok";
 
 class IfSemiExpr : public Expr {};

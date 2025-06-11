@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILING_H
 #define STONE_COMPILE_COMPILING_H
 
-#include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTSession.h"
 #include "stone/AST/ModuleDecl.h"
 #include "stone/Compile/Frontend.h"
 

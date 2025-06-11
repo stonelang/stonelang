@@ -12,8 +12,6 @@ class alignas(1 << TypeAlignInBits) TypeState
 
   friend class ASTSession;
   ASTSession &session;
-
-  // The canonical type associated with this TypeSate
   Type *canonicalType = nullptr;
 
 public:
@@ -26,6 +24,7 @@ public:
     canonicalType = CT;
   }
   bool IsCanonical() const { return GetCanonicalType() != nullptr; }
+  ASTSession &GetASTSession() { return session; }
 };
 
 class BuiltinTypeState final : public TypeState {

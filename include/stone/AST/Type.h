@@ -16,7 +16,7 @@ namespace stone {
 
 class Type;
 class TypeState;
-class ASTContext;
+class ASTSession;
 
 enum class TypeKind : uint8_t {
   None = 0,
@@ -33,7 +33,7 @@ enum : uint8_t {
 };
 
 class alignas(1 << TypeAlignInBits) Type : public ASTUnit {
-  friend ASTContext;
+  friend ASTSession;
   TypeKind kind;
   TypeState *typeState = nullptr;
 
@@ -46,12 +46,13 @@ public:
 public:
   TypeKind GetKind() const { return kind; }
   TypeState *GetTypeState();
+
+  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Type; }
 };
 
 class ObjectType : public Type {
 public:
   ObjectType(TypeKind kind, TypeState *typeState) : Type(kind, typeState) {}
-  ObjectType(TypeState *typeState) : ObjectType(TypeKind::Object, typeState) {}
 };
 
 class BuiltinType : public ObjectType {
@@ -83,7 +84,7 @@ enum class NumberBitWidth : uint8_t {
   Size128   // 128 bits
 };
 class NumberType : public BuiltinType {
-  friend ASTContext;
+  friend ASTSession;
   NumberBitWidth numberBitWidth;
 
   bool IsNumberType(TypeKind kind, TypeState *typeState) const;
@@ -96,91 +97,91 @@ public:
   NumberBitWidth GetBitWidth() const;
 };
 class IntType : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   IntType(TypeState *TS) : NumberType(TypeKind::Int, TS) {}
 
 public:
-  static IntType *Create(const ASTContext &AC);
+  static IntType *Create(const ASTSession &AC);
 };
 
 class Int8Type : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   Int8Type(TypeState *TS) : NumberType(TypeKind::Int8, TS) {}
 };
 
 class Int16Type : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   Int16Type(TypeState *TS) : NumberType(TypeKind::Int16, TS) {}
 };
 
 class Int32Type : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   Int32Type(TypeState *TS) : NumberType(TypeKind::Int32, TS) {}
 };
 
 class Int64Type : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   Int64Type(TypeState *TS) : NumberType(TypeKind::Int64, TS) {}
 };
 
 class Int128Type : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   Int128Type(TypeState *TS) : NumberType(TypeKind::Int128, TS) {}
 };
 
 class UIntType : public NumberType {
-  friend class ASTContext;
+  friend class ASTSession;
 
 public:
   UIntType(TypeState *TS) : NumberType(TypeKind::UInt, TS) {}
 };
 class UInt8Type : public NumberType {
-  friend class ASTContext;
+  friend class ASTSession;
 
 public:
   UInt8Type(TypeState *TS) : NumberType(TypeKind::UInt8, TS) {}
 };
 class UInt16Type : public NumberType {
-  friend class ASTContext;
+  friend class ASTSession;
 
 public:
   UInt16Type(TypeState *TS) : NumberType(TypeKind::UInt16, TS) {}
 };
 
 class UInt32Type : public NumberType {
-  friend class ASTContext;
+  friend class ASTSession;
 
 public:
   UInt32Type(TypeState *TS) : NumberType(TypeKind::UInt32, TS) {}
 };
 
 class UInt64Type final : public NumberType {
-  friend class ASTContext;
+  friend class ASTSession;
 
 public:
   UInt64Type(TypeState *TS) : NumberType(TypeKind::UInt64, TS) {}
 };
 class UInt128Type final : public NumberType {
-  friend class ASTContext;
+  friend class ASTSession;
 
 public:
   UInt128Type(TypeState *TS) : NumberType(TypeKind::UInt128, TS) {}
 };
 
 class FloatType : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   FloatType(TypeState *TS) : NumberType(TypeKind::Float, TS) {}
@@ -189,33 +190,33 @@ public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
 
 public:
-  static FloatType *Create(const ASTContext &astContext);
+  static FloatType *Create(const ASTSession &astContext);
 
   static bool classof(const Type *T) { return T->GetKind() == TypeKind::Float; }
 };
 
 class Float16Type : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   Float16Type(TypeState *TS) : NumberType(TypeKind::Float16, TS) {}
 };
 
 class Float32Type : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   Float32Type(TypeState *TS) : NumberType(TypeKind::Float32, TS) {}
 };
 
 class Float64Type : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   Float64Type(TypeState *TS) : NumberType(TypeKind::Float64, TS) {}
 };
 class Float128Type : public NumberType {
-  friend ASTContext;
+  friend ASTSession;
 
 public:
   Float128Type(TypeState *TS) : NumberType(TypeKind::Float128, TS) {}
@@ -242,7 +243,7 @@ public:
   EnumType(TypeState *TS) : NominalType(TypeKind::Enum, TS) {}
 };
 
-class SugType : public Type {
+class SugType : public ObjectType {
 public:
 };
 
@@ -254,7 +255,7 @@ public:
 
 class DeducedType : public Type {
 protected:
-  friend class ASTContext; // ASTContext creates these
+  friend class ASTSession; // ASTSession creates these
 };
 // own auto in = new int
 class AutoType final : public DeducedType, public llvm::FoldingSetNode {
