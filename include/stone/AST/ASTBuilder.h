@@ -17,6 +17,8 @@ public:
 public:
   ModuleDecl *CreateModuleDecl();
   FunDecl *CreateFunDecl();
+
+public:
 };
 
 } // namespace stone

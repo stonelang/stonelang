@@ -48,7 +48,6 @@ template <class T> struct PointerLikeTypeTraits;
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Decl, stone::DeclAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Expr, stone::ExprAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Stmt, stone::StmtAlignInBits)
-
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Type, stone::TypeAlignInBits)
 
 static_assert(alignof(void *) >= 2, "pointer alignment is too small");
