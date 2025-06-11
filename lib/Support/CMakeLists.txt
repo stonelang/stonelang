@@ -16,6 +16,7 @@ list(REMOVE_ITEM LLVM_COMMON_DEPENDS stone-tablegen-targets)
 
 set(stone_support_sources
   About.cpp
+  EditorPlaceholder.cpp
   FileSystem.cpp
   FileSystemStatCache.cpp
   FileType.cpp
