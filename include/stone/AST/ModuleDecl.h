@@ -1,9 +1,8 @@
 #ifndef STONE_AST_MODULE_DECL_H
 #define STONE_AST_MODULE_DECL_H
 
-#include "stone/AST/AST.h"
+#include "stone/AST/ASTSession.h"
 #include "stone/AST/Decl.h"
-#include "stone/AST/DeclContext.h"
 #include "stone/AST/ModuleFile.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -11,15 +10,14 @@
 
 namespace stone {
 class ModuleFile;
+class ASTSession;
 
-class ModuleDecl final : public DeclContext,
-                         public TypeDecl,
-                         public ASTAllocation<ModuleDecl> {
+class ModuleDecl final : public TypeDecl {
 
   llvm::SmallVector<ModuleFile *, 2> moduleFiles;
 
 public:
-  ModuleDecl();
+  ModuleDecl(ASTSession &session);
   explicit operator bool() const { return HasFirstModuleFile(); }
 
 public:

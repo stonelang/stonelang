@@ -19,8 +19,8 @@ class ASTUnit : public ASTAllocation<ASTUnit> {
 
 public:
   ASTUnit(ASTSession &session, ASTUnit *parent = nullptr)
-      : session(session), kind(kind) {}
-  virtual ~ASTUnit() = default;
+      : session(session), parent(parent) {}
+  // virtual ~ASTUnit() = default;
 
 public:
   // void Walk(ASTWalker &walker);
@@ -31,6 +31,13 @@ public:
 
   ASTUnit *GetParent() const { return parent; }
   ASTSession &GetSession() const { return session; }
+
+public:
+  bool IsDecl() const { return GetUnitKind() == ASTUnitKind::Decl; }
+  bool IsExpr() const { return GetUnitKind() == ASTUnitKind::Expr; }
+  bool IsStmt() const { return GetUnitKind() == ASTUnitKind::Stmt; }
+  bool IsModuleFile() const { return GetUnitKind() == ASTUnitKind::ModuleFile; }
+  bool IsType() const { return GetUnitKind() == ASTUnitKind::Type; }
 
 public:
   // static bool classof(const ASTUnit *unit) {

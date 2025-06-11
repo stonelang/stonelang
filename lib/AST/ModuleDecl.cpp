@@ -1,9 +1,12 @@
 #include "stone/AST/ModuleDecl.h"
+#include "stone/AST/ASTBuilder.h"
+#include "stone/AST/ASTSession.h"
 #include "stone/AST/ModuleFile.h"
 
 using namespace stone;
 
-ModuleDecl::ModuleDecl() : DeclContext() {}
+ModuleDecl::ModuleDecl(ASTSession &session)
+    : TypeDecl(DeclKind::ModuleDecl, session) {}
 
 ModuleFile *ModuleDecl::GetFirstModuleFile() const { return nullptr; }
 
@@ -26,3 +29,5 @@ void ModuleDecl::AddModuleFile(ModuleFile *moduleFile) {
   moduleFiles.push_back(moduleFile);
   // TODO: ClearLookupCache();
 }
+
+ModuleDecl *ASTBuilder::CreateModuleDecl() { return nullptr; }

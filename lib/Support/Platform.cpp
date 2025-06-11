@@ -83,7 +83,7 @@ static bool isPlatformActiveForTarget(PlatformKind Platform,
 
 bool stone::IsPlatformActive(PlatformKind Platform, const LangOptions &langOpts,
                              bool ForTargetVariant) {
-  llvm::Triple TT = langOpts.GetDefaultTargetTriple();
+  llvm::Triple TT = langOpts.DefaultTargetTriple;
 
   if (ForTargetVariant) {
     assert(langOpts.TargetVariant && "Must have target variant triple");

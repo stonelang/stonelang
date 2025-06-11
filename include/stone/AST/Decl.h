@@ -28,15 +28,16 @@ enum : uint8_t {
 // int x where x is the declaration, int is the type.
 class alignas(1 << DeclAlignInBits) Decl : public ASTUnit {
   DeclKind kind;
-  ASTSession &session
 
-      public : Decl(DeclKind kind, ASTSession &session);
+public:
+  Decl(DeclKind kind, ASTSession &session);
 
 public:
   DeclKind GetKind() const { return kind; }
-  bool IsJoin() const { return kind == DeclKind::Join; }
+  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Decl; }
 
-  ASTUnitKind GetUnitKind() override const { return ASTUnitKind::Decl; }
+public:
+  bool IsJoin() const { return kind == DeclKind::Join; }
 
 public:
   static bool classof(const Decl *D) {
@@ -44,21 +45,34 @@ public:
            D->GetKind() <= DeclKind::LastValueDecl;
   }
   static bool classof(const ASTUnit *unit) {
-    return unit->GetUniKind() == ASTKind::Decl;
+    return unit->GetUnitKind() == ASTUnitKind::Decl;
   }
 };
 
 class ValueDecl : public Decl {
 public:
+  ValueDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
+};
+
+class FunctionDecl : public ValueDecl {
+public:
+  FunctionDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
+};
+
+class FunDecl : public FunctionDecl {
+
+public:
+  FunDecl(ASTSession &session) : FunctionDecl(DeclKind::Fun, session) {}
 };
 
 class TypeDecl : public ValueDecl {
 public:
+  TypeDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
 };
 
-class TemplateDecl {};
+// class TemplateDecl {};
 
-class UsingDecl : public ValueDecl {};
+// class UsingDecl : public ValueDecl {};
 
 class JoinDecl : public ValueDecl {
 
@@ -66,14 +80,14 @@ public:
   JoinDecl();
 };
 
-class SpaceDecl : public ValueDecl {
-public:
-  SpaceDecl();
-};
+// class SpaceDecl : public ValueDecl {
+// public:
+//   SpaceDecl();
+// };
 
-class TrustDecl final : public Decl {
-public:
-};
+// class TrustDecl final : public Decl {
+// public:
+// };
 
 } // namespace stone
 #endif

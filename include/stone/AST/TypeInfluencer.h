@@ -1,7 +1,6 @@
 #ifndef STONE_AST_TYPEINFLUENCER_H
 #define STONE_AST_TYPEINFLUENCER_H
 
-#include "stone/AST/AST.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/TypeAlignment.h"
@@ -170,25 +169,22 @@ public:
 };
 
 class TypeInfluencerList final : public AbstractTypeInfluencerList {
-  const ASTContext &astContext;
+  const ASTSession &session;
 
 public:
-  explicit TypeInfluencerList(const ASTContext &astContext)
-      : astContext(astContext) {}
+  explicit TypeInfluencerList(const ASTSession &session) : session(session) {}
 
 public:
-  const ASTContext &GetASTContext() { return astContext; }
+  const ASTSession &GetASTSession() { return session; }
 
 public:
-  void AddPure(SrcLoc loc) { Add(new (astContext) PureModifier(loc)); }
-  void AddStone(SrcLoc loc) { Add(new (astContext) StoneModifier(loc)); }
-  void AddOwn(SrcLoc loc) { Add(new (astContext) OwnModifier(loc)); }
-  void AddSafe(SrcLoc loc) { Add(new (astContext) SafeModifier(loc)); }
-  void AddNot(SrcLoc loc) { Add(new (astContext) NotModifier(loc)); }
-  void AddHardware(SrcLoc loc) { Add(new (astContext) HardwareModifier(loc)); }
-  void AddExclusive(SrcLoc loc) {
-    Add(new (astContext) ExclusiveModifier(loc));
-  }
+  void AddPure(SrcLoc loc) { Add(new (session) PureModifier(loc)); }
+  void AddStone(SrcLoc loc) { Add(new (session) StoneModifier(loc)); }
+  void AddOwn(SrcLoc loc) { Add(new (session) OwnModifier(loc)); }
+  void AddSafe(SrcLoc loc) { Add(new (session) SafeModifier(loc)); }
+  void AddNot(SrcLoc loc) { Add(new (session) NotModifier(loc)); }
+  void AddHardware(SrcLoc loc) { Add(new (session) HardwareModifier(loc)); }
+  void AddExclusive(SrcLoc loc) { Add(new (session) ExclusiveModifier(loc)); }
 
 public:
   bool HasPure() const { return Has(TypeInfluencerKind::Pure); }

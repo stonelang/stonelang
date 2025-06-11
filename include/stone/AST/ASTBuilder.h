@@ -5,6 +5,7 @@
 
 namespace stone {
 class FunDecl;
+class ModuleDecl;
 class ASTSession;
 
 class ASTBuilder final {
@@ -14,8 +15,8 @@ public:
   ASTBuilder(const ASTSession &session);
 
 public:
+  ModuleDecl *CreateModuleDecl();
   FunDecl *CreateFunDecl();
-}
 };
 
 } // namespace stone

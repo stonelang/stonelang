@@ -1,4 +1,8 @@
 #include "stone/Support/LangOptions.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/TargetParser/Host.h"
+
+using namespace stone;
 
 LangOptions::LangOptions()
     : optTable(stone::CreateOptTable()),

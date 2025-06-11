@@ -1,0 +1,7 @@
+join Syntax;
+
+/// if: express as opposed to the if stmt 
+auto message =  if: error then "error" 
+                else if warning then "warn" 
+                else if debug then "debug" 
+                else "ok";

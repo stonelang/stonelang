@@ -3,6 +3,8 @@
 
 #include "stone/Support/Options.h"
 
+#include "llvm/ADT/StringMap.h"
+
 #include <memory>
 namespace stone {
 
@@ -142,7 +144,7 @@ public:
 
   /// \ Return the current triple
   bool HasCurrentTargetTriple() const {
-    return LangOptions::HasTargetTriple(currentTargetTriple);
+    return LangOptions::HasTargetTriple(CurrentTargetTriple);
   }
   /// Print out the options
   void PrintHelp(bool showHidden);

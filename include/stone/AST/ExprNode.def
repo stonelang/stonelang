@@ -54,6 +54,8 @@ LIT_EXPR(FloatLiteral, NumberLiteralExpr)
 ABSTRACT_EXPR(AbstractClosure, Expr)
 CTX_EXPR(Closure, AbstractClosureExpr)
 
+
+EXPR(IfSemi, Expr)     
 EXPR(CodeCompletion, Expr)
 EXPR(Type, Expr)
 LAST_EXPR(Type)

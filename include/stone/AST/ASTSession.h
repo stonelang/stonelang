@@ -1,5 +1,5 @@
-#ifndef STONE_AST_ASTCONTEXT_H
-#define STONE_AST_ASTCONTEXT_H
+#ifndef STONE_AST_ASTSESSION_H
+#define STONE_AST_ASTSESSION_H
 
 #include "stone/AST/ASTBuilder.h"
 #include "stone/AST/Identifier.h"
@@ -12,9 +12,11 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Casting.h"
 
+#include <memory>
+
 namespace stone {
 class Type;
-class FunDecl();
+class FunDecl;
 
 class ASTMemory {
 

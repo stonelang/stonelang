@@ -4,4 +4,6 @@
 
 using namespace stone;
 
-DeclState::DeclState(ASTContext &astContext) : astContext(astContext) {}
+Decl::Decl(DeclKind kind, ASTSession &session) : ASTUnit(session), kind(kind) {}
+
+DeclState::DeclState(ASTSession &session) : session(session) {}

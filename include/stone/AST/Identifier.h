@@ -7,7 +7,7 @@
 
 namespace stone {
 class Identifier {
-  friend class ASTContext;
+  friend class ASTSession;
 
   const char *dataPointer = nullptr;
   explicit Identifier(const char *dataPtr = nullptr) : dataPointer(dataPtr) {}

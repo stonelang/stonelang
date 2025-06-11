@@ -18,6 +18,7 @@ set(stone_support_sources
   About.cpp
   FileSystem.cpp
   FileSystemStatCache.cpp
+  FileType.cpp
   Help.cpp
   InputFile.cpp
   LangOptions.cpp

@@ -48,3 +48,23 @@ public:
     return unit->GetUniKind() == ASTKind::Expr;
   }
 };
+
+
+// if: error then "error" 
+//                 else if warning then "warn" 
+//                 else if debug then "debug" 
+//                 else "ok";
+
+class IfSemiExpr : public Expr {};
+
+// auto result = match: value
+//     case a then true
+//     case b then false
+//     else       null;
+// match: val case 1 then "one" case 2 then "many"
+
+class MatchExpr : public Expr {};
+
+} // namespace stone
+
+#endif

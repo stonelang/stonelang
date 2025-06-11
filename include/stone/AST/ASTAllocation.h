@@ -18,8 +18,8 @@ void *AllocateInASTSession(size_t bytes, const ASTSession &session,
 /// but not always, the type that is inheriting \c ASTAllocated.
 template <typename AlignTy> class ASTAllocation {
 public:
-  static_assert(alignof(AlignTy) >= alignof(void *),
-                "Alignment must be at least pointer-aligned.");
+  // static_assert(alignof(AlignTy) >= alignof(void *),
+  //               "Alignment must be at least pointer-aligned.");
 
   // Make vanilla new/delete illegal.
   void *operator new(size_t bytes) throw() = delete;

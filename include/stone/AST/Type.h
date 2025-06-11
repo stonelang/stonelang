@@ -37,9 +37,11 @@ class alignas(1 << TypeAlignInBits) Type : public ASTUnit {
   TypeKind kind;
   TypeState *typeState = nullptr;
 
+  ASTSession &GetASTSession(TypeState *typeState);
+
 public:
   Type(TypeKind kind, TypeState *typeState)
-      : kind(kind), typeState(typeState) {}
+      : ASTUnit(GetASTSession(typeState)), kind(kind), typeState(typeState) {}
 
 public:
   TypeKind GetKind() const { return kind; }

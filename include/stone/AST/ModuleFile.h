@@ -1,9 +1,8 @@
 #ifndef STONE_AST_MODULE_FILE_H
 #define STONE_AST_MODULE_FILE_H
 
-#include "stone/AST/AST.h"
+#include "stone/AST/ASTUnit.h"
 #include "stone/AST/Decl.h"
-#include "stone/AST/DeclContext.h"
 
 #include "llvm/ADT/SmallVector.h"
 
@@ -19,17 +18,24 @@ enum class ModuleFileKind : uint8_t {
   ClangModule
 };
 
-class ModuleFile : public DeclContext, public ASTAllocation<ModuleFile> {
+class ModuleFile : public ASTUnit {
 private:
   ModuleFileKind kind;
 
 public:
-  ModuleFile(ModuleFileKind kind, ModuleDecl *owner);
+  ModuleFile(ModuleFileKind kind, ModuleDecl *parent);
 
 public:
   bool IsSource() const { return kind == ModuleFileKind::Source; }
   bool IsBuiltin() const { return kind == ModuleFileKind::Builtin; }
   bool IsClangModule() const { return kind == ModuleFileKind::ClangModule; }
+};
+
+enum class SourceFileKind : uint8_t {
+  Library = 0, ///< A normal .swift file.
+  Main,        ///< A .swift file that can have top-level code.
+  Interface, ///< Came from a .swiftinterface file, representing another module.
+  MacroExpansion, ///< Came from a macro expansion.
 };
 
 enum class SourceFileStage : uint8_t {
@@ -41,19 +47,22 @@ enum class SourceFileStage : uint8_t {
 
 class SourceFile final : public ModuleFile {
 
+  SourceFileKind kind;
+  unsigned srcBufferID;
   std::vector<Decl *> topLevelDecls;
 
 public:
-  SourceFile();
+  SourceFile(SourceFileKind kind, unsigned srcBufferID, ModuleDecl *parent);
   explicit operator bool() const {
     return HasFirstDecl() && llvm::cast<JoinDecl>(GetFirstDecl());
   }
 
 public:
+  SourceFileKind GetSourceFileKind() { return kind; }
+  unsigned GetSrcBufferID() { return srcBufferID; }
+
   Decl *GetFirstDecl() const;
   bool HasFirstDecl() const;
-
-public:
   void AddTopLevelDecl(Decl *D) { topLevelDecls.push_back(D); }
   llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
 };
