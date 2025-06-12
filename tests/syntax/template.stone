@@ -1,6 +1,5 @@
 join Syntax;
 
 
-type[T] public struct S {
-
+any[T] public struct S {
 }

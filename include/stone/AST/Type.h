@@ -50,12 +50,12 @@ public:
   ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Type; }
 };
 
-class ObjectType : public Type {
+class AnyType : public Type {
 public:
-  ObjectType(TypeKind kind, TypeState *typeState) : Type(kind, typeState) {}
+  AnyType(TypeKind kind, TypeState *typeState) : Type(kind, typeState) {}
 };
 
-class BuiltinType : public ObjectType {
+class BuiltinType : public AnyType {
 public:
   explicit BuiltinType(TypeKind kind, TypeState *TS);
 };
@@ -222,9 +222,9 @@ public:
   Float128Type(TypeState *TS) : NumberType(TypeKind::Float128, TS) {}
 };
 
-class NominalType : public ObjectType {
+class NominalType : public AnyType {
 public:
-  NominalType(TypeKind kind, TypeState *TS) : ObjectType(kind, TS) {}
+  NominalType(TypeKind kind, TypeState *TS) : AnyType(kind, TS) {}
 };
 
 class StructType final : public NominalType {
@@ -243,7 +243,7 @@ public:
   EnumType(TypeState *TS) : NominalType(TypeKind::Enum, TS) {}
 };
 
-class SugType : public ObjectType {
+class SugType : public AnyType {
 public:
 };
 

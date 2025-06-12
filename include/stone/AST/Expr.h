@@ -47,6 +47,11 @@ public:
   }
 };
 
+class NewExpr final : public Expr {
+
+public:
+  NewExpr(ExprKind kind, ASTSession &session) : Expr(ExprKind::New, session) {}
+};
 // if: error then "error"
 //                 else if warning then "warn"
 //                 else if debug then "debug"

@@ -20,6 +20,8 @@
 namespace stone {
 class Type;
 class FunDecl;
+class Scaffolder;
+class TypeChecker;
 
 class ASTMemory {
 
@@ -52,6 +54,8 @@ public:
 };
 
 class ASTSession final : public ASTMemory {
+  friend Scaffolder;
+  friend TypeChecker;
 
   using IdentifierTable = llvm::StringMap<char, llvm::BumpPtrAllocator &>;
   mutable IdentifierTable identifierTable;

@@ -9,7 +9,7 @@ ASTSession &Type::GetASTSession(TypeState *typeState) {
   return typeState->GetASTSession();
 }
 
-BuiltinType::BuiltinType(TypeKind kind, TypeState *TS) : ObjectType(kind, TS) {
+BuiltinType::BuiltinType(TypeKind kind, TypeState *TS) : AnyType(kind, TS) {
   // Bits.Type.IsBuiltin = true;
   TS->SetCanonicalType(this);
 }

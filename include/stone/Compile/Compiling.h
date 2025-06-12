@@ -10,23 +10,25 @@ namespace stone {
 class Compiling final {
 
   std::unique_ptr<Frontend> frontend;
-  mutable ModuleDecl *mod = nullptr;
+  std::unique_ptr<ASTSession> session;
+
+  mutable ModuleDecl *normalModule = nullptr;
   FrontendObserver *observer = nullptr;
 
 public:
   Compiling(const Compiling &) = delete;
   void operator=(const Compiling &) = delete;
   explicit Compiling(std::unique_ptr<Frontend> frontend);
+  bool Setup();
 
 public:
-  bool Setup();
   void SetFrontendObserver(FrontendObserver *obs) { observer = obs; }
   FrontendObserver *GetFrontendObserver() { return observer; }
+  ASTSession &GetASTSession() { return *session; }
+  ModuleDecl *GetModule() { return normalModule; }
 
 public:
-  ModuleDecl *GetModule() { return mod; }
-  void SetModule(ModuleDecl *mod);
-  Frontend &GetFronend() { return *frontend; }
+  SourceFile *CreateSourceFile(const InputFile inputFile);
 };
 
 } // namespace stone

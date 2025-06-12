@@ -1,13 +1,15 @@
 #ifndef STONE_AST_DECLINFLUENCER_H
 #define STONE_AST_DECLINFLUENCER_H
 
-#include "stone/AST/AST.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/Visibility.h"
-#include "stone/Lang/SrcLoc.h"
+#include "stone/Support/SrcLoc.h"
 
+#include "llvm/ADT/BitVector.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 
@@ -72,6 +74,8 @@ public:
   bool IsDeprecated() const { return kind == DeclInfluencerKind::Deprecated; }
   bool IsIntrinsic() const { return kind == DeclInfluencerKind::Intrinsic; }
   bool IsInline() const { return kind == DeclInfluencerKind::Inline; }
+  bool IsHardware() { return GetKind() == DeclInfluencerKind::Hardware; }
+  bool IsExclusive() { return GetKind() == DeclInfluencerKind::Exclusive; }
 };
 
 // --------------------
@@ -110,6 +114,17 @@ public:
   OpenModifier(SrcLoc loc) : DeclModifier(DeclInfluencerKind::Open, loc) {}
 };
 
+class HardwareModifier : public DeclModifier {
+public:
+  HardwareModifier(SrcLoc loc)
+      : DeclModifier(DeclInfluencerKind::Hardware, loc) {}
+};
+class ExclusiveModifier : public DeclModifier {
+public:
+  ExclusiveModifier(SrcLoc loc)
+      : DeclModifier(DeclInfluencerKind::Exclusive, loc) {}
+};
+
 class VisibilityModifier : public DeclModifier {
   VisibilityLevel level;
 
@@ -140,6 +155,12 @@ class InlineAttribute : public DeclAttribute {
 public:
   InlineAttribute(SrcLoc loc, SrcRange range)
       : DeclAttribute(DeclInfluencerKind::Inline, loc, range) {}
+};
+
+class ExternAttribute : public DeclAttribute {
+public:
+  ExternAttribute(SrcLoc loc, SrcRange range)
+      : DeclAttribute(DeclInfluencerKind::Extern, loc, range) {}
 };
 
 enum class IntrinsicKind : uint8_t {
@@ -233,18 +254,10 @@ public:
   ASTSession &GetASTSession() { return session; }
 
 public:
-  void AddTrust(SrcLoc loc) {
-    Add(new (session) TrustModifier(DeclInfluencerKind::Trust, loc));
-  }
-  void AddPure(SrcLoc loc) {
-    Add(new (session) TrustModifier(DeclInfluencerKind::Pure, loc));
-  }
-  void AddVirtual(SrcLoc loc) {
-    Add(new (session) TrustModifier(DeclInfluencerKind::Virtual, loc));
-  }
-  void AddPersonal(SrcLoc loc) {
-    Add(new (session) TrustModifier(DeclInfluencerKind::Personal, loc));
-  }
+  void AddTrust(SrcLoc loc) { Add(new (session) TrustModifier(loc)); }
+  void AddPure(SrcLoc loc) { Add(new (session) PureModifier(loc)); }
+  void AddVirtual(SrcLoc loc) { Add(new (session) VirtualModifier(loc)); }
+  void AddPersonal(SrcLoc loc) { Add(new (session) PersonalModifier(loc)); }
   void AddPublic(SrcLoc loc) {
     Add(new (session) VisibilityModifier(VisibilityLevel::Public, loc));
   }
@@ -254,7 +267,6 @@ public:
   void AddInternal(SrcLoc loc) {
     Add(new (session) VisibilityModifier(VisibilityLevel::Internal, loc));
   }
-  void AddExtern(SrcLoc loc) { Add(new (session) ExternModifier(loc)); }
 
 public:
   bool HasTrust() { return Has(DeclInfluencerKind::Trust); }
@@ -262,19 +274,20 @@ public:
   bool HasVritual() { return Has(DeclInfluencerKind::Virtual); }
   bool HasPersonal() { return Has(DeclInfluencerKind::Personal); }
   bool HasVisibility() { return Has(DeclInfluencerKind::Visibility); }
-  bool HasExtern() { return Has(DeclInfluencerKind::Extern); }
+  bool HasHardware() const { return Has(DeclInfluencerKind::Hardware); }
+  bool HasExclusive() const { return Has(DeclInfluencerKind::Exclusive); }
 
 public:
-  void AddAlign(SrcLoc loc) {
-    Add(new (session) AlignAttribute(DeclInfluencerKind::Align, loc));
+  void AddIntrinsic(IntrinsicKind kind, SrcLoc loc, SrcRange srcRange) {
+    Add(new (session) IntrinsicAttribute(kind, loc, srcRange));
   }
-  void AddIntrinsic(SrcLoc loc) {
-    Add(new (session) AlignAttribute(DeclInfluencerKind::Intrinsic, loc));
+  void AddExtern(SrcLoc loc, SrcRange srcRange) {
+    Add(new (session) ExternAttribute(loc, srcRange));
   }
 
 public:
-  bool HasAlign() { return Has(DeclInfluencerKind::Align); }
   bool HasIntrinsic() { return Has(DeclInfluencerKind::Intrinsic); }
+  bool HasExtern() { return Has(DeclInfluencerKind::Extern); }
 };
 
 } // namespace stone

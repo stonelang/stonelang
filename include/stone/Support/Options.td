@@ -14,7 +14,7 @@ def ExcludeFrontendOption : OptionFlag;
 def DriverOption : OptionFlag;
 
 // The option should not be accepted by the build.
-def ExcludeDriverOption : OptionFlag;
+def NotForDriverOption : OptionFlag;
 
 // The option should not be accepted by the build.
 def DebugOption : OptionFlag;

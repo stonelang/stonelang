@@ -1,7 +1,10 @@
 #ifndef STONE_COMPILE_FRONTEND_OPTIONS_H
 #define STONE_COMPILE_FRONTEND_OPTIONS_H
 
+#include "stone/Support/InputFile.h"
 #include "stone/Support/LangOptions.h"
+
+#include <vector>
 
 namespace stone {
 
@@ -13,6 +16,8 @@ enum class FrontendMode : uint8_t {
 class FrontendOptions final {
   friend class Frontend;
 
+  std::vector<InputFile> inputs;
+
 public:
   /// The frontend mode that we are in -- parse, type-check, etc.
   FrontendMode Mode = FrontendMode::None;
@@ -22,6 +27,9 @@ public:
 
   /// Indicates that we must process duplicate files
   bool MustProcessDuplicateInputFile = false;
+
+  /// If \p fn returns true, exits early and returns true.
+  bool ForEachInputFile(std::function<bool(const InputFile &)> callback) const;
 
 public:
   /// \return true if the given action requires a proper module name

@@ -6,4 +6,6 @@ using namespace stone;
 
 Decl::Decl(DeclKind kind, ASTSession &session) : ASTUnit(session), kind(kind) {}
 
-DeclState::DeclState(ASTSession &session) : session(session) {}
+DeclState::DeclState(ASTSession &session)
+    : session(session), declInfluencerList(session),
+      typeInfluencerList(session) {}

@@ -38,8 +38,7 @@
 #define LAST_EXPR(Id)
 #endif
 
-EXPR(New, Expr)
-EXPR(Delete, Expr)
+EXPR(New,  Expr)
 EXPR(This, Expr)
 EXPR(Call, Expr)
 EXPR(Paren, Expr)

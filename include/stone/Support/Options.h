@@ -18,19 +18,18 @@ namespace stone {
 namespace opts {
 enum OptFlag {
   FrontendOption = (1 << 4),
-  ExcludeFrontendOption = (1 << 5),
-  DriverOption = (1 << 6),
-  ExcludeDriverOption = (1 << 7),
-  DebugOption = (1 << 8),
-  ArgumentIsPath = (1 << 9),
-  ModuleInterfaceOption = (1 << 10),
-  SupplementaryOutput = (1 << 11),
-  StoneAPIExtractOption = (1 << 12),
-  StoneSymbolGraphExtractOption = (1 << 13),
-  StoneAPIDigesterOption = (1 << 14),
-  ExcludeBatchOption = (1 << 15),
-  DoesNotAffectIncrementalBuild = (1 << 16),
-  CacheInvariant = (1 << 17),
+  DriverOption = (1 << 5),
+  NotForDriverOption = (1 << 6),
+  DebugOption = (1 << 7),
+  ArgumentIsPath = (1 << 8),
+  ModuleInterfaceOption = (1 << 9),
+  SupplementaryOutput = (1 << 10),
+  StoneAPIExtractOption = (1 << 11),
+  StoneSymbolGraphExtractOption = (1 << 12),
+  StoneAPIDigesterOption = (1 << 13),
+  ExcludeBatchOption = (1 << 14),
+  DoesNotAffectIncrementalBuild = (1 << 15),
+  CacheInvariant = (1 << 16),
 };
 
 enum OptID {

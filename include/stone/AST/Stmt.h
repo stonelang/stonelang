@@ -31,6 +31,12 @@ public:
   ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Stmt; }
 };
 
+class FreeStmt final : public Stmt {
+public:
+  FreeStmt(StmtKind kind, ASTSession &session)
+      : Stmt(StmtKind::Free, session) {}
+};
+
 } // namespace stone
 
 #endif

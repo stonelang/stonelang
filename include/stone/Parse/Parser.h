@@ -97,12 +97,12 @@ public:
   Identifier GetDeclIdentifier() { return declIdentifier; }
   Parser &GetParser() { return parser; }
 
-  // TypeInfluencerList &GetTypeInfluencerList() {
-  //   return declState->GetTypeInfluencerList();
-  // }
-  // DeclInfluencerList &GetDeclInfluencerList() {
-  //   return declState->GetDeclInfluencerList();
-  // }
+  TypeInfluencerList &GetTypeInfluencerList() {
+    return declState->GetTypeInfluencerList();
+  }
+  DeclInfluencerList &GetDeclInfluencerList() {
+    return declState->GetDeclInfluencerList();
+  }
 };
 
 class Parser final {

@@ -7,6 +7,7 @@
 namespace stone {
 
 class Compiling;
+class SourceFile;
 class FrontendObservation;
 using CompilingCallback = std::function<bool(Compiling &compiling)>;
 
@@ -20,7 +21,22 @@ Status Compile(Compiling &compiling);
 Status PerformCompileLLVM(Compiling &compiling);
 
 /// \return true if syntax analysis is successful
-Status PerformParse(Compiling &compiling, CompilingCallback callback);
+Status PerformParsing(Compiling &compiling, CompilingCallback callback);
+
+/// \return true if syntax analysis is successful
+Status PerformParsing(SourceFile *SF);
+
+/// \return true if syntax analysis is successful
+Status PerformScaffolding(Compiling &compiling, CompilingCallback callback);
+
+/// \return true if syntax analysis is successful
+Status PerformTypeChecking(Compiling &compiling, CompilingCallback callback);
+
+// \return true if syntax analysis is successful
+Status PerformCodeGen(Compiling &compiling, CompilingCallback callback);
+
+// \return true if syntax analysis is successful
+Status PerformBackend(Compiling &compiling, CompilingCallback callback);
 
 } // namespace stone
 

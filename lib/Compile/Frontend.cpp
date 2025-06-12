@@ -44,5 +44,10 @@ using namespace stone;
 Frontend::Frontend() {}
 
 Status Frontend::ParseArgStrings(llvm::ArrayRef<const char *> args) {
+
+  // Frontend CL options
+  unsigned missingIndex;
+  unsigned missingCount;
+
   return Status::Done();
 }

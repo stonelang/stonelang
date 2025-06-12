@@ -23,17 +23,20 @@
 
 /// DECLARATION MODIFIERS 
 ABSTRACT_DECL_INFLUENCER(DeclModifier, DeclInfluencer)
-    DECL_MODIFIER_INFLUENCER(Trust, DeclModifier)
-    DECL_MODIFIER_INFLUENCER(Pure, DeclModifier)
-    DECL_MODIFIER_INFLUENCER(Personal, DeclModifier)
-    DECL_MODIFIER_INFLUENCER(Virtual,  DeclModifier)
-    DECL_MODIFIER_INFLUENCER(Open, DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Trust,     DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Pure,      DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Personal,  DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Virtual,   DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Open,      DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Hardware,  DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Exclusive, DeclModifier)
     DECL_MODIFIER_INFLUENCER(Visibility, DeclModifier)
     DECL_INFLUENCER_RANGE(DeclModifier, Trust, Visibility)
 
 /// DECLARATION ATTRIBUTES  
 ABSTRACT_DECL_INFLUENCER(DeclAttribute, DeclInfluencer)
     DECL_ATTRIBUTE_INFLUENCER(Deprecated, DeclAttribute)
+    DECL_ATTRIBUTE_INFLUENCER(Extern,  DeclAttribute)
     DECL_ATTRIBUTE_INFLUENCER(Intrinsic, DeclAttribute)
     DECL_ATTRIBUTE_INFLUENCER(Inline, DeclAttribute)
     DECL_INFLUENCER_RANGE(DeclAttribute, Deprecated, Inline)

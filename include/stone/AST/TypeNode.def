@@ -22,10 +22,10 @@
 #define LAST_TYPE(ID)
 #endif
 
-// === Object Root ===
-TYPE(Object, Type)
+// === Root Type ===
+TYPE(Any, Type)
 // === Builtin Types (Boxable) ===
-ABSTRACT_TYPE(Builtin, ObjectType)
+ABSTRACT_TYPE(Builtin, AnyType)
   ABSTRACT_TYPE(Number, BuiltinType)
     BUILTIN_TYPE(Int, NumberType)
     BUILTIN_TYPE(Int8, NumberType)
@@ -50,7 +50,7 @@ ABSTRACT_TYPE(Builtin, ObjectType)
 TYPE_RANGE(Builtin, Int, Null)
 
 // === Sugared Types (Aliases and String) ===
-ABSTRACT_SUG_TYPE(Sug, ObjectType)
+ABSTRACT_SUG_TYPE(Sug, AnyType)
   TYPE(String, SugType)
   TYPE(Using, SugType)
 TYPE_RANGE(Sug, String, Using)
@@ -80,7 +80,7 @@ ABSTRACT_TYPE(Access, Type)
 TYPE_RANGE(Access, Ptr, Ref)
 
 // === Nominal Types (User-defined, Boxable) ===
-ABSTRACT_TYPE(Nominal, ObjectType)
+ABSTRACT_TYPE(Nominal, AnyType)
   TYPE(Enum, NominalType)
   TYPE(Struct, NominalType)
   TYPE(Interface, NominalType)

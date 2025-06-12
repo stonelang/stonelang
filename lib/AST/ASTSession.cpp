@@ -5,7 +5,9 @@
 using namespace stone;
 
 ASTSession::ASTSession()
-    : identifierTable(allocator), declBuilder(new DeclBuilder(*this)) {
+    : identifierTable(allocator), declBuilder(new DeclBuilder(*this)),
+      stmtBuilder(new StmtBuilder(*this)), exprBuilder(new ExprBuilder(*this)),
+      typeBuilder(new TypeBuilder(*this)) {
 
 #define BUILTIN_TYPE(ID, Parent)                                               \
   Builtin##ID##Type = new (*this) ID##Type(new (*this) BuiltinTypeState(*this));

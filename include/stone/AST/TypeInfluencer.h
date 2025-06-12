@@ -78,8 +78,6 @@ public:
   bool IsOwn() { return GetKind() == TypeInfluencerKind::Own; }
   bool IsSafe() { return GetKind() == TypeInfluencerKind::Safe; }
   bool IsNot() { return GetKind() == TypeInfluencerKind::Not; }
-  bool IsHardware() { return GetKind() == TypeInfluencerKind::Hardware; }
-  bool IsExclusive() { return GetKind() == TypeInfluencerKind::Exclusive; }
 };
 
 class TypeModifier : public TypeInfluencer {
@@ -104,16 +102,6 @@ public:
 class NotModifier : public TypeModifier {
 public:
   NotModifier(SrcLoc loc) : TypeModifier(TypeInfluencerKind::Not, loc) {}
-};
-class HardwareModifier : public TypeModifier {
-public:
-  HardwareModifier(SrcLoc loc)
-      : TypeModifier(TypeInfluencerKind::Hardware, loc) {}
-};
-class ExclusiveModifier : public TypeModifier {
-public:
-  ExclusiveModifier(SrcLoc loc)
-      : TypeModifier(TypeInfluencerKind::Exclusive, loc) {}
 };
 
 class TypeAttribute : public TypeInfluencer, public Attribute {
@@ -178,16 +166,12 @@ public:
   void AddOwn(SrcLoc loc) { Add(new (session) OwnModifier(loc)); }
   void AddSafe(SrcLoc loc) { Add(new (session) SafeModifier(loc)); }
   void AddNot(SrcLoc loc) { Add(new (session) NotModifier(loc)); }
-  void AddHardware(SrcLoc loc) { Add(new (session) HardwareModifier(loc)); }
-  void AddExclusive(SrcLoc loc) { Add(new (session) ExclusiveModifier(loc)); }
 
 public:
   bool HasStone() const { return Has(TypeInfluencerKind::Stone); }
   bool HasOwn() const { return Has(TypeInfluencerKind::Own); }
   bool HasSafe() const { return Has(TypeInfluencerKind::Safe); }
   bool HasNot() const { return Has(TypeInfluencerKind::Not); }
-  bool HasHardware() const { return Has(TypeInfluencerKind::Hardware); }
-  bool HasExclusive() const { return Has(TypeInfluencerKind::Exclusive); }
 
 public:
 };

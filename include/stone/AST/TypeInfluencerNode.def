@@ -24,9 +24,7 @@ ABSTRACT_TYPE_INFLUENCER(TypeModifier,  TypeInfluencer)
     TYPE_MODIFIER_INFLUENCER(Own,       TypeModifier)
     TYPE_MODIFIER_INFLUENCER(Safe,      TypeModifier)
     TYPE_MODIFIER_INFLUENCER(Not,       TypeModifier)
-    TYPE_MODIFIER_INFLUENCER(Hardware,  TypeModifier)
-    TYPE_MODIFIER_INFLUENCER(Exclusive, TypeModifier)
-    TYPE_INFLUENCER_RANGE(TypeModifier, Stone, Exclusive)
+    TYPE_INFLUENCER_RANGE(TypeModifier, Stone, Not)
 
 // TYPE ATTRIBUTES 
 ABSTRACT_TYPE_INFLUENCER(TypeAttribute,     TypeInfluencer)

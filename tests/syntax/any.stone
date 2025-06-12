@@ -1,0 +1,6 @@
+join Syntax;
+
+fun TestAny() {
+
+	any i = 10;
+}
