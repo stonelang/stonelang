@@ -1,9 +1,12 @@
 #include "stone/AST/TypeChecker.h"
+#include "stone/AST/ModuleDecl.h"
 
 using namespace stone;
 
-void stone::CheckModuleDecl(ModuleDecl &MD) {}
+TypeChecker::TypeChecker() {}
 
-void stone::CheckSourceFile(SourceFile &SF) {}
+void TypeChecker::CheckModuleDecl(ModuleDecl &moduleDecl) {}
 
-void stone::CheckDecl(Decl *D) {}
+void TypeChecker::CheckSourceFile(SourceFile &sourceFile) {}
+
+void TypeChecker::CheckDecl(Decl *D) {}

@@ -24,11 +24,11 @@ public:
   Stmt &operator=(Stmt &&) = delete;
 
 public:
-  Stmt(StmtKind kind) : kind(kind) {}
+  Stmt(StmtKind kind, ASTSession &session);
 
 public:
   StmtKind GetKind() const { return kind; }
-  ASTUnitKind GetUnitKind() override const { return ASTUnitKind::Stmt; }
+  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Stmt; }
 };
 
 } // namespace stone

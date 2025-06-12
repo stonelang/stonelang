@@ -1,3 +1,6 @@
 join Syntax;
 
+
+
+//implicit: space __stone__space__Syntax; 
 public stone int x = 10;

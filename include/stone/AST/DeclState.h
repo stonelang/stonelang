@@ -2,6 +2,7 @@
 #define STONE_AST_DECLSTATE_H
 
 #include "stone/AST/ASTAllocation.h"
+#include "stone/AST/DeclName.h"
 #include "stone/AST/TypeAlignment.h"
 
 #include "llvm/ADT/BitVector.h"
@@ -18,12 +19,18 @@ class alignas(1 << DeclAlignInBits) DeclState
   // The ASTSession associated with this DeclSate
   ASTSession &session;
 
+  // The declaration name
+  DeclName declName;
+
 public:
   // Every DeclState must have a context
   explicit DeclState(ASTSession &session);
 
 public:
   ASTSession &GetASTSession() { return session; }
+
+  void SetDeclName(DeclName name) { declName = name; }
+  DeclName GetDeclName() { return declName; }
 };
 
 } // namespace stone

@@ -4,7 +4,8 @@
 
 using namespace stone;
 
-ASTSession::ASTSession() : identifierTable(allocator) {
+ASTSession::ASTSession()
+    : identifierTable(allocator), declBuilder(new DeclBuilder(*this)) {
 
 #define BUILTIN_TYPE(ID, Parent)                                               \
   Builtin##ID##Type = new (*this) ID##Type(new (*this) BuiltinTypeState(*this));
@@ -18,11 +19,11 @@ ASTSession::ASTSession() : identifierTable(allocator) {
 
 ASTSession::~ASTSession() {}
 
-Identifier ASTSession::GetIdentifier(llvm::StringRef text) const {
-  if (text.empty() || text.data() == nullptr || text.size() == 0) {
+Identifier ASTSession::GetIdentifier(llvm::StringRef name) const {
+  if (name.empty()) {
     return Identifier();
   }
-  auto it = identifierTable.insert({text, 0}).first;
+  auto it = identifierTable.insert({name, 0}).first;
   return Identifier(it->getKeyData());
 }
 

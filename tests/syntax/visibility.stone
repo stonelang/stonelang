@@ -1,0 +1,19 @@
+
+
+// These are the same 
+pure public struct S {}
+
+// Compiler inserts pure 
+public struct S {} 
+
+internal struct V {}
+
+// for the module 
+open internal struct W {}
+open struct W {} // compiler inserts internal by default 
+
+
+
+// for inside the mdoule, and outside the module 
+open public struct Y {}
+

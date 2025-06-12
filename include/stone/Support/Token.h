@@ -259,6 +259,7 @@ public:
   bool IsCatch() const { return kind == tok::kw_catch; }
 
   bool IsJoin() const { return kind == tok::kw_join; }
+  bool IsOpen() const { return kind == tok::kw_open; }
   bool IsSpace() const { return kind == tok::kw_space; }
   bool IsUsing() const { return kind == tok::kw_using; }
 

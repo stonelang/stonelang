@@ -1,8 +1,6 @@
 #ifndef STONE_AST_TYPECHECKER_H
 #define STONE_AST_TYPECHECKER_H
 
-#include "stone/AST/ModuleDecl.h"
-
 namespace stone {
 class Decl;
 class SourceFile;
@@ -12,14 +10,22 @@ class Stmt;
 class Type;
 class ValueDecl;
 
-/// Check the module
-void CheckModuleDecl(ModuleDecl &MD);
+class ModuleDecl;
 
-/// Check the source file
-void CheckSourceFile(SourceFile &SF);
+class TypeChecker final {
+public:
+  TypeChecker();
 
-/// Check the declaration
-void CheckDecl(Decl *D);
+public:
+  void CheckModuleDecl(ModuleDecl &moduleDecl);
+  /// Check the module
+
+  /// Check the source file
+  void CheckSourceFile(SourceFile &SF);
+
+  /// Check the declaration
+  void CheckDecl(Decl *D);
+};
 
 } // namespace stone
 

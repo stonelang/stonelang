@@ -9,11 +9,14 @@
 
 namespace stone {
 class Identifier {
+  friend class DeclName;
+  friend class DeclNameBase;
   friend class ASTSession;
   const char *dataPointer = nullptr;
-  explicit Identifier(const char *dataPtr = nullptr) : dataPointer(dataPtr) {}
+  explicit Identifier(const char *dataPtr) : dataPointer(dataPtr) {}
 
 public:
+  Identifier() : Identifier(nullptr) {}
   explicit operator bool() const { return !IsEmpty(); }
 
 public:
@@ -76,13 +79,13 @@ public:
            (C >= 0xFE20 && C <= 0xFE2F) || (C >= 0xE0100 && C <= 0xE01EF);
   }
 
-  // static bool IsEditorPlaceholder(llvm::StringRef name) {
-  //   return stone::isEditorPlaceholder(name);
-  // }
+  static bool IsEditorPlaceholder(llvm::StringRef name) {
+    return stone::isEditorPlaceholder(name);
+  }
 
-  // bool IsEditorPlaceholder() const {
-  //   return !IsEmpty() && isEditorPlaceholder(GetString());
-  // }
+  bool IsEditorPlaceholder() const {
+    return !IsEmpty() && isEditorPlaceholder(GetString());
+  }
 
   const void *GetAsOpaquePointer() const {
     return static_cast<const void *>(dataPointer);

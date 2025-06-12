@@ -26,15 +26,13 @@ public:
   Expr &operator=(Expr &&) = delete;
 
 public:
-  Expr(ExprKind kind) : kind(kind) {}
+  Expr(ExprKind kind, ASTSession &session);
 
   // ExprKind kind, Type qualTy, ExprValueKind VK, ExprObjectKind OK
 
 public:
   ExprKind GetKind() const { return kind; }
-
-  ASTUnitKind GetUnitKind() override const { return ASTUnitKind::Expr; }
-
+  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Expr; }
   /// This recursively walks the AST rooted at this expression.
   // Expr *Walk(ASTWalker &walker);
   // Expr *Walk(ASTWalker &&walker) { return Walk(walker); }
@@ -45,7 +43,7 @@ public:
   //          D->GetKind() <= ExprKind::LastValueDecl;
   // }
   static bool classof(const ASTUnit *unit) {
-    return unit->GetUniKind() == ASTKind::Expr;
+    return unit->GetUnitKind() == ASTUnitKind::Expr;
   }
 };
 

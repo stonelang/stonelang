@@ -1,10 +1,12 @@
 set(stone_parse_sources
-  Parser.cpp
+  Confusable.cpp
+  Lexer.cpp 
   ParseDecl.cpp  
   ParseExpr.cpp  
-  Parser.cpp     
+  Parser.cpp   
   ParseStmt.cpp
-  
+  ParseType.cpp
+      
   LINK_LIBS
   StoneAST
 

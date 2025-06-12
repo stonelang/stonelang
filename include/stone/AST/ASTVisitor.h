@@ -4,7 +4,9 @@
 namespace stone {
 
 /// An abstract class used to traverse an AST.
-class ASTVisitor {};
+class ASTVisitor {
+public:
+};
 
 } // namespace stone
 

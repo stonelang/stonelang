@@ -5,15 +5,19 @@ set(LLVM_LINK_COMPONENTS
  )
 
 set(stone_ast_sources
-	ASTBuilder.cpp
 	ASTSession.cpp
 	ASTUnit.cpp
 	Decl.cpp
+	DeclBuilder.cpp
 	Expr.cpp
+	ExprBuilder.cpp
 	ModuleDecl.cpp
-	ModuleFile.cpp
+	Scaffolder.cpp
+	SourceFile.cpp
 	Stmt.cpp
+	StmtBuilder.cpp
 	Type.cpp
+	TypeBuilder.cpp
 	TypeChecker.cpp
 	Visibility.cpp
 

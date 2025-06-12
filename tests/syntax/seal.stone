@@ -1,3 +1,11 @@
 join Syntax;
 
-struct S {}
+
+// forbids inheritance 
+seal struct S {}
+
+seal public struct T {}
+
+seal open public struct U {}
+
+seal open internal struct V{}

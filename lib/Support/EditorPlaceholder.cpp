@@ -1,6 +1,5 @@
 #include "stone/Support/EditorPlaceholder.h"
 
-using namespace stone;
 #include <optional>
 
 using namespace stone;

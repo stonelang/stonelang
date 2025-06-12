@@ -1,8 +1,6 @@
 #ifndef STONE_AST_ASTWALKER_H
 #define STONE_AST_ASTWALKER_H
 
-#include "stone/AST/AST.h"
-
 #include <optional>
 #include <utility>
 
@@ -12,8 +10,8 @@ class Decl;
 class Stmt;
 class Expr;
 class Type;
-class ModuleDecl;
 class ASTUnit;
+class ModuleDecl;
 
 /// An abstract class used to traverse an AST.
 class ASTWalker {

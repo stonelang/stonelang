@@ -36,7 +36,7 @@ public:
   bool IsDecl() const { return GetUnitKind() == ASTUnitKind::Decl; }
   bool IsExpr() const { return GetUnitKind() == ASTUnitKind::Expr; }
   bool IsStmt() const { return GetUnitKind() == ASTUnitKind::Stmt; }
-  bool IsModuleFile() const { return GetUnitKind() == ASTUnitKind::ModuleFile; }
+  bool IsSourceFile() const { return GetUnitKind() == ASTUnitKind::SourceFile; }
   bool IsType() const { return GetUnitKind() == ASTUnitKind::Type; }
 
 public:

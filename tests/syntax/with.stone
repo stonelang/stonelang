@@ -1,0 +1,9 @@
+join Syntax;
+
+
+interface Node {}
+
+struct Decl with Node {
+}
+
+struct FunDecl with Decl {}

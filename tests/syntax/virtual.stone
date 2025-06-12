@@ -1,0 +1,13 @@
+
+
+virtual struct S {
+}
+join S public virtual fun Do() -> int32 {
+}
+
+struct U with S {
+}
+
+join U public personal fun D() -> int32 {
+
+}

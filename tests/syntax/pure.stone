@@ -1,0 +1,12 @@
+
+//Guarantee POD for pure struct in the compiler:
+//The compiler guarantees:
+//*Standard layout
+//*No padding unless required
+//*Pass-by-value safe
+//*Interop safe with C FFI
+pure struct Vec3 {
+    public float x;
+    public float y;
+    public float z;
+}

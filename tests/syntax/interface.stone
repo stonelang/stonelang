@@ -1,0 +1,14 @@
+join Syntax;
+
+
+interface A { fun D(); }
+interface B { fun Do();}
+
+struct C with A with B {
+}
+
+join C with A public fun Do() {
+}
+
+join C with B public fun Do() {
+}

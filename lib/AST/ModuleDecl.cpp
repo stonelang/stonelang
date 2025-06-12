@@ -1,33 +1,25 @@
 #include "stone/AST/ModuleDecl.h"
-#include "stone/AST/ASTBuilder.h"
 #include "stone/AST/ASTSession.h"
-#include "stone/AST/ModuleFile.h"
+#include "stone/AST/SourceFile.h"
 
 using namespace stone;
 
-ModuleDecl::ModuleDecl(ASTSession &session)
-    : TypeDecl(DeclKind::Module, session) {}
-
-ModuleFile *ModuleDecl::GetFirstModuleFile() const { return nullptr; }
-
-bool ModuleDecl::HasFirstModuleFile() const {
-  return GetFirstModuleFile() != nullptr;
+ModuleDecl::ModuleDecl(ModuleDeclKind kind, ASTSession &session)
+    : TypeDecl(DeclKind::Module, session), kind(kind) {
+  scope = new (session) ASTScope(this);
 }
 
-llvm::ArrayRef<const ModuleFile *> ModuleDecl::GetModuleFiles() const {
-  return {moduleFiles.begin(), moduleFiles.size()};
+SourceFile *ModuleDecl::GetFirstSourceFile() const { return nullptr; }
+
+bool ModuleDecl::HasFirstSourceFile() const {
+  return GetFirstSourceFile() != nullptr;
 }
 
-void ModuleDecl::AddModuleFile(ModuleFile *moduleFile) {
-  // If this is a LoadedFile, make sure it loaded without error.
-  // assert(!(isa<LoadedFile>(newFile) &&
-  //         cast<LoadedFile>(newFile).hadLoadError()));
-  // Require Main and REPL files to be the first file added.
-  // assert(files.empty() || !isa<SourceFile>(file) ||
-  //        llvm::cast<SourceFile>(file).kind == SourceFileKind::Library
-  /// ||cast<SourceFile>(unit).Kind == SourceFileKind::SIL);
-  moduleFiles.push_back(moduleFile);
-  // TODO: ClearLookupCache();
+llvm::ArrayRef<const SourceFile *> ModuleDecl::GetSourceFiles() const {
+  return {sources.begin(), sources.size()};
 }
 
-ModuleDecl *ASTBuilder::CreateModuleDecl() { return nullptr; }
+void ModuleDecl::AddSourceFile(SourceFile *sourceFile) {
+  assert(sourceFile && "Cannot add null SourceFile");
+  sources.push_back(sourceFile);
+}

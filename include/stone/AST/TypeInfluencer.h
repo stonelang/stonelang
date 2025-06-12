@@ -71,7 +71,6 @@ public:
   SrcLoc GetLoc() { return loc; }
 
 public:
-  bool IsPure() { return GetKind() == TypeInfluencerKind::Pure; }
   bool IsStone() { return GetKind() == TypeInfluencerKind::Stone; }
   bool IsAlign() { return GetKind() == TypeInfluencerKind::Align; }
   bool IsNullable() { return GetKind() == TypeInfluencerKind::Nullable; }
@@ -89,14 +88,11 @@ public:
       : TypeInfluencer(kind, loc) {}
 };
 
-class PureModifier : public TypeModifier {
-public:
-  PureModifier(SrcLoc loc) : TypeModifier(TypeInfluencerKind::Pure, loc) {}
-};
 class StoneModifier : public TypeModifier {
 public:
   StoneModifier(SrcLoc loc) : TypeModifier(TypeInfluencerKind::Stone, loc) {}
 };
+
 class OwnModifier : public TypeModifier {
 public:
   OwnModifier(SrcLoc loc) : TypeModifier(TypeInfluencerKind::Own, loc) {}
@@ -178,7 +174,6 @@ public:
   const ASTSession &GetASTSession() { return session; }
 
 public:
-  void AddPure(SrcLoc loc) { Add(new (session) PureModifier(loc)); }
   void AddStone(SrcLoc loc) { Add(new (session) StoneModifier(loc)); }
   void AddOwn(SrcLoc loc) { Add(new (session) OwnModifier(loc)); }
   void AddSafe(SrcLoc loc) { Add(new (session) SafeModifier(loc)); }
@@ -187,13 +182,14 @@ public:
   void AddExclusive(SrcLoc loc) { Add(new (session) ExclusiveModifier(loc)); }
 
 public:
-  bool HasPure() const { return Has(TypeInfluencerKind::Pure); }
   bool HasStone() const { return Has(TypeInfluencerKind::Stone); }
   bool HasOwn() const { return Has(TypeInfluencerKind::Own); }
   bool HasSafe() const { return Has(TypeInfluencerKind::Safe); }
   bool HasNot() const { return Has(TypeInfluencerKind::Not); }
   bool HasHardware() const { return Has(TypeInfluencerKind::Hardware); }
   bool HasExclusive() const { return Has(TypeInfluencerKind::Exclusive); }
+
+public:
 };
 
 } // namespace stone

@@ -74,20 +74,55 @@ public:
 
 // class UsingDecl : public ValueDecl {};
 
+enum class JoinDeclKind {
+  Module = 0,
+  Struct,
+  Interface,
+  Enum,
+};
 class JoinDecl : public ValueDecl {
+  JoinDeclKind kind;
 
 public:
-  JoinDecl();
+  JoinDecl(JoinDeclKind kind);
+
+public:
+  JoinDeclKind GetJoinDeclKind() { return kind; }
+
+  bool IsModule() const { return kind == JoinDeclKind::Module; }
+  bool IsStruct() const { return kind == JoinDeclKind::Struct; }
+  bool IsInterface() const { return kind == JoinDeclKind::Interface; }
+  bool IsEnum() const { return kind == JoinDeclKind::Enum; }
 };
 
-// class SpaceDecl : public ValueDecl {
-// public:
-//   SpaceDecl();
-// };
+enum class UsingDeclKind {
+  Module = 0,
+  Struct,
+  Interface,
+  Enum,
+  Fun,
+  Macro,
+  Alias
+};
 
-// class TrustDecl final : public Decl {
-// public:
-// };
+class UsingDecl : public ValueDecl {
+  UsingDeclKind kind;
+
+public:
+  UsingDecl(UsingDeclKind kind);
+
+public:
+  UsingDeclKind GetUsingDeclKind() { return kind; }
+};
+
+class SpaceDecl : public ValueDecl {
+public:
+  SpaceDecl();
+};
+
+class TrustDecl final : public ValueDecl {
+public:
+};
 
 } // namespace stone
 #endif
