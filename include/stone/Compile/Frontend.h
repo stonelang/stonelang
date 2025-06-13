@@ -1,7 +1,9 @@
 #ifndef STONE_COMPILE_FRONTEND_H
 #define STONE_COMPILE_FRONTEND_H
 
+#include "stone/AST/ASTSession.h"
 #include "stone/AST/TypeCheckerOptions.h"
+#include "stone/Compile/FrontendMemoryBuffers.h"
 #include "stone/Compile/FrontendObserver.h"
 #include "stone/Compile/FrontendOptions.h"
 #include "stone/Support/CodeGenOptions.h"
@@ -19,25 +21,6 @@
 
 namespace stone {
 
-using ConfigurationFileBuffers =
-    llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
-using MemoryBuffers =
-    llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
-
-struct ModuleBuffers final {
-  std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
-  std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer;
-  std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer;
-  // Constructor
-  explicit ModuleBuffers(
-      std::unique_ptr<llvm::MemoryBuffer> moduleBuffer,
-      std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer = nullptr,
-      std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer = nullptr)
-      : moduleBuffer(std::move(moduleBuffer)),
-        moduleDocBuffer(std::move(moduleDocBuffer)),
-        moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
-};
-
 class Frontend final {
   FrontendOptions frontendOpts;
   CodeGenOptions codeGenOpts;
@@ -46,11 +29,13 @@ class Frontend final {
   clang::FileSystemOptions clangFileSystemOpts;
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
   FrontendObserver *observer;
+  std::unique_ptr<ASTSession> session;
 
 private:
 public:
   Frontend(llvm::StringRef executablePath, llvm::StringRef executableNam);
   Status ParseArgStrings(llvm::ArrayRef<const char *> args);
+  FrontendMode GetMode() const { frontendOpts.Mode; }
 
 public:
   FrontendOptions &GetFronendOptions() { return frontendOpts; }
@@ -62,6 +47,11 @@ public:
   bool HasObserver() { return observer != nullptr; }
   void SetObserver(FrontendObserver *obs) { observer = obs; }
   FrontendObserver *GetObserver() { return observer; }
+
+public:
+  Status SetupASTSession();
+  bool HasASTSession() { return session != nullptr; }
+  ASTSession &GetASTSession() { *session; }
 };
 
 } // namespace stone

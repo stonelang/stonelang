@@ -8,37 +8,46 @@
 
 namespace stone {
 
-class Compiling;
 class SourceFile;
+class Frontend;
+class FrontendModule;
 class FrontendObserver;
-using CompilingCallback = std::function<bool(Compiling &compiling)>;
+using FrontendModuleCallback = std::function<bool(FrontendModule &fm)>;
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
             FrontendObserver *observer = nullptr);
 
+/// \return a frontend module
+FrontendModule *CreateFrontendModule(Frontend &frontend);
+
 /// \return status of compile
-Status Compile(Compiling &compiling);
+Status PerformCompile(FrontendModule &frontendModule);
 
 /// \return true if we compiled an ir file.
-Status PerformCompileLLVM(Compiling &compiling);
+Status PerformCompileLLVM(FrontendModule &frontendModule);
 
 /// \return true if syntax analysis is successful
-Status PerformParsing(Compiling &compiling, CompilingCallback callback);
+Status PerformParsing(FrontendModule &frontendModule,
+                      FrontendModuleCallback callback);
 
 /// \return true if syntax analysis is successful
 Status PerformParsing(SourceFile *SF);
 
 /// \return true if syntax analysis is successful
-Status PerformScaffolding(Compiling &compiling, CompilingCallback callback);
+Status PerformScaffolding(FrontendModule &frontendModule,
+                          FrontendModuleCallback callback);
 
 /// \return true if syntax analysis is successful
-Status PerformTypeChecking(Compiling &compiling, CompilingCallback callback);
+Status PerformTypeChecking(FrontendModule &frontendModule,
+                           FrontendModuleCallback callback);
 
 // \return true if syntax analysis is successful
-Status PerformCodeGen(Compiling &compiling, CompilingCallback callback);
+Status PerformCodeGen(FrontendModule &frontendModule,
+                      FrontendModuleCallback callback);
 
 // \return true if syntax analysis is successful
-Status PerformBackend(Compiling &compiling, CompilingCallback callback);
+Status PerformBackend(FrontendModule &frontendModule,
+                      FrontendModuleCallback callback);
 
 } // namespace stone
 

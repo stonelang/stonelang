@@ -1,7 +1,8 @@
 set(stone_compile_sources
   Compile.cpp
-  Compiling.cpp
   Frontend.cpp
+  FrontendArgStrings.cpp
+  FrontendModule.cpp
   FrontendOptions.cpp
   
   LINK_LIBS
