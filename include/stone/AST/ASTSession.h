@@ -1,11 +1,7 @@
 #ifndef STONE_AST_ASTSESSION_H
 #define STONE_AST_ASTSESSION_H
 
-#include "stone/AST/DeclBuilder.h"
-#include "stone/AST/ExprBuilder.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/StmtBuilder.h"
-#include "stone/AST/TypeBuilder.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SetVector.h"
@@ -22,9 +18,14 @@ class Type;
 class FunDecl;
 class Scaffolder;
 class TypeChecker;
+class JoinDecl;
+class SpaceDecl;
+class UsingDecl;
+class NormalModuleDecl;
+class BuiltinModuleDecl;
+class ForeignModuleDecl;
 
 class ASTMemory {
-
 protected:
   mutable llvm::BumpPtrAllocator allocator;
 
@@ -59,11 +60,6 @@ class ASTSession final : public ASTMemory {
 
   using IdentifierTable = llvm::StringMap<char, llvm::BumpPtrAllocator &>;
   mutable IdentifierTable identifierTable;
-
-  std::unique_ptr<DeclBuilder> declBuilder;
-  std::unique_ptr<StmtBuilder> stmtBuilder;
-  std::unique_ptr<ExprBuilder> exprBuilder;
-  std::unique_ptr<TypeBuilder> typeBuilder;
 
 public:
   ASTSession(const ASTSession &) = delete;
@@ -184,12 +180,13 @@ public:
   //   }
 
 public:
-  DeclBuilder &GetDeclBuilder() { return *declBuilder; }
-  ExprBuilder &GetExprBuilder() { return *exprBuilder; }
-  StmtBuilder &GetStmtBuilder() { return *stmtBuilder; }
-  TypeBuilder &GetTypeBuilder() { return *typeBuilder; }
-
-public:
+  FunDecl *CreateFunDecl();
+  JoinDecl *CreateJoinDecl();
+  SpaceDecl *CreateSpaceDecl();
+  UsingDecl *CreateUsingDecl();
+  NormalModuleDecl *CreateNormalModuleDecl();
+  BuiltinModuleDecl *CreateBuiltinModuleDecl();
+  ForeignModuleDecl *CreateForeignModuleDecl();
 };
 
 } // namespace stone

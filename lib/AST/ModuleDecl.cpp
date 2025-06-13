@@ -4,7 +4,8 @@
 
 using namespace stone;
 
-ModuleDecl::ModuleDecl(DeclKind kind, ASTSession &session) : TypeDecl(kind, session) {
+ModuleDecl::ModuleDecl(DeclKind kind, ASTSession &session)
+    : TypeDecl(kind, session) {
   scope = new (session) ASTScope(this);
 }
 

@@ -51,7 +51,7 @@ public:
 public:
   Status SetupASTSession();
   bool HasASTSession() { return session != nullptr; }
-  ASTSession &GetASTSession() { *session; }
+  ASTSession &GetASTSession() { return *session; }
 };
 
 } // namespace stone

@@ -49,13 +49,15 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   FrontendModule *frontendModule = stone::CreateFrontendModule(frontend);
-  if (!stone::PerformCompile(*frontendModule).IsSuccess()) {
-    return 1;
-  }
+  // if (!stone::PerformCompile(*frontendModule).IsSuccess()) {
+  //   return 1;
+  // }
   return 0;
 }
 
 FrontendModule *stone::CreateFrontendModule(Frontend &frontend) {
+  assert(frontend.HasASTSession() &&
+         "Cannote create a FrontendModule without an ASTSession!");
   return new (frontend.GetASTSession()) FrontendModule(frontend);
 }
 /// \return status of compile
@@ -73,8 +75,7 @@ Status stone::PerformParsing(FrontendModule &frontendModule,
                              FrontendModuleCallback callback) {
 
   // when we parse, we add to the mdou
-  //FrontendModule.GetFrontend().GetFrontendOptions().ForEachInput();
-
+  // FrontendModule.GetFrontend().GetFrontendOptions().ForEachInput();
 
   // frontendModule.GetModule().AddSourceFile()
   Status::Success();
