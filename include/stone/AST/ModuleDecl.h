@@ -4,8 +4,8 @@
 #include "stone/AST/ASTScope.h"
 #include "stone/AST/ASTSession.h"
 #include "stone/AST/Decl.h"
-#include "stone/AST/SourceFile.h"
 #include "stone/AST/Foreign.h"
+#include "stone/AST/SourceFile.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"

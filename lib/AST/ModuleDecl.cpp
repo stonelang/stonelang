@@ -32,6 +32,7 @@ BuiltinModuleDecl *ASTSession::CreateBuiltinModuleDecl() {
   return new (*this) BuiltinModuleDecl(*this);
 }
 
-ForeignModuleDecl *ASTSession::CreateForeignModuleDecl(ForeignModuleDeclKind kind) {
+ForeignModuleDecl *
+ASTSession::CreateForeignModuleDecl(ForeignModuleDeclKind kind) {
   return new (*this) ForeignModuleDecl(kind, *this);
 }

@@ -1,8 +1,8 @@
 #ifndef STONE_AST_ASTSESSION_H
 #define STONE_AST_ASTSESSION_H
 
-#include "stone/AST/Identifier.h"
 #include "stone/AST/Foreign.h"
+#include "stone/AST/Identifier.h"
 #include "stone/AST/SourceFileKind.h"
 
 #include "llvm/ADT/ArrayRef.h"

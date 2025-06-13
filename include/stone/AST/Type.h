@@ -11,6 +11,7 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/Support/Casting.h"
+#include "llvm/Support/TrailingObjects.h"
 
 namespace stone {
 
@@ -245,6 +246,17 @@ public:
 
 class SugType : public AnyType {
 public:
+};
+
+/// A reference to a type alias that is somehow generic, along with the
+/// set of substitutions to apply to make the type concrete.
+class AliasType final : public SugType,
+                        public llvm::FoldingSetNode,
+                        llvm::TrailingObjects<AliasType, Type> {
+  AliasDecl *aliasDecl;
+
+public:
+  AliasType() : SugType(TypeKind::Alias) {}
 };
 
 class StringType final : public SugType {
