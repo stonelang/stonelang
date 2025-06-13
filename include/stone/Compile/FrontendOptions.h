@@ -19,6 +19,7 @@ class FrontendInputFile final : public InputFile {
   friend class FrontendOptions;
 
   OutputPaths outputPaths;
+
 public:
   FrontendInputFile(llvm::StringRef file,
                     llvm::MemoryBuffer *memoryBuffer = nullptr)

@@ -5,6 +5,7 @@
 #include "stone/Support/Options.h"
 
 #include "llvm/ADT/StringMap.h"
+#include "llvm/Option/ArgList.h"
 
 #include <memory>
 namespace stone {
@@ -90,6 +91,9 @@ public:
   /// The libray level to use
   LibraryLevel CurrentLibraryLevel = LibraryLevel::API;
 
+  /// The parsed input arg list
+  std::unique_ptr<llvm::opt::InputArgList> InputArgs;
+
 public:
   /// The map of aliases and underlying names of imported or referenced modules.
   llvm::StringMap<llvm::StringRef> ModuleAliasMap;
@@ -115,6 +119,9 @@ public:
   const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
   /// The main options table
   llvm::opt::OptTable &GetOptTable() { return *optTable; }
+
+  /// Return the input args
+  llvm::opt::InputArgList &GetInputArgList() { return *InputArgs; }
 
   /// Set the main exec path
   void SetMainExecutablePath(llvm::StringRef executablePath) {
