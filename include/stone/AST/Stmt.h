@@ -31,10 +31,19 @@ public:
   ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Stmt; }
 };
 
+class BraceStmt final : public Stmt {
+public:
+  BraceStmt(ASTSession &session) : Stmt(StmtKind::Brace, session) {}
+};
+
+class ResturnStmt final : public Stmt {
+public:
+  ResturnStmt(ASTSession &session) : Stmt(StmtKind::Return, session) {}
+};
+
 class FreeStmt final : public Stmt {
 public:
-  FreeStmt(StmtKind kind, ASTSession &session)
-      : Stmt(StmtKind::Free, session) {}
+  FreeStmt(ASTSession &session) : Stmt(StmtKind::Free, session) {}
 };
 
 } // namespace stone

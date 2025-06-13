@@ -70,9 +70,16 @@ public:
   TypeDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
 };
 
-// class TemplateDecl {};
+class StorageDecl : public ValueDecl {
+public:
+  StorageDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
+};
 
-// class UsingDecl : public ValueDecl {};
+class VarDecl : public StorageDecl {
+
+public:
+  VarDecl(ASTSession &session) : StorageDecl(DeclKind::Var, session) {}
+};
 
 enum class JoinDeclKind {
   Module = 0,
