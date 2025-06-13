@@ -1,6 +1,8 @@
 #ifndef STONE_COMPILE_FRONTEND_H
 #define STONE_COMPILE_FRONTEND_H
 
+#include "stone/AST/TypeCheckerOptions.h"
+#include "stone/Compile/FrontendObserver.h"
 #include "stone/Compile/FrontendOptions.h"
 #include "stone/Support/CodeGenOptions.h"
 #include "stone/Support/DiagnosticOptions.h"
@@ -37,8 +39,6 @@ struct ModuleBuffers final {
 };
 
 class Frontend final {
-  // friend class FrontendImpl;
-
   FrontendOptions frontendOpts;
   LangOptions langOpts;
   CodeGenOptions codeGenOpts;
@@ -47,8 +47,10 @@ class Frontend final {
   clang::FileSystemOptions clangFileSystemOpts;
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
 
+  FrontendObserver *observer;
+
 public:
-  Frontend(const FrontendObservation *observation);
+  Frontend(FrontendObserver *observer = nullptr);
   Status ParseArgStrings(llvm::ArrayRef<const char *> args);
 
 public:

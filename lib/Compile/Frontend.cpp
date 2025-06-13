@@ -1,4 +1,5 @@
 #include "stone/Compile/Frontend.h"
+#include "stone/Support/Options.h"
 
 using namespace stone;
 
@@ -41,13 +42,17 @@ using namespace stone;
 //   FrontendImpl(Frontend &frontend) : frontend(frontend) {}
 // };
 
-Frontend::Frontend() {}
+Frontend::Frontend(FrontendObserver *observer) : observer(observer) {}
 
 Status Frontend::ParseArgStrings(llvm::ArrayRef<const char *> args) {
 
   // Frontend CL options
-  unsigned missingIndex;
-  unsigned missingCount;
+  unsigned missingArgIndex;
+  unsigned missingArgCount;
+
+  frontendOpts.langOpts.InputArgs = std::make_unique<llvm::opt::InputArgList>(
+      frontendOpts.GetLangOptions().GetOptTable().ParseArgs(
+          args, missingArgIndex, missingArgCount, opts::FrontendOption));
 
   return Status::Done();
 }

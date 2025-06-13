@@ -18,19 +18,20 @@ class FrontendInputFile final : public InputFile {
   friend class Frontend;
   friend class FrontendOptions;
 
-  OutputPaths outputPaths;
+  FileSpecificPaths fileSpecificPaths;
 
 public:
   FrontendInputFile(llvm::StringRef file,
                     llvm::MemoryBuffer *memoryBuffer = nullptr)
-      : InputFile(file memoryBuffer) {}
+      : InputFile(file, memoryBuffer) {}
+
   FrontendInputFile(llvm::StringRef file, stone::FileType fileType,
                     llvm::MemoryBuffer *memoryBuffer = nullptr)
       : InputFile(file, fileType, memoryBuffer) {}
 
 public:
   /// Get the output paths for this file.
-  OutputPaths GetOutputPaths() const { return outputPaths; }
+  FileSpecificPaths GetFileSpecificPaths() const { return fileSpecificPaths; }
 };
 
 class FrontendOptions final {
@@ -121,8 +122,6 @@ public:
 
   void ForAllOutputPaths(const FrontendInputFile &input,
                          std::function<void(StringRef)> callbac) const;
-
-  bool IsOutputFileDirectory() const;
 };
 
 } // namespace stone

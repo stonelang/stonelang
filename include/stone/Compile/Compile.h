@@ -1,6 +1,8 @@
 #ifndef STONE_COMPILE_COMPILE_H
 #define STONE_COMPILE_COMPILE_H
 
+#include "stone/Support/Status.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/IR/Module.h"
 

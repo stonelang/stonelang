@@ -9,8 +9,9 @@ namespace stone {
 class SourceFile;
 class ModuleDecl;
 class ParserObserver;
-class TypeCheckingObserver;
+class TypeCheckerObserver;
 class CodeGenObserver;
+class Frontend;
 
 class FrontendObserver {
 
@@ -32,7 +33,7 @@ public:
 public:
   // Set the parser observer
   void SetParserObserver(ParserObserver *observer) {
-    return parserObserver = observer;
+    parserObserver = observer;
   }
   ///\return the ParserObserver
   ParserObserver *GetParserObserver() { return parserObserver; }
@@ -43,7 +44,7 @@ public:
 public:
   // Set the TypeChecker observer
   void SetTypeCheckerObserver(TypeCheckerObserver *observer) {
-    return typeCheckerObserver = observer;
+    typeCheckerObserver = observer;
   }
 
   /// Callbacks into the parsing pipeline
@@ -55,7 +56,7 @@ public:
 public:
   // Callbacks into the parsing pipeline
   void SetCodeGenObserver(CodeGenObserver *observer) {
-    return codeGenObserver = observer;
+    codeGenObserver = observer;
   }
 
   /// Callbacks into the parsing pipeline

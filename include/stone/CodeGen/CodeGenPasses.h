@@ -59,5 +59,8 @@ public:
   void RunLegacyPasses(llvm::Module *mod);
 };
 
+// void RunCodeGenPasses(llvm::Module *mod);
+// void RunLegacyCodeGenPasses(llvm::Module *mod);
+
 } // namespace stone
 #endif

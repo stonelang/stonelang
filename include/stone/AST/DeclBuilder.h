@@ -18,10 +18,10 @@ class ForeignModuleDecl;
 class ASTSession;
 
 class DeclBuilder final {
-  const ASTSession &session;
+  ASTSession &session;
 
 public:
-  DeclBuilder(const ASTSession &session);
+  DeclBuilder(ASTSession &session);
 
 public:
   JoinDecl *BuildJoinDecl();
