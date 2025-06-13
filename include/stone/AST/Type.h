@@ -18,6 +18,7 @@ namespace stone {
 class Type;
 class TypeState;
 class ASTSession;
+class AliasDecl;
 
 enum class TypeKind : uint8_t {
   None = 0,
@@ -246,6 +247,7 @@ public:
 
 class SugType : public AnyType {
 public:
+  SugType(TypeKind kind, TypeState *TS) : AnyType(TypeKind::Enum, TS) {}
 };
 
 /// A reference to a type alias that is somehow generic, along with the
@@ -256,7 +258,7 @@ class AliasType final : public SugType,
   AliasDecl *aliasDecl;
 
 public:
-  AliasType() : SugType(TypeKind::Alias) {}
+  AliasType(TypeState *TS) : SugType(TypeKind::Alias, TS) {}
 };
 
 class StringType final : public SugType {

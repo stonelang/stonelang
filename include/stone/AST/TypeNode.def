@@ -2,10 +2,17 @@
 #define TYPE(ID, Parent)
 #endif
 
+// REAL TYPES
 #ifndef BUILTIN_TYPE
 #define BUILTIN_TYPE(ID, Parent) TYPE(ID, Parent)
 #endif
 
+#ifndef SUG_TYPE
+#define SUG_TYPE(ID, Parent) TYPE(ID, parent)
+#endif
+
+
+// ABSTRACT TYPPES
 #ifndef ABSTRACT_TYPE
 #define ABSTRACT_TYPE(ID, Parent)
 #endif
@@ -13,6 +20,8 @@
 #ifndef ABSTRACT_SUG_TYPE
 #define ABSTRACT_SUG_TYPE(ID, Parent) ABSTRACT_TYPE(ID, Parent)
 #endif
+
+
 
 #ifndef TYPE_RANGE
 #define TYPE_RANGE(ID, First, Last) /* Specify range metadata */
@@ -51,9 +60,8 @@ TYPE_RANGE(Builtin, Int, Null)
 
 // === Sugared Types (Aliases and String) ===
 ABSTRACT_SUG_TYPE(Sug, AnyType)
-  TYPE(String, SugType)
-  TYPE(Using, SugType)
-TYPE_RANGE(Sug, String, Using)
+  SUG_TYPE(Alias, SugType)
+TYPE_RANGE(Sug, Alias, Alias)
 
 
 // === Deduced Types ===
@@ -86,6 +94,7 @@ ABSTRACT_TYPE(Nominal, AnyType)
   TYPE(Interface, NominalType)
 TYPE_RANGE(Nominal, Enum, Interface)
 LAST_TYPE(Interface)
+
 
 // === Cleanup ===
 #undef TYPE
