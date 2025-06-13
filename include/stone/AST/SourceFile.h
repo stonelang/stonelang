@@ -3,17 +3,12 @@
 
 #include "stone/AST/ASTUnit.h"
 #include "stone/AST/Decl.h"
+#include "stone/AST/SourceFileKind.h"
 
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
 class ModuleDecl;
-
-enum class SourceFileKind : uint8_t {
-  Normal = 0,     ///< A .stone file.
-  Interface,      ///< A.stoneinterface file -- another module (stable ABI?)
-  MacroExpansion, ///< Came from a macro expansion.
-};
 
 enum class SourceFileStage : uint8_t {
   None = 1 << 0,

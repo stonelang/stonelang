@@ -184,22 +184,6 @@ public:
     }
   }
 
-  bool IsTypeInfluencer() const {
-    return IsAny(tok::kw_pure, tok::kw_restrict, tok::kw_volatile,
-                 tok::kw_stone);
-  }
-  bool IsStorageSpecifier() const {
-    return IsAny(tok::kw_auto, tok::kw_register, tok::kw_static);
-  }
-  bool IsVisibilitySpecifier() const {
-    return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
-  }
-
-  bool IsBuiltin() const { return Token::IsBuiltin(kind); }
-
-  bool IsNominalType() const {
-    return IsAny(tok::kw_enum, tok::kw_struct, tok::kw_interface);
-  }
   bool IsFun() const { return kind == tok::kw_fun; }
   bool IsMutable() const { return kind == tok::kw_mutable; }
   bool IsPeriod() const { return kind == tok::period; }
@@ -262,6 +246,7 @@ public:
   bool IsOpen() const { return kind == tok::kw_open; }
   bool IsSpace() const { return kind == tok::kw_space; }
   bool IsUsing() const { return kind == tok::kw_using; }
+  bool IsAlias() const { return kind == tok::kw_alias; }
 
   bool IsMatch() const { return kind == tok::kw_match; }
   bool IsCase() const { return kind == tok::kw_case; }

@@ -35,7 +35,7 @@ private:
 public:
   Frontend(llvm::StringRef executablePath, llvm::StringRef executableNam);
   Status ParseArgStrings(llvm::ArrayRef<const char *> args);
-  FrontendMode GetMode() const { frontendOpts.Mode; }
+  FrontendMode GetMode() { return frontendOpts.Mode; }
 
 public:
   FrontendOptions &GetFronendOptions() { return frontendOpts; }
@@ -52,6 +52,22 @@ public:
   Status SetupASTSession();
   bool HasASTSession() { return session != nullptr; }
   ASTSession &GetASTSession() { return *session; }
+
+private:
+  Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
+
+private:
+  Status ParseFrontendOptions();
+  Status ParseFrontendMode();
+
+private:
+  Status ParseDiagnosticOptions();
+
+private:
+  Status ParseTargetOptions();
+
+private:
+  Status ParseCodeGenOptions();
 };
 
 } // namespace stone

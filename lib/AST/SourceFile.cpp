@@ -1,4 +1,5 @@
 #include "stone/AST/SourceFile.h"
+#include "stone/AST/ASTSession.h"
 #include "stone/AST/ModuleDecl.h"
 
 using namespace stone;
@@ -17,4 +18,10 @@ llvm::ArrayRef<Decl *> SourceFile::GetTopLevelDecls() const {
 ASTSession &SourceFile::GetASTSession(ModuleDecl *parent) {
   assert(parent && "Cannot get session from null ModuleDecl");
   return parent->GetASTSession();
+}
+
+SourceFile *ASTSession::CreateSourceFile(SourceFileKind kind,
+                                         unsigned srcBufferID,
+                                         ModuleDecl *parent) {
+  return nullptr;
 }

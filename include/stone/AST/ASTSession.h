@@ -2,6 +2,7 @@
 #define STONE_AST_ASTSESSION_H
 
 #include "stone/AST/Identifier.h"
+#include "stone/AST/SourceFileKind.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SetVector.h"
@@ -21,6 +22,8 @@ class TypeChecker;
 class JoinDecl;
 class SpaceDecl;
 class UsingDecl;
+class SourceFile;
+class ModuleDecl;
 class NormalModuleDecl;
 class BuiltinModuleDecl;
 class ForeignModuleDecl;
@@ -178,6 +181,10 @@ public:
   //         AllocateCopy<T>(setVector.begin(), setVector.end()),
   //         setVector.size());
   //   }
+
+public:
+  SourceFile *CreateSourceFile(SourceFileKind kind, unsigned srcBufferID,
+                               ModuleDecl *owner);
 
 public:
   FunDecl *CreateFunDecl();

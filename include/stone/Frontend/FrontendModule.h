@@ -3,6 +3,7 @@
 
 #include "stone/AST/ModuleDecl.h"
 #include "stone/Frontend/Frontend.h"
+#include "stone/Support/Status.h"
 
 namespace stone {
 
@@ -15,9 +16,10 @@ public:
 
 public:
   explicit FrontendModule(Frontend &frontend);
+  Status Initialize();
 
 public:
-  Frontend &GetFronend() { return frontend; }
+  Frontend &GetFrontend() { return frontend; }
 };
 } // namespace stone
 

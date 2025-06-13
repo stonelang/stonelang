@@ -49,6 +49,51 @@ public:
   }
 };
 
+enum class JoinDeclKind : uint8_t {
+  Module = 0,
+  Struct,
+  Interface,
+  Enum,
+};
+
+class JoinDecl : public Decl {
+  JoinDeclKind kind;
+
+public:
+  JoinDecl(JoinDeclKind kind);
+
+public:
+  JoinDeclKind GetJoinDeclKind() { return kind; }
+
+  bool IsModule() const { return kind == JoinDeclKind::Module; }
+  bool IsStruct() const { return kind == JoinDeclKind::Struct; }
+  bool IsInterface() const { return kind == JoinDeclKind::Interface; }
+  bool IsEnum() const { return kind == JoinDeclKind::Enum; }
+};
+
+enum class UsingDeclKind : uint8_t {
+  Module = 0,
+  Struct,
+  Interface,
+  Enum,
+  Fun,
+  Macro,
+};
+class UsingDecl : public Decl {
+  UsingDeclKind kind;
+
+public:
+  UsingDecl(UsingDeclKind kind);
+
+public:
+  UsingDeclKind GetUsingDeclKind() { return kind; }
+};
+
+class SpaceDecl : public Decl {
+public:
+  SpaceDecl();
+};
+
 class ValueDecl : public Decl {
 public:
   ValueDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
@@ -70,6 +115,11 @@ public:
   TypeDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
 };
 
+class AliasDecl : public ValueDecl {
+public:
+  AliasDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
+};
+
 class StorageDecl : public ValueDecl {
 public:
   StorageDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
@@ -79,52 +129,6 @@ class VarDecl : public StorageDecl {
 
 public:
   VarDecl(ASTSession &session) : StorageDecl(DeclKind::Var, session) {}
-};
-
-enum class JoinDeclKind {
-  Module = 0,
-  Struct,
-  Interface,
-  Enum,
-};
-class JoinDecl : public ValueDecl {
-  JoinDeclKind kind;
-
-public:
-  JoinDecl(JoinDeclKind kind);
-
-public:
-  JoinDeclKind GetJoinDeclKind() { return kind; }
-
-  bool IsModule() const { return kind == JoinDeclKind::Module; }
-  bool IsStruct() const { return kind == JoinDeclKind::Struct; }
-  bool IsInterface() const { return kind == JoinDeclKind::Interface; }
-  bool IsEnum() const { return kind == JoinDeclKind::Enum; }
-};
-
-enum class UsingDeclKind {
-  Module = 0,
-  Struct,
-  Interface,
-  Enum,
-  Fun,
-  Macro,
-  Alias
-};
-
-class UsingDecl : public ValueDecl {
-  UsingDeclKind kind;
-
-public:
-  UsingDecl(UsingDeclKind kind);
-
-public:
-  UsingDeclKind GetUsingDeclKind() { return kind; }
-};
-
-class SpaceDecl : public ValueDecl {
-public:
-  SpaceDecl();
 };
 
 class TrustDecl final : public ValueDecl {

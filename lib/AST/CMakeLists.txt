@@ -13,7 +13,6 @@ set(stone_ast_sources
 	Scaffolder.cpp
 	SourceFile.cpp
 	Stmt.cpp
-	StmtBuilder.cpp
 	Type.cpp
 	TypeChecker.cpp
 	Visibility.cpp

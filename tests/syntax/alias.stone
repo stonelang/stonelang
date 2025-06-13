@@ -1,0 +1,5 @@
+join Syntax;
+
+
+alias Int int; 
+alias Callabck fun(int, int) -> int;

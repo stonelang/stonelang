@@ -1,3 +1,5 @@
+#include "stone/Support/Status.h"
+#include "stone/Frontend/Frontend.h"
 #include "stone/Frontend/FrontendOptions.h"
 
 using namespace stone;
@@ -12,3 +14,5 @@ bool FrontendOptions::ForEachInput(
   }
   return false;
 }
+
+Status Frontend::ParseFrontendOptions() { return Status::Success(); }

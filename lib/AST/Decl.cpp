@@ -1,7 +1,7 @@
 #include "stone/AST/Decl.h"
-#include "stone/AST/ModuleDecl.h"
 #include "stone/AST/ASTSession.h"
 #include "stone/AST/DeclState.h"
+#include "stone/AST/ModuleDecl.h"
 
 using namespace stone;
 
@@ -17,7 +17,7 @@ SpaceDecl *ASTSession::CreateSpaceDecl() { return nullptr; }
 
 UsingDecl *ASTSession::CreateUsingDecl() { return nullptr; }
 
-FunDecl *ASTSession::CreateFunDecl() { return new (*this) FunDecl(*this);}
+FunDecl *ASTSession::CreateFunDecl() { return new (*this) FunDecl(*this); }
 
 NormalModuleDecl *ASTSession::CreateNormalModuleDecl() {
   return new (*this) NormalModuleDecl(*this);

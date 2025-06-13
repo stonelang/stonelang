@@ -12,7 +12,7 @@ class SourceFile;
 class Frontend;
 class FrontendModule;
 class FrontendObserver;
-using FrontendModuleCallback = std::function<bool(FrontendModule &fm)>;
+using FrontendModuleCallback = std::function<Status(FrontendModule &fm)>;
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
             FrontendObserver *observer = nullptr);
@@ -21,33 +21,34 @@ int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
 FrontendModule *CreateFrontendModule(Frontend &frontend);
 
 /// \return status of compile
-Status PerformCompile(FrontendModule &frontendModule);
+Status PerformCompile(FrontendModule &fm);
 
-/// \return true if we compiled an ir file.
-Status PerformCompileLLVM(FrontendModule &frontendModule);
+/// \return Success if we compiled an ir file.
+Status PerformCompileLLVM(FrontendModule &fm);
 
-/// \return true if syntax analysis is successful
-Status PerformParsing(FrontendModule &frontendModule,
-                      FrontendModuleCallback callback);
+/// \return Success if syntax analysis is successful
+Status PerformParse(FrontendModule &fm, FrontendModuleCallback cb);
 
-/// \return true if syntax analysis is successful
-Status PerformParsing(SourceFile *SF);
-
-/// \return true if syntax analysis is successful
-Status PerformScaffolding(FrontendModule &frontendModule,
-                          FrontendModuleCallback callback);
-
-/// \return true if syntax analysis is successful
-Status PerformTypeChecking(FrontendModule &frontendModule,
-                           FrontendModuleCallback callback);
+/// \return Success if syntax analysis is successful
+Status PerformParse(SourceFile *SF);
 
 // \return true if syntax analysis is successful
-Status PerformCodeGen(FrontendModule &frontendModule,
-                      FrontendModuleCallback callback);
+Status PerformScaffolding(FrontendModule &fm, FrontendModuleCallback cb);
+
+/// \return true if syntax analysis is successful
+Status PerformScaffolding(SourceFile *S);
+
+/// \return true if syntax analysis is successful
+Status PerformCheckTypes(FrontendModule &fm, FrontendModuleCallback cb);
+
+/// \return true if syntax analysis is successful
+Status PerformCheckTypes(SourceFile *S);
 
 // \return true if syntax analysis is successful
-Status PerformBackend(FrontendModule &frontendModule,
-                      FrontendModuleCallback callback);
+Status PerformCodeGen(FrontendModule &fm, FrontendModuleCallback cb);
+
+// \return true if syntax analysis is successful
+Status PerformBackend(FrontendModule &fm, FrontendModuleCallback cb);
 
 } // namespace stone
 

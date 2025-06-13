@@ -17,10 +17,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     // frontend.GetDiags().diagnose(SrcLoc(), diag::error_no_input_files);
     // return FinishCompile(Status::Error());
   }
-  if (frontend.ParseArgStrings(args).IsError()) {
+  if (!frontend.ParseArgStrings(args).IsSuccess()) {
+    return 1;
   }
-  frontend.SetObserver(observer);
-
   switch (frontend.GetMode()) {
   case FrontendMode::PrintHelp: {
     // instance.GetInvocation().GetCompilerOptions().PrintHelp();
@@ -43,15 +42,20 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   }
 
+  frontend.SetObserver(observer);
   // Simple for now
   if (!frontend.SetupASTSession().IsSuccess()) {
     return 1;
   }
 
   FrontendModule *frontendModule = stone::CreateFrontendModule(frontend);
-  // if (!stone::PerformCompile(*frontendModule).IsSuccess()) {
-  //   return 1;
-  // }
+  if (!frontendModule->Initialize().IsSuccess()) {
+    return 1;
+  }
+
+  if (!stone::PerformCompile(*frontendModule).IsSuccess()) {
+    return 1;
+  }
   return 0;
 }
 
@@ -61,18 +65,23 @@ FrontendModule *stone::CreateFrontendModule(Frontend &frontend) {
   return new (frontend.GetASTSession()) FrontendModule(frontend);
 }
 /// \return status of compile
-Status stone::PerformCompile(FrontendModule &frontendModule) {
+Status stone::PerformCompile(FrontendModule &fm) {
+
+  switch (fm.GetFrontend().GetMode()) {
+  case FrontendMode::Parse: {
+    return stone::PerformParse(
+        fm, [&](FrontendModule &fm) { return Status::Success(); });
+  }
+  }
   Status::Success();
 }
 
 /// \return true if we compiled an ir file.
-Status stone::PerformCompileLLVM(FrontendModule &frontendModule) {
-  Status::Success();
-}
+Status stone::PerformCompileLLVM(FrontendModule &fm) { Status::Success(); }
 
 /// \return true if syntax analysis is successful
-Status stone::PerformParsing(FrontendModule &frontendModule,
-                             FrontendModuleCallback callback) {
+Status stone::PerformParse(FrontendModule &fm,
+                           FrontendModuleCallback callback) {
 
   // when we parse, we add to the mdou
   // FrontendModule.GetFrontend().GetFrontendOptions().ForEachInput();
@@ -82,31 +91,37 @@ Status stone::PerformParsing(FrontendModule &frontendModule,
 }
 
 // \return true if syntax analysis is successful
-Status stone::PerformParsing(SourceFile *SF) {}
+Status stone::PerformParse(SourceFile *SF) {}
 
 /// \return true if syntax analysis is successful
-Status stone::PerformScaffolding(FrontendModule &frontendModule,
+Status stone::PerformScaffolding(FrontendModule &fm,
                                  FrontendModuleCallback callback) {
 
   Status::Success();
 }
 
 /// \return true if syntax analysis is successful
-Status stone::PerformTypeChecking(FrontendModule &frontendModule,
-                                  FrontendModuleCallback callback) {
+Status stone::PerformScaffolding(SourceFile *SF) { Status::Success(); }
+
+/// \return true if syntax analysis is successful
+Status stone::PerformCheckTypes(FrontendModule &fm,
+                                FrontendModuleCallback callback) {
 
   Status::Success();
 }
 
+/// \return true if syntax analysis is successful
+Status stone::PerformCheckTypes(SourceFile *S) { Status::Success(); }
+
 // \return true if syntax analysis is successful
-Status stone::PerformCodeGen(FrontendModule &frontendModule,
+Status stone::PerformCodeGen(FrontendModule &fm,
                              FrontendModuleCallback callback) {
 
   Status::Success();
 }
 
 // \return true if syntax analysis is successful
-Status stone::PerformBackend(FrontendModule &frontendModule,
+Status stone::PerformBackend(FrontendModule &fm,
                              FrontendModuleCallback callback) {
 
   Status::Success();
