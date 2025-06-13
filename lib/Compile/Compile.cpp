@@ -12,11 +12,10 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   auto mainExecutableName = llvm::sys::path::stem(arg0);
-  auto driver =
-      std::make_unique<Frontend>(mainExecutablePath, mainExecutableName);
-
-  if (driver->ParseArgStrings(args).IsError()) {
+  Frontend frontend(mainExecutablePath, mainExecutableName);
+  if (frontend.ParseArgStrings(args).IsError()) {
   }
+  frontend.SetObserver(observer);
 
   return 0;
 }

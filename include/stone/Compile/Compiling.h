@@ -9,7 +9,7 @@ namespace stone {
 
 class Compiling final {
 
-  std::unique_ptr<Frontend> frontend;
+  Frontend &frontend;
   std::unique_ptr<ASTSession> session;
 
   mutable ModuleDecl *normalModule = nullptr;
@@ -18,7 +18,7 @@ class Compiling final {
 public:
   Compiling(const Compiling &) = delete;
   void operator=(const Compiling &) = delete;
-  explicit Compiling(std::unique_ptr<Frontend> frontend);
+  explicit Compiling(Frontend &frontend);
   bool Setup();
 
 public:

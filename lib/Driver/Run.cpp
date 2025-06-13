@@ -11,11 +11,8 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
 
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   auto mainExecutableName = llvm::sys::path::stem(arg0);
-  auto driver =
-      std::make_unique<Driver>(mainExecutablePath, mainExecutableName);
-
-  if (driver->ParseArgStrings(args).IsError()) {
+  Driver driver(mainExecutablePath, mainExecutableName);
+  if (driver.ParseArgStrings(args).IsError()) {
   }
-
   return 0;
 }

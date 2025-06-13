@@ -3,8 +3,8 @@
 
 using namespace stone;
 
-Compiling::Compiling(std::unique_ptr<Frontend> frontend)
-    : frontend(std::move(frontend)), session(new ASTSession()) {
+Compiling::Compiling(Frontend &frontend)
+    : frontend(frontend), session(new ASTSession()) {
   normalModule = GetASTSession().GetDeclBuilder().BuildNormalModuleDecl();
 }
 

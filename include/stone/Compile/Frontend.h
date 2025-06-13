@@ -45,7 +45,6 @@ class Frontend final {
   DiagnosticOptions diagOpts;
   clang::FileSystemOptions clangFileSystemOpts;
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
-
   FrontendObserver *observer;
 
 private:
@@ -60,6 +59,9 @@ public:
   clang::FileSystemOptions &GetClangFileSystemOptions() {
     return clangFileSystemOpts;
   }
+  bool HasObserver() { return observer != nullptr; }
+  void SetObserver(FrontendObserver *obs) { observer = obs; }
+  FrontendObserver *GetObserver() { return observer; }
 };
 
 } // namespace stone

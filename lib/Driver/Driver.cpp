@@ -16,6 +16,5 @@ Status Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
       langOpts.GetOptTable().ParseArgs(args, MissingArgIndex, MissingArgCount,
                                        IncludedFlagsBitmask,
                                        ExcludedFlagsBitmask));
-
   return Status::Success();
 }
