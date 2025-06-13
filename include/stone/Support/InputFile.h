@@ -13,7 +13,7 @@ namespace stone {
 llvm::StringRef ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(
     llvm::StringRef fileName);
 
-class InputFile final {
+class InputFile {
   llvm::StringRef fileName;
   FileType fileType;
   llvm::MemoryBuffer *memoryBuffer = nullptr;

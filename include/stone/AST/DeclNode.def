@@ -57,7 +57,6 @@
 
 DECL(Join,  Decl)
 DECL(Space, Decl)
-// Declaration hierarchy starts here
 ABSTRACT_DECL(Value, Decl)
     ABSTRACT_DECL(Type, ValueDecl)
         ABSTRACT_DECL(NominalType, TypeDecl)

@@ -1,6 +1,7 @@
 #ifndef STONE_SUPPORT_LANGOPTIONS_H
 #define STONE_SUPPORT_LANGOPTIONS_H
 
+#include "stone/Support/FileType.h"
 #include "stone/Support/Options.h"
 
 #include "llvm/ADT/StringMap.h"
@@ -37,6 +38,14 @@ public:
 
   /// The current triple
   llvm::Triple CurrentTargetTriple;
+
+  /// The file type for the main input files. Assuming all inputs produce the
+  /// same kind of output.
+  FileType InputFileType = FileType::INVALID;
+
+  /// The file type for main output files. Assuming all inputs produce the
+  /// same kind of output.
+  FileType OutputFileType = FileType::INVALID;
 
   /// \brief The second target for a zippered build
   ///

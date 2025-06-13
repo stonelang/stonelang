@@ -3,7 +3,7 @@
 using namespace stone;
 
 /// If \p fn returns true, exits early and returns true.
-bool FrontendOptions::ForEachInputFile(
+bool FrontendOptions::ForEachInput(
     std::function<bool(const InputFile &)> callback) const {
 
   for (const InputFile &input : inputs) {
