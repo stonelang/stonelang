@@ -1,11 +1,11 @@
-#ifndef STONE_COMPILE_FRONTEND_H
-#define STONE_COMPILE_FRONTEND_H
+#ifndef STONE_FRONTEND_FRONTEND_H
+#define STONE_FRONTEND_FRONTEND_H
 
 #include "stone/AST/ASTSession.h"
 #include "stone/AST/TypeCheckerOptions.h"
-#include "stone/Compile/FrontendMemoryBuffers.h"
-#include "stone/Compile/FrontendObserver.h"
-#include "stone/Compile/FrontendOptions.h"
+#include "stone/Frontend/FrontendMemoryBuffers.h"
+#include "stone/Frontend/FrontendObserver.h"
+#include "stone/Frontend/FrontendOptions.h"
 #include "stone/Support/CodeGenOptions.h"
 #include "stone/Support/DiagnosticOptions.h"
 #include "stone/Support/LangOptions.h"

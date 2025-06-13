@@ -1,5 +1,5 @@
-#include "stone/Compile/FrontendModule.h"
-#include "stone/Compile/Frontend.h"
+#include "stone/Frontend/FrontendModule.h"
+#include "stone/Frontend/Frontend.h"
 
 using namespace stone;
 

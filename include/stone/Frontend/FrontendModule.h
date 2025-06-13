@@ -1,8 +1,8 @@
-#ifndef STONE_COMPILE_FRONTEND_MODULE_H
-#define STONE_COMPILE_FRONTEND_MODULE_H
+#ifndef STONE_FRONTEND_FRONTEND_MODULE_H
+#define STONE_FRONTEND_FRONTEND_MODULE_H
 
 #include "stone/AST/ModuleDecl.h"
-#include "stone/Compile/Frontend.h"
+#include "stone/Frontend/Frontend.h"
 
 namespace stone {
 

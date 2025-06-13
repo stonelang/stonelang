@@ -26,15 +26,13 @@ class ModuleDecl : public TypeDecl {
   friend Scaffolder;
   friend TypeChecker;
 
-  ModuleDeclKind kind;
   ASTScope *scope = nullptr;
   llvm::SmallVector<SourceFile *, 2> sources;
   // llvm::DenseMap<Identifier, llvm::SmallVector<Decl *, 4>> symbols;
 
 public:
-  ModuleDecl(ModuleDeclKind kind, ASTSession &session);
+  ModuleDecl(DeclKind kind, ASTSession &session);
   explicit operator bool() const { return HasFirstSourceFile(); }
-  ModuleDeclKind GetModuleKind() const { return kind; }
   ASTScope *GetScope() const { return scope; }
 
 public:
@@ -48,13 +46,13 @@ public:
 class NormalModuleDecl : public ModuleDecl {
 public:
   NormalModuleDecl(ASTSession &session)
-      : ModuleDecl(ModuleDeclKind::Normal, session) {}
+      : ModuleDecl(DeclKind::NormalModule, session) {}
 };
 
-class BuiltinModuleDecl : public ModuleDecl {
+class BuiltinModuleDecl final : public ModuleDecl {
 public:
   BuiltinModuleDecl(ASTSession &session)
-      : ModuleDecl(ModuleDeclKind::Builtin, session) {}
+      : ModuleDecl(DeclKind::BuiltinModule, session) {}
 };
 
 enum class ForeignModuleDeclKind : uint8_t {
@@ -62,12 +60,12 @@ enum class ForeignModuleDeclKind : uint8_t {
   DWARF      ///< Possibly from debug symbols
 };
 
-class ForeignModuleDecl : public ModuleDecl {
+class ForeignModuleDecl final : public ModuleDecl {
   ForeignModuleDeclKind kind;
 
 public:
   ForeignModuleDecl(ForeignModuleDeclKind kind, ASTSession &session)
-      : ModuleDecl(ModuleDeclKind::Foreign, session), kind(kind) {}
+      : ModuleDecl(DeclKind::ForeignModule, session), kind(kind) {}
 
 public:
   ForeignModuleDeclKind GetForeignModuleKind() const { return kind; }

@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_FRONTEND_OPTIONS_H
-#define STONE_COMPILE_FRONTEND_OPTIONS_H
+#ifndef STONE_FRONTEND_FRONTEND_OPTIONS_H
+#define STONE_FRONTEND_FRONTEND_OPTIONS_H
 
 #include "stone/Support/InputFile.h"
 #include "stone/Support/LangOptions.h"

@@ -1,5 +1,5 @@
 #include "stone/Compile/Compile.h"
-#include "stone/Compile/FrontendModule.h"
+#include "stone/Frontend/FrontendModule.h"
 #include "stone/Support/LLVMInit.h"
 
 using namespace stone;
@@ -45,12 +45,14 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   // Simple for now
   if (!frontend.SetupASTSession().IsSuccess()) {
-    return 0;
+    return 1;
   }
+
   FrontendModule *frontendModule = stone::CreateFrontendModule(frontend);
   if (!stone::PerformCompile(*frontendModule).IsSuccess()) {
-    return 0;
+    return 1;
   }
+  return 0;
 }
 
 FrontendModule *stone::CreateFrontendModule(Frontend &frontend) {
@@ -71,6 +73,8 @@ Status stone::PerformParsing(FrontendModule &frontendModule,
                              FrontendModuleCallback callback) {
 
   // when we parse, we add to the mdou
+  //FrontendModule.GetFrontend().GetFrontendOptions().ForEachInput();
+
 
   // frontendModule.GetModule().AddSourceFile()
   Status::Success();

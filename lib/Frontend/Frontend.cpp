@@ -1,4 +1,4 @@
-#include "stone/Compile/Frontend.h"
+#include "stone/Frontend/Frontend.h"
 #include "stone/Support/Options.h"
 
 using namespace stone;

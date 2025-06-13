@@ -4,6 +4,7 @@ set(stone_include_files
 	${STONE_SOURCE_DIR}/include/stone/CodeGen/*.h
 	${STONE_SOURCE_DIR}/include/stone/Compile/*.h
 	${STONE_SOURCE_DIR}/include/stone/Driver/*.h
+	${STONE_SOURCE_DIR}/include/stone/Frontend/*.h
 	${STONE_SOURCE_DIR}/include/stone/Support/*.h
 	${STONE_SOURCE_DIR}/include/stone/Parse/*.h
 )
@@ -12,6 +13,7 @@ set(stone_lib_files
 	${STONE_SOURCE_DIR}/lib/CodeGen/*.cpp
 	${STONE_SOURCE_DIR}/lib/Compile/*.cpp
 	${STONE_SOURCE_DIR}/lib/Driver/*.cpp
+	${STONE_SOURCE_DIR}/lib/Frontend/*.cpp
 	${STONE_SOURCE_DIR}/lib/Support/*.cpp
 	${STONE_SOURCE_DIR}/lib/Parse/*.cpp	
 )

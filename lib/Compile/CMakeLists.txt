@@ -1,13 +1,10 @@
 set(stone_compile_sources
   Compile.cpp
-  Frontend.cpp
-  FrontendArgStrings.cpp
-  FrontendModule.cpp
-  FrontendOptions.cpp
   
   LINK_LIBS
   StoneCodeGen
   StoneParse
+  StoneFrontend
   clangFrontend
 
   DEPENDS
