@@ -1,9 +1,21 @@
+#include "stone/Driver/Driver.h"
 
+using namespace stone;
 
-// bool Driver::ParseArgStrings(){
+Driver::Driver(llvm::StringRef executablePath, llvm::StringRef executableNam) {
+  langOpts.MainExecutablePath = executablePath;
+  langOpts.MainExecutableName = executableNam;
+}
 
-//  unsigned includedFlagsBitmask = 0;
-//  unsigned excludedFlagsBitmask = opts::NotForDriverOption;
-//  unsigned missingArgIndex;
-//  unsigned missingArgCount;
-// }
+Status Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
+
+  unsigned IncludedFlagsBitmask = 0;
+  unsigned ExcludedFlagsBitmask = opts::NotForDriverOption;
+  unsigned MissingArgIndex, MissingArgCount;
+  langOpts.InputArgs = std::make_unique<llvm::opt::InputArgList>(
+      langOpts.GetOptTable().ParseArgs(args, MissingArgIndex, MissingArgCount,
+                                       IncludedFlagsBitmask,
+                                       ExcludedFlagsBitmask));
+
+  return Status::Success();
+}

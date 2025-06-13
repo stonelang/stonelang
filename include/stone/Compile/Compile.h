@@ -10,11 +10,11 @@ namespace stone {
 
 class Compiling;
 class SourceFile;
-class FrontendObservation;
+class FrontendObserver;
 using CompilingCallback = std::function<bool(Compiling &compiling)>;
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
-            FrontendObservation *observation = nullptr);
+            FrontendObserver *observer = nullptr);
 
 /// \return status of compile
 Status Compile(Compiling &compiling);

@@ -40,7 +40,6 @@ struct ModuleBuffers final {
 
 class Frontend final {
   FrontendOptions frontendOpts;
-  LangOptions langOpts;
   CodeGenOptions codeGenOpts;
   TypeCheckerOptions typeCheckerOpts;
   DiagnosticOptions diagOpts;
@@ -49,13 +48,13 @@ class Frontend final {
 
   FrontendObserver *observer;
 
+private:
 public:
-  Frontend(FrontendObserver *observer = nullptr);
+  Frontend(llvm::StringRef executablePath, llvm::StringRef executableNam);
   Status ParseArgStrings(llvm::ArrayRef<const char *> args);
 
 public:
   FrontendOptions &GetFronendOptions() { return frontendOpts; }
-  LangOptions &GetLangOptions() { return langOpts; }
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
   DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
   clang::FileSystemOptions &GetClangFileSystemOptions() {

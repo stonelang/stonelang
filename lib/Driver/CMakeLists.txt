@@ -1,5 +1,8 @@
 set(stone_drive_sources
+
   Driver.cpp
+  Run.cpp
+
   LINK_LIBS
   StoneCore
   StoneOption
