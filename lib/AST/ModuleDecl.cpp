@@ -23,3 +23,15 @@ void ModuleDecl::AddSourceFile(SourceFile *sourceFile) {
   assert(sourceFile && "Cannot add null SourceFile");
   sources.push_back(sourceFile);
 }
+
+NormalModuleDecl *ASTSession::CreateNormalModuleDecl() {
+  return new (*this) NormalModuleDecl(*this);
+}
+
+BuiltinModuleDecl *ASTSession::CreateBuiltinModuleDecl() {
+  return new (*this) BuiltinModuleDecl(*this);
+}
+
+ForeignModuleDecl *ASTSession::CreateForeignModuleDecl(ForeignModuleDeclKind kind) {
+  return new (*this) ForeignModuleDecl(kind, *this);
+}

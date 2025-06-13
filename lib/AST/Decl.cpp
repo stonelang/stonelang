@@ -18,11 +18,3 @@ SpaceDecl *ASTSession::CreateSpaceDecl() { return nullptr; }
 UsingDecl *ASTSession::CreateUsingDecl() { return nullptr; }
 
 FunDecl *ASTSession::CreateFunDecl() { return new (*this) FunDecl(*this); }
-
-NormalModuleDecl *ASTSession::CreateNormalModuleDecl() {
-  return new (*this) NormalModuleDecl(*this);
-}
-
-BuiltinModuleDecl *ASTSession::CreateBuiltinModuleDecl() { return nullptr; }
-
-ForeignModuleDecl *ASTSession::CreateForeignModuleDecl() { return nullptr; }

@@ -5,6 +5,7 @@
 #include "stone/AST/ASTSession.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/SourceFile.h"
+#include "stone/AST/Foreign.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
@@ -53,11 +54,6 @@ class BuiltinModuleDecl final : public ModuleDecl {
 public:
   BuiltinModuleDecl(ASTSession &session)
       : ModuleDecl(DeclKind::BuiltinModule, session) {}
-};
-
-enum class ForeignModuleDeclKind : uint8_t {
-  Clang = 0, ///< Imported via Clang bridge
-  DWARF      ///< Possibly from debug symbols
 };
 
 class ForeignModuleDecl final : public ModuleDecl {
