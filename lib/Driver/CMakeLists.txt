@@ -4,8 +4,7 @@ set(stone_drive_sources
   Run.cpp
 
   LINK_LIBS
-  StoneCore
-  StoneOption
+  StoneAST
 )
 add_stone_library(StoneDriver
   ${stone_drive_sources}
