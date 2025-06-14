@@ -14,12 +14,11 @@ enum class ASTUnitKind : uint8_t {
 };
 
 class ASTUnit : public ASTAllocation<ASTUnit> {
-  ASTUnit *parent = nullptr;
   ASTSession &session;
+  ASTUnit *parent = nullptr;
 
 public:
-  ASTUnit(ASTSession &session, ASTUnit *parent = nullptr)
-      : session(session), parent(parent) {}
+  ASTUnit(ASTSession &session, ASTUnit *parent = nullptr);
   // virtual ~ASTUnit() = default;
 
 public:
@@ -31,6 +30,8 @@ public:
   bool HasParent() const { return parent != nullptr; }
   ASTUnit *GetParent() const { return parent; }
   ASTSession &GetASTSession() const { return session; }
+
+  // virtual void Evaluate(EvaluatorKind kind);
 
 public:
   bool IsDecl() const { return GetUnitKind() == ASTUnitKind::Decl; }

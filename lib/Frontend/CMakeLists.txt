@@ -1,6 +1,6 @@
 set(stone_frontend_sources
   Frontend.cpp
-  FrontendArgStrings.cpp
+  FrontendArgList.cpp
   FrontendModule.cpp
   FrontendOptions.cpp
   

@@ -14,5 +14,3 @@ bool FrontendOptions::ForEachInput(
   }
   return false;
 }
-
-Status Frontend::ParseFrontendOptions() { return Status::Success(); }

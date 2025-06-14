@@ -21,7 +21,23 @@
 
 namespace stone {
 
+class Frontend;
+class FrontendArgListConverter final {
+public:
+  FrontendArgListConverter();
+
+public:
+  Status Convert(Frontend &frontend);
+  Status ParseFrontendOptions();
+  Status ParseFrontendMode();
+  Status ParseDiagnosticOptions();
+  Status ParseTargetOptions();
+  Status ParseCodeGenOptions();
+};
+
 class Frontend final {
+  friend FrontendArgListConverter;
+
   FrontendOptions frontendOpts;
   CodeGenOptions codeGenOpts;
   TypeCheckerOptions typeCheckerOpts;
@@ -31,7 +47,9 @@ class Frontend final {
   FrontendObserver *observer;
   std::unique_ptr<ASTSession> session;
 
-private:
+  FrontendArgListConverter converter;
+  FrontendArgListConverter &GetArgListConverter() { return converter; }
+
 public:
   Frontend(llvm::StringRef executablePath, llvm::StringRef executableNam);
   Status ParseArgStrings(llvm::ArrayRef<const char *> args);
@@ -53,21 +71,9 @@ public:
   bool HasASTSession() { return session != nullptr; }
   ASTSession &GetASTSession() { return *session; }
 
+  // llvm::ArrayRef<EvaluatorKind> GetPipeline(FrontendMode mode);
 private:
   Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
-
-private:
-  Status ParseFrontendOptions();
-  Status ParseFrontendMode();
-
-private:
-  Status ParseDiagnosticOptions();
-
-private:
-  Status ParseTargetOptions();
-
-private:
-  Status ParseCodeGenOptions();
 };
 
 } // namespace stone

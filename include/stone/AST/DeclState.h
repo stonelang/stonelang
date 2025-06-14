@@ -3,6 +3,7 @@
 
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/DeclInfluencer.h"
+#include "stone/AST/DeclKind.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeInfluencer.h"

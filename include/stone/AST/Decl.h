@@ -2,8 +2,8 @@
 #define STONE_AST_DECL_H
 
 #include "stone/AST/ASTUnit.h"
+#include "stone/AST/DeclKind.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/InlineBitfield.h"
 #include "stone/AST/TypeAlignment.h"
 #include "llvm/Support/Casting.h"
 
@@ -13,44 +13,26 @@ namespace stone {
 
 class DeclState;
 
-// DeclKind enum class definition
-enum class DeclKind : uint8_t {
-  None = 0,
-// Core declaration macros
-#define DECL(ID, Parent) ID,
-// Ranges
-#define LAST_DECL(ID) Count = ID,
-#define DECL_RANGE(ID, FirstId, LastId) First##ID = FirstId, Last##ID = LastId,
-
-#include "stone/AST/DeclNode.def"
-};
-
-enum : uint8_t {
-  NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
-};
-
 // Introduces a name and associates it with a type such as:
 // int x where x is the declaration, int is the type.
 class alignas(1 << DeclAlignInBits) Decl : public ASTUnit {
-  DeclKind kind;
+  DeclState *DS;
 
 public:
-  Decl(DeclKind kind, ASTSession &session);
+  Decl(DeclState *DS);
 
 public:
-  DeclKind GetKind() const { return kind; }
+  DeclState *GetDeclState();
+  DeclKind GetDeclKind() const;
   ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Decl; }
 
-public:
-  bool IsJoin() const { return kind == DeclKind::Join; }
-
-public:
   // void Evaluate(DeclActionKind kind);
 
 public:
+public:
   static bool classof(const Decl *D) {
-    return D->GetKind() >= DeclKind::FirstDecl &&
-           D->GetKind() <= DeclKind::LastDecl;
+    return D->GetDeclKind() >= DeclKind::FirstDecl &&
+           D->GetDeclKind() <= DeclKind::LastDecl;
   }
   static bool classof(const ASTUnit *unit) {
     return unit->GetUnitKind() == ASTUnitKind::Decl;
@@ -58,103 +40,109 @@ public:
 };
 
 enum class JoinDeclKind : uint8_t {
-  Module = 0,
+  None = 0,
+  Module,
   Struct,
   Interface,
   Enum,
 };
 
-class JoinDecl : public Decl {
-  JoinDeclKind kind;
+class JoinDecl final : public Decl {
+  JoinDeclKind joinKind;
 
 public:
-  JoinDecl(JoinDeclKind kind);
+  JoinDecl(DeclState *DS) : Decl(DS) {}
 
 public:
-  JoinDeclKind GetJoinDeclKind() { return kind; }
+  void SetJoinKind(JoinDeclKind kind) { joinKind = kind; }
+  JoinDeclKind GetJoinKind() { return joinKind; }
 
-  bool IsModule() const { return kind == JoinDeclKind::Module; }
-  bool IsStruct() const { return kind == JoinDeclKind::Struct; }
-  bool IsInterface() const { return kind == JoinDeclKind::Interface; }
-  bool IsEnum() const { return kind == JoinDeclKind::Enum; }
+  bool IsModule() const { return joinKind == JoinDeclKind::Module; }
+  bool IsStruct() const { return joinKind == JoinDeclKind::Struct; }
+  bool IsInterface() const { return joinKind == JoinDeclKind::Interface; }
+  bool IsEnum() const { return joinKind == JoinDeclKind::Enum; }
 };
 
 enum class UsingDeclKind : uint8_t {
-  Module = 0,
+  None = 0,
+  Module,
   Struct,
   Interface,
   Enum,
   Fun,
   Macro,
 };
-class UsingDecl : public Decl {
-  UsingDeclKind kind;
+class UsingDecl final : public Decl {
+  UsingDeclKind usingKind;
 
 public:
-  UsingDecl(UsingDeclKind kind);
+  UsingDecl(DeclState *DS) : Decl(DS) {}
 
 public:
-  UsingDeclKind GetUsingDeclKind() { return kind; }
+  void SetUsingKind(UsingDeclKind kind) { usingKind = kind; }
+  UsingDeclKind GetUsingKind() { return usingKind; }
 };
 
-class SpaceDecl : public Decl {
+class SpaceDecl final : public Decl {
 public:
-  SpaceDecl();
+  SpaceDecl(DeclState *DS) : Decl(DS) {}
 };
 
 class GenericDecl : public Decl {
 public:
-  GenericDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
+  GenericDecl(DeclState *DS) : Decl(DS) {}
+
+public:
+  bool HasSignature() const;
 };
 
 class TypeDecl : public GenericDecl {
 public:
-  TypeDecl(DeclKind kind, ASTSession &session) : GenericDecl(kind, session) {}
+  TypeDecl(DeclState *DS) : GenericDecl(DS) {}
 };
 
-class AliasDecl : public TypeDecl {
+class AliasDecl final : public TypeDecl {
 public:
-  AliasDecl(DeclKind kind, ASTSession &session) : TypeDecl(kind, session) {}
+  AliasDecl(DeclState *DS) : TypeDecl(DS) {}
 };
 
 class FunctionDecl : public GenericDecl {
 public:
-  FunctionDecl(DeclKind kind, ASTSession &session)
-      : GenericDecl(kind, session) {}
+  FunctionDecl(DeclState *DS) : GenericDecl(DS) {}
 };
 
 class FunDecl : public FunctionDecl {
 
 public:
-  FunDecl(DeclKind kind, ASTSession &session) : FunctionDecl(kind, session) {}
+  FunDecl(DeclState *DS) : FunctionDecl(DS) {}
 };
 
-class ConstructorDecl : public FunDecl {
+class ConstructorDecl : public FunctionDecl {
 
 public:
-  ConstructorDecl(ASTSession &session)
-      : FunDecl(DeclKind::Constructor, session) {}
+  ConstructorDecl(DeclState *DS) : FunctionDecl(DS) {}
 };
 
-class DestructorDecl : public FunDecl {
+class DestructorDecl : public FunctionDecl {
 
 public:
-  DestructorDecl(ASTSession &session) : FunDecl(DeclKind::Destructor, session) {}
+  DestructorDecl(DeclState *DS) : FunctionDecl(DS) {}
 };
 
 class StorageDecl : public Decl {
 public:
-  StorageDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
+  StorageDecl(DeclState *DS) : Decl(DS) {}
 };
 
 class VarDecl : public StorageDecl {
 
 public:
-  VarDecl(ASTSession &session) : StorageDecl(DeclKind::Var, session) {}
+  VarDecl(DeclState *DS) : StorageDecl(DS) {}
 };
 
 class TrustDecl final : public Decl {
 public:
+  TrustDecl(DeclState *DS) : Decl(DS) {}
 };
 
 } // namespace stone

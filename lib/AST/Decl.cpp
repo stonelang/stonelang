@@ -5,7 +5,15 @@
 
 using namespace stone;
 
-Decl::Decl(DeclKind kind, ASTSession &session) : ASTUnit(session), kind(kind) {}
+Decl::Decl(DeclState *DS) : ASTUnit(DS->GetASTSession()) {}
+
+DeclState *Decl::GetDeclState() { return DS; }
+
+DeclKind Decl::GetDeclKind() const { return DS->GetKind(); }
+
+// void Decl::Evaluate(DeclActionKind kind) {
+//   GetDeclState()->GetASTSession().GetDeclEvaluator().Evaluate(this, kind);
+// }
 
 DeclState::DeclState(ASTSession &session)
     : session(session), declInfluencerList(session),
@@ -21,6 +29,6 @@ SpaceDecl *ASTSession::CreateSpaceDecl() { return nullptr; }
 
 UsingDecl *ASTSession::CreateUsingDecl() { return nullptr; }
 
-FunDecl *ASTSession::CreateFunDecl() { 
-  //return new (*this) FunDecl(*this); 
+FunDecl *ASTSession::CreateFunDecl() {
+  // return new (*this) FunDecl(*this);
 }

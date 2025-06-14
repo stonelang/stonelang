@@ -32,7 +32,7 @@ class ModuleDecl : public TypeDecl {
   // llvm::DenseMap<Identifier, llvm::SmallVector<Decl *, 4>> symbols;
 
 public:
-  ModuleDecl(DeclKind kind, ASTSession &session);
+  ModuleDecl(DeclState *DS);
   explicit operator bool() const { return HasFirstSourceFile(); }
   ASTScope *GetScope() const { return scope; }
 
@@ -46,25 +46,23 @@ public:
 
 class NormalModuleDecl : public ModuleDecl {
 public:
-  NormalModuleDecl(ASTSession &session)
-      : ModuleDecl(DeclKind::NormalModule, session) {}
+  NormalModuleDecl(DeclState *DS) : ModuleDecl(DS) {}
 };
 
 class BuiltinModuleDecl final : public ModuleDecl {
 public:
-  BuiltinModuleDecl(ASTSession &session)
-      : ModuleDecl(DeclKind::BuiltinModule, session) {}
+  BuiltinModuleDecl(DeclState *DS) : ModuleDecl(DS) {}
 };
 
 class ForeignModuleDecl final : public ModuleDecl {
-  ForeignModuleDeclKind kind;
+  ForeignModuleDeclKind foreignKind;
 
 public:
-  ForeignModuleDecl(ForeignModuleDeclKind kind, ASTSession &session)
-      : ModuleDecl(DeclKind::ForeignModule, session), kind(kind) {}
+  ForeignModuleDecl(DeclState *DS) : ModuleDecl(DS) {}
 
 public:
-  ForeignModuleDeclKind GetForeignModuleKind() const { return kind; }
+  void SetForeignKind(ForeignModuleDeclKind kind) { foreignKind = kind; }
+  ForeignModuleDeclKind GetForeignKind() { return foreignKind; }
 };
 
 } // namespace stone

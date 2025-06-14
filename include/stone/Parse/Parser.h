@@ -25,21 +25,6 @@ public:
   void print(llvm::raw_ostream &out) const override;
 };
 
-// class ParsingDeclScope final : public ASTScope {
-//   Parser &parser;
-
-// public:
-//   ParsingDeclScope(const ParsingDeclScope &) = delete;
-//   void operator=(const ParsingDeclScope &) = delete;
-
-// public:
-//   ParsingDeclScope(Parser &parser);
-//   ~ParsingDeclScope();
-
-// public:
-//   Parser &GetParser() { return parser; }
-// };
-
 class ParsingDeclOptions final {
   unsigned storage;
 
@@ -104,7 +89,7 @@ public:
     return declState->GetDeclInfluencerList();
   }
 };
-
+// Evaluator
 class Parser final {
 
   SourceFile &sourceFile;

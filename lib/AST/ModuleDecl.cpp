@@ -4,9 +4,8 @@
 
 using namespace stone;
 
-ModuleDecl::ModuleDecl(DeclKind kind, ASTSession &session)
-    : TypeDecl(kind, session) {
-  scope = new (session) ASTScope(this);
+ModuleDecl::ModuleDecl(DeclState *DS) : TypeDecl(DS) {
+  // scope = new (session) ASTScope(this);
 }
 
 SourceFile *ModuleDecl::GetFirstSourceFile() const { return nullptr; }
@@ -25,14 +24,14 @@ void ModuleDecl::AddSourceFile(SourceFile *sourceFile) {
 }
 
 NormalModuleDecl *ASTSession::CreateNormalModuleDecl() {
-  return new (*this) NormalModuleDecl(*this);
+  // return new (*this) NormalModuleDecl(*this);
 }
 
 BuiltinModuleDecl *ASTSession::CreateBuiltinModuleDecl() {
-  return new (*this) BuiltinModuleDecl(*this);
+  // return new (*this) BuiltinModuleDecl(*this);
 }
 
 ForeignModuleDecl *
 ASTSession::CreateForeignModuleDecl(ForeignModuleDeclKind kind) {
-  return new (*this) ForeignModuleDecl(kind, *this);
+  // new (*this) ForeignModuleDecl(kind, *this);
 }
