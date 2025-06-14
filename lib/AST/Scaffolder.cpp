@@ -1,7 +1,6 @@
 #include "stone/AST/Scaffolder.h"
-#include "stone/AST/ModuleDecl.h"
 #include "stone/AST/DeclEvaluator.h"
-
+#include "stone/AST/ModuleDecl.h"
 
 using namespace stone;
 

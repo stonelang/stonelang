@@ -43,7 +43,7 @@ class alignas(1 << DeclAlignInBits) DeclEvaluator
 
 public:
   explicit DeclEvaluator(DeclEvaluatorKind kind) : kind(kind) {}
-  //virtual ~DeclEvaluator() = default;
+  // virtual ~DeclEvaluator() = default;
 
 public:
   DeclEvaluatorKind GetKind() const { return kind; }

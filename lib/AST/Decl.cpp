@@ -21,4 +21,6 @@ SpaceDecl *ASTSession::CreateSpaceDecl() { return nullptr; }
 
 UsingDecl *ASTSession::CreateUsingDecl() { return nullptr; }
 
-FunDecl *ASTSession::CreateFunDecl() { return new (*this) FunDecl(*this); }
+FunDecl *ASTSession::CreateFunDecl() { 
+  //return new (*this) FunDecl(*this); 
+}

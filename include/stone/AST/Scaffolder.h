@@ -11,10 +11,10 @@ public:
   Scaffolder();
 
 public:
-  /// Produce symbols and resolve names 
+  /// Produce symbols and resolve names
   void ScaffoldDecl(Decl *D);
 
-  /// Produce symbols and resolve names 
+  /// Produce symbols and resolve names
   void ScaffoldModuleDecl(ModuleDecl *MD);
 };
 

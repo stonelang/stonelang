@@ -57,15 +57,17 @@ DECL(Space, Decl)
 DECL(Using, Decl)
 
 // Type system
-ABSTRACT_DECL(Type, Decl)
+// Generic layer embedded in spine
+ABSTRACT_DECL(Generic, Decl)
+
+// Type declarations
+ABSTRACT_DECL(Type, GenericDecl)
     ABSTRACT_DECL(NominalType, TypeDecl)
         NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
         NOMINAL_TYPE_DECL(Struct, NominalTypeDecl)
         NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
         DECL_RANGE(NominalType, Enum, Interface)
-
     DECL(Alias, TypeDecl)
-
     ABSTRACT_DECL(Module, TypeDecl)
         CONTEXT_DECL(NormalModule,  ModuleDecl)
         CONTEXT_DECL(BuiltinModule, ModuleDecl)
@@ -73,10 +75,10 @@ ABSTRACT_DECL(Type, Decl)
         DECL_RANGE(Alias, NormalModule, ForeignModule)
 
 // Function declarations
-ABSTRACT_DECL(Function, Decl)
+ABSTRACT_DECL(Function, GenericDecl)
     DECL(Fun, FunctionDecl)
-    DECL(Constructor, FunctionDecl)
-    DECL(Destructor, FunctionDecl)
+    DECL(Constructor, FunDecl)
+    DECL(Destructor, FunDecl)
     DECL_RANGE(Function, Fun, Destructor)
 
 // Storage declarations

@@ -16,18 +16,14 @@ class DeclState;
 // DeclKind enum class definition
 enum class DeclKind : uint8_t {
   None = 0,
-  // Core declaration macros
+// Core declaration macros
 #define DECL(ID, Parent) ID,
 // Ranges
 #define LAST_DECL(ID) Count = ID,
-#define DECL_RANGE(ID, FirstId, LastId) \
-  First##ID = FirstId, Last##ID = LastId,
+#define DECL_RANGE(ID, FirstId, LastId) First##ID = FirstId, Last##ID = LastId,
 
 #include "stone/AST/DeclNode.def"
 };
-
-
-
 
 enum : uint8_t {
   NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
@@ -106,25 +102,44 @@ public:
   SpaceDecl();
 };
 
-class FunctionDecl : public Decl {
+class GenericDecl : public Decl {
 public:
-  FunctionDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
+  GenericDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
 };
 
-class FunDecl : public FunctionDecl {
-
+class TypeDecl : public GenericDecl {
 public:
-  FunDecl(ASTSession &session) : FunctionDecl(DeclKind::Fun, session) {}
-};
-
-class TypeDecl : public Decl {
-public:
-  TypeDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
+  TypeDecl(DeclKind kind, ASTSession &session) : GenericDecl(kind, session) {}
 };
 
 class AliasDecl : public TypeDecl {
 public:
   AliasDecl(DeclKind kind, ASTSession &session) : TypeDecl(kind, session) {}
+};
+
+class FunctionDecl : public GenericDecl {
+public:
+  FunctionDecl(DeclKind kind, ASTSession &session)
+      : GenericDecl(kind, session) {}
+};
+
+class FunDecl : public FunctionDecl {
+
+public:
+  FunDecl(DeclKind kind, ASTSession &session) : FunctionDecl(kind, session) {}
+};
+
+class ConstructorDecl : public FunDecl {
+
+public:
+  ConstructorDecl(ASTSession &session)
+      : FunDecl(DeclKind::Constructor, session) {}
+};
+
+class DestructorDecl : public FunDecl {
+
+public:
+  DestructorDecl(ASTSession &session) : FunDecl(DeclKind::Destructor, session) {}
 };
 
 class StorageDecl : public Decl {
