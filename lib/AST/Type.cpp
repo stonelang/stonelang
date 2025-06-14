@@ -11,7 +11,7 @@ ASTSession &Type::GetASTSession(TypeState *typeState) {
 
 BuiltinType::BuiltinType(TypeKind kind, TypeState *TS) : AnyType(kind, TS) {
   // Bits.Type.IsBuiltin = true;
-  TS->SetCanType(this);
+  TS->SetOwner(this);
 }
 
 NumberBitWidth NumberType::GetBitWidth() const {

@@ -19,6 +19,9 @@ DeclState::DeclState(ASTSession &session)
     : session(session), declInfluencerList(session),
       typeInfluencerList(session) {}
 
+// GenericDeclState::GenericDeclState(ASTSession &session) : DeclState(session)
+// {}
+
 DeclState *ASTSession::CreateDeclState() {
   return new (*this) DeclState(*this);
 }

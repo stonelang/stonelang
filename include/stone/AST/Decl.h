@@ -145,5 +145,34 @@ public:
   TrustDecl(DeclState *DS) : Decl(DS) {}
 };
 
+class OperatorDecl : public Decl {
+public:
+  OperatorDecl(DeclState *DS) : Decl(DS) {}
+};
+
+class NewOperatorDecl final : public OperatorDecl {
+public:
+  NewOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+};
+
+class FreeOperatorDecl final : public OperatorDecl {
+public:
+  FreeOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+};
+
+class PrefixOperatorDecl final : public OperatorDecl {
+public:
+  PrefixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+};
+
+class InfixOperatorDecl final : public OperatorDecl {
+public:
+  InfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+};
+class PostfixOperatorDecl final : public OperatorDecl {
+public:
+  PostfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+};
+
 } // namespace stone
 #endif

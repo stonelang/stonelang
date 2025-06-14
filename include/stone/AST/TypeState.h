@@ -16,7 +16,11 @@ class alignas(1 << TypeAlignInBits) TypeState
   ASTSession &session;
 
   // The type that owns this TypeState
-  ///\ If the owner type is null, then this is cannonical
+  ///\ If the owner type is null
+  Type *owner = nullptr;
+
+  // The type that owns this TypeState
+  ///\ If this is cannonical
   Type *canType = nullptr;
 
   // Source location of the type
@@ -38,6 +42,10 @@ public:
   Type *GetCanType() { return canType; }
   bool HasCanType() { return canType != nullptr; }
   bool HasName();
+
+  void SetOwner(Type *ty) { owner = ty; }
+  Type *GetOwner() { return owner; }
+  bool HasOwner() { return owner != nullptr; }
 
   void SetLoc(SrcLoc loc) { typeLoc = loc; }
   SrcLoc GetLoc() { return typeLoc; }

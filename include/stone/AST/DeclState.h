@@ -23,7 +23,7 @@ class ASTSession;
 
 class alignas(1 << DeclAlignInBits) DeclState final
     : public ASTAllocation<DeclState> {
-
+  friend Decl;
   // The ASTSession associated with this DeclSate
   ASTSession &session;
 
@@ -65,6 +65,12 @@ public:
   TypeInfluencerList &GetTypeInfluencerList() { return typeInfluencerList; }
   DeclInfluencerList &GetDeclInfluencerList() { return declInfluencerList; }
 };
+
+// class GenericDeclState : public DeclState {
+// public:
+//   // Every DeclState must have a context
+//   explicit GenericDeclState(ASTSession &session);
+// };
 
 } // namespace stone
 #endif
