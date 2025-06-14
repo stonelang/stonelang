@@ -16,7 +16,6 @@ enum class DeclKind : uint8_t {
 #define DECL_RANGE(ID, FirstId, LastId) First##ID = FirstId, Last##ID = LastId,
 #include "stone/AST/DeclNode.def"
 };
-
 enum : uint8_t {
   NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
 };

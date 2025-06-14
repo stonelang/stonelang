@@ -7,6 +7,8 @@
 
 namespace stone {
 
+class ASTSession;
+
 enum class ASTUnitKind : uint8_t {
   None = 0,
 #define AST_UNIT(K) K,
@@ -28,8 +30,8 @@ public:
 
   virtual ASTUnitKind GetUnitKind() const = 0;
   bool HasParent() const { return parent != nullptr; }
-  ASTUnit *GetParent() const { return parent; }
-  ASTSession &GetASTSession() const { return session; }
+  ASTUnit *GetParent() { return parent; }
+  ASTSession &GetASTSession();
 
   // virtual void Evaluate(EvaluatorKind kind);
 

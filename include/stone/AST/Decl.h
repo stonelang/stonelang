@@ -18,6 +18,9 @@ class DeclState;
 class alignas(1 << DeclAlignInBits) Decl : public ASTUnit {
   DeclState *DS;
 
+  // protected:
+  //   ASTSession &GetASTSession(DeclState *DS);
+
 public:
   Decl(DeclState *DS);
 
@@ -25,9 +28,7 @@ public:
   DeclState *GetDeclState();
   DeclKind GetDeclKind() const;
   ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Decl; }
-
   // void Evaluate(DeclActionKind kind);
-
 public:
 public:
   static bool classof(const Decl *D) {

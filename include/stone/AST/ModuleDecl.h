@@ -29,6 +29,7 @@ class ModuleDecl : public TypeDecl {
 
   ASTScope *scope = nullptr;
   llvm::SmallVector<SourceFile *, 2> sources;
+
   // llvm::DenseMap<Identifier, llvm::SmallVector<Decl *, 4>> symbols;
 
 public:

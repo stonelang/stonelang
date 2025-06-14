@@ -5,7 +5,13 @@
 
 using namespace stone;
 
-Decl::Decl(DeclState *DS) : ASTUnit(DS->GetASTSession()) {}
+namespace stone {
+static ASTSession &GetASTSession(DeclState *DS) {
+  assert(DS && "Every Decl requires a DeclState!");
+  return DS->GetASTSession();
+}
+} // namespace stone
+Decl::Decl(DeclState *DS) : ASTUnit(stone::GetASTSession(DS)) {}
 
 DeclState *Decl::GetDeclState() { return DS; }
 

@@ -24,8 +24,6 @@ class SourceFile final : public ASTUnit {
   /// May way ASTUnit
   std::vector<Decl *> topLevelDecls;
 
-  ASTSession &GetASTSession(ModuleDecl *parent);
-
 public:
   SourceFile(SourceFileKind kind, unsigned srcBufferID, ModuleDecl *parent);
   explicit operator bool() const {
