@@ -16,13 +16,8 @@ class DeclState;
 // DeclKind enum class definition
 enum class DeclKind : uint8_t {
   None = 0,
-
   // Core declaration macros
 #define DECL(ID, Parent) ID,
-#define ABSTRACT_DECL(ID, Parent) ID,
-#define ABSTRACT_FUNCTION_DECL(ID, Parent) ID,
-#define NOMINAL_TYPE_DECL(ID, Parent) ID,
-
 // Ranges
 #define LAST_DECL(ID) Count = ID,
 #define DECL_RANGE(ID, FirstId, LastId) \
