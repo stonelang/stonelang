@@ -1,0 +1,37 @@
+
+
+fun TestFor() {
+
+	// Standard loop: from 0 to 10 (inclusive), step = 1
+for (auto i in 0 to 10) {
+    // i = 0, 1, 2, ..., 10
+}	 
+for (auto i in list) {
+   
+}
+// Step loop: increment i by 2 each time
+for (auto i in 0 to 10 step 2) {
+    // i = 0, 2, 4, 6, 8, 10
+}
+
+// Filtered loop: only keep even values from full range
+for (auto i in 0 to 10 where (i mod 2 = 0)) {
+    // i = 0, 2, 4, 6, 8, 10
+}
+
+for (auto i in 10 down to 0) {
+    // i = 10, 9, 8, ..., 0
+}
+
+for (auto i in 10 down to 0 step 2) {
+    // i = 10, 8, 6, 4, 2, 0
+}
+
+for (auto x in users where x.IsActive()) { 
+}
+
+for (auto x in items where x.ready and x.priority > 5) {
+
+}
+
+}

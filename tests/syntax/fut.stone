@@ -3,3 +3,4 @@ join Syntax;
 
 any[T] public struct S {
 }
+

@@ -1,0 +1,47 @@
+
+/// TYPESTATE(Id, Parent)
+///   The TypeState's enumerator value is TypeStateKind::Id.  The TypeState's
+///   class name is Id##TypeState, and the name of its base class is Parent.
+#ifndef TYPESTATE
+# error Included TypeStateNode.def without defining TYPESTATE!
+#endif
+
+/// An abstract node is an abstract base class in the hierarchy;
+/// it is never a most-derived type, and it does not have an enumerator in
+/// TypeStateKind.
+///
+/// Most metaprograms do not care about abstract classes, so the default
+/// is to ignore them.
+#ifndef ABSTRACT_TYPESTATE
+#define ABSTRACT_TYPESTATE(Id, Parent)
+#endif
+
+/// SPECIFIER_TYPESTATE(Id, Parent)
+///
+/// A specific TypeState that's a child of SpecifierTypeState.
+#ifndef SPECIFIER_TYPESTATE
+#define SPECIFIER_TYPESTATE TYPESTATE
+#endif
+
+#ifndef LAST_TYPESTATE
+#define LAST_TYPESTATE(Id)
+#endif
+  
+TYPESTATE(Module,   TypeState)
+TYPESTATE(Function, TypeState)
+TYPESTATE(Builtin, TypeState)
+TYPESTATE(Nominal, TypeState)
+
+ABSTRACT_TYPESTATE(Identifier, TypeState)
+  TYPESTATE(Normal, IdentifierTypeState)
+  TYPESTATE(Ptr, IdentifierTypeState)
+  TYPESTATE(Ref, IdentifierTypeState)
+  TYPESTATE(Ref, IdentifierTypeState)
+
+
+LAST_TYPESTATE(Function)
+
+#undef SPECIFIER_TYPESTATE
+#undef ABSTRACT_TYPESTATE
+#undef TYPESTATE
+#undef LAST_TYPESTATE

@@ -98,6 +98,7 @@ LAST_TYPE(Interface)
 
 // === Cleanup ===
 #undef TYPE
+#undef SUG_TYPE
 #undef BUILTIN_TYPE
 #undef ABSTRACT_TYPE
 #undef ABSTRACT_SUG_TYPE

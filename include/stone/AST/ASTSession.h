@@ -19,8 +19,11 @@ namespace stone {
 class Type;
 class FunDecl;
 class Scaffolder;
+class DeclEvaluator;
 class TypeChecker;
 class JoinDecl;
+class DeclState;
+class TypeState;
 class SpaceDecl;
 class UsingDecl;
 class SourceFile;
@@ -184,6 +187,9 @@ public:
   //   }
 
 public:
+  DeclEvaluator *GetEvaluator();
+
+public:
   SourceFile *CreateSourceFile(SourceFileKind kind, unsigned srcBufferID,
                                ModuleDecl *owner);
 
@@ -195,6 +201,9 @@ public:
   NormalModuleDecl *CreateNormalModuleDecl();
   BuiltinModuleDecl *CreateBuiltinModuleDecl();
   ForeignModuleDecl *CreateForeignModuleDecl(ForeignModuleDeclKind kind);
+
+public:
+  DeclState *CreateDeclState();
 };
 
 } // namespace stone

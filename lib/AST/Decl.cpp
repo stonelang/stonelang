@@ -11,6 +11,10 @@ DeclState::DeclState(ASTSession &session)
     : session(session), declInfluencerList(session),
       typeInfluencerList(session) {}
 
+DeclState *ASTSession::CreateDeclState() {
+  return new (*this) DeclState(*this);
+}
+
 JoinDecl *ASTSession::CreateJoinDecl() { return nullptr; }
 
 SpaceDecl *ASTSession::CreateSpaceDecl() { return nullptr; }

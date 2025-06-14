@@ -2,6 +2,7 @@
 #define STONE_AST_SCAFFOLDER_H
 
 namespace stone {
+class Decl;
 class ModuleDecl;
 
 class Scaffolder final {
@@ -10,8 +11,11 @@ public:
   Scaffolder();
 
 public:
-  /// Check the module
-  void ScaffoldModuleDecl(ModuleDecl &moduleDecl);
+  /// Produce symbols and resolve names 
+  void ScaffoldDecl(Decl *D);
+
+  /// Produce symbols and resolve names 
+  void ScaffoldModuleDecl(ModuleDecl *MD);
 };
 
 } // namespace stone

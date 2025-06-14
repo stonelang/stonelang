@@ -1,6 +1,6 @@
 join Syntax;
 
-auto[T, U] struct Map {
+poly[T, U] struct Map {
 }
 
 fun TestAuto() {

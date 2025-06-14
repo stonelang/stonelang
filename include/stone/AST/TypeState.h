@@ -7,24 +7,41 @@
 
 namespace stone {
 
+class DeclState;
+
 class alignas(1 << TypeAlignInBits) TypeState
     : public ASTAllocation<TypeState> {
 
   friend class ASTSession;
   ASTSession &session;
-  Type *canonicalType = nullptr;
+
+  // The type that owns this TypeState
+  ///\ If the owner type is null, then this is cannonical
+  Type *canType = nullptr;
+
+  // Source location of the type
+  SrcLoc typeLoc;
+
+  // The DeclState that owns this TypeState
+  DeclState *declState = nullptr;
 
 public:
   explicit TypeState(ASTSession &session) : session(session) {}
 
 public:
-  Type *GetCanonicalType() const { return canonicalType; }
-  void SetCanonicalType(Type *CT) {
-    assert(CT && "TypeState cannot be assigned a null Type!");
-    canonicalType = CT;
-  }
-  bool IsCanonical() const { return GetCanonicalType() != nullptr; }
   ASTSession &GetASTSession() { return session; }
+
+  void SetCanType(Type *T) {
+    assert(T && "TypeState cannot be assigned a null Type!");
+    canType = T;
+  }
+  Type *GetCanType() { return canType; }
+  bool HasCanType() { return canType != nullptr; }
+  bool HasName();
+
+  void SetLoc(SrcLoc loc) { typeLoc = loc; }
+  SrcLoc GetLoc() { return typeLoc; }
+  bool HasLoc() { return typeLoc.isValid(); }
 };
 
 class BuiltinTypeState final : public TypeState {

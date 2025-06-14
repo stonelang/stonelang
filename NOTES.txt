@@ -19,3 +19,367 @@ public fun ToString() -> own String {
 struct String {
 
 }
+
+
+// === Enumerations defining validation and action kinds ===
+
+enum class DeclValidationKind {
+    None,
+    Shallow,
+    Full,
+    // Future: Lint, BorrowCheck, etc.
+};
+
+enum class DeclActionKind {
+    None,
+    ShallowTypeCheck,
+    FullTypeCheck,
+    ShallowScaffolding,
+    FullScaffolding,
+    CodeGen,
+    // Extend as needed
+};
+
+// === Interfaces for validators and actions ===
+
+class DeclValidator {
+public:
+    virtual ~DeclValidator() = default;
+    virtual bool validate(const Decl* decl, DeclValidationKind kind) = 0;
+};
+
+class DeclAction {
+public:
+    virtual ~DeclAction() = default;
+    virtual bool perform(Decl* decl, DeclActionKind kind) = 0;
+};
+
+// === DeclState holds info and delegates validation/action ===
+
+class DeclState {
+    DeclKind kind;
+    // Other fields...
+
+public:
+    DeclKind getKind() const { return kind; }
+
+    DeclValidator* getValidator() const;
+    DeclAction* getAction() const;
+    // Implement these to return registered handlers for kind
+};
+
+// === Decl wraps DeclState and offers API ===
+
+class Decl {
+    DeclState* state;
+
+public:
+    Decl(DeclState* s) : state(s) {}
+
+    bool validate(DeclValidationKind kind) const {
+        if (auto validator = state->getValidator())
+            return validator->validate(this, kind);
+        return true; // No validator = implicitly valid
+    }
+
+    bool performAction(DeclActionKind kind) {
+        if (auto action = state->getAction())
+            return action->perform(this, kind);
+        return true; // No action = no-op
+    }
+};
+
+// === Registry example (simplified) ===
+
+class ASTSession {
+    std::unordered_map<DeclKind, std::unique_ptr<DeclValidator>> validators;
+    std::unordered_map<DeclKind, std::unique_ptr<DeclAction>> actions;
+
+public:
+    DeclValidator* getValidator(DeclKind kind) {
+        auto it = validators.find(kind);
+        return (it != validators.end()) ? it->second.get() : nullptr;
+    }
+
+    DeclAction* getAction(DeclKind kind) {
+        auto it = actions.find(kind);
+        return (it != actions.end()) ? it->second.get() : nullptr;
+    }
+
+    void registerValidator(DeclKind kind, std::unique_ptr<DeclValidator> validator) {
+        validators[kind] = std::move(validator);
+    }
+
+    void registerAction(DeclKind kind, std::unique_ptr<DeclAction> action) {
+        actions[kind] = std::move(action);
+    }
+};
+
+// === Usage: in DeclState **getValidator** and **getAction**
+
+// Example implementations
+
+DeclValidator* DeclState::getValidator() const {
+    return GetASTSession().getValidator(kind);
+}
+
+DeclAction* DeclState::getAction() const {
+    return GetASTSession().getAction(kind);
+}
+
+
+class DeclActionEvaluator {
+public:
+    void Evaluate(Decl* decl, DeclActionKind action) {
+        switch (action) {
+            case DeclActionKind::ValidateShallow:
+                PerformShallowValidation(decl);
+                break;
+            case DeclActionKind::ValidateFull:
+                PerformFullValidation(decl);
+                break;
+            case DeclActionKind::ScaffoldingShallow:
+                PerformScaffolding(decl, /*shallow=*/true);
+                break;
+            case DeclActionKind::ScaffoldingFull:
+                PerformScaffolding(decl, /*shallow=*/false);
+                break;
+            case DeclActionKind::TypeCheckShallow:
+                PerformTypeCheck(decl, /*shallow=*/true);
+                break;
+            case DeclActionKind::TypeCheckFull:
+                PerformTypeCheck(decl, /*shallow=*/false);
+                break;
+            case DeclActionKind::CodeGen:
+                GenerateCode(decl);
+                break;
+            default:
+                break;
+        }
+    }
+
+private:
+    void PerformShallowValidation(Decl* decl);
+    void PerformFullValidation(Decl* decl);
+    void PerformScaffolding(Decl* decl, bool shallow);
+    void PerformTypeCheck(Decl* decl, bool shallow);
+    void GenerateCode(Decl* decl);
+};
+
+
+class Decl {
+public:
+    void Evaluate(DeclActionKind kind) {
+        ASTSession::Get().GetDeclActionEvaluator().Evaluate(this, kind);
+    }
+};
+
+using DeclActionHandler = std::function<void(Decl*, DeclActionKind)>;
+
+std::unordered_map<DeclKind, DeclActionHandler> handlers;
+
+void RegisterHandler(DeclKind kind, DeclActionHandler handler);
+
+if (auto it = handlers.find(decl->GetKind()); it != handlers.end()) {
+    it->second(decl, action);
+} else {
+    DefaultEvaluate(decl, action);
+}
+
+
+
+
+
+class DeclEvaluatorRegistry {
+  std::unordered_map<DeclEvaluatorKind, std::unique_ptr<DeclEvaluator>> evaluators;
+
+public:
+  void Register(std::unique_ptr<DeclEvaluator> evaluator) {
+    evaluators[evaluator->GetKind()] = std::move(evaluator);
+  }
+
+  DeclEvaluator* Get(DeclEvaluatorKind kind) const {
+    auto it = evaluators.find(kind);
+    return (it != evaluators.end()) ? it->second.get() : nullptr;
+  }
+};
+
+Decl* decl = ...;
+if (auto* evaluator = registry.Get(DeclEvaluatorKind::FullTypeCheck)) {
+  evaluator->Evaluate(decl);
+}
+
+class DeclEvaluatorContext {
+  // e.g. pass source location, diagnostics engine, flags, etc.
+};
+
+virtual void Evaluate(Decl* decl, DeclEvaluatorContext& ctx) = 0;
+
+
+class DeclEvaluatorContext {
+  DeclState* state;
+  DiagnosticEngine* diags;
+  SourceLoc sourceLoc;
+  bool isIDEContext = false;
+  bool suppressErrors = false;
+  // etc.
+
+public:
+  explicit DeclEvaluatorContext(DeclState* state) : state(state) {}
+
+  DeclState* GetState() const { return state; }
+  DiagnosticEngine* GetDiags() const { return diags; }
+  // More accessors...
+};
+
+
+void Evaluate(Decl* decl, DeclEvaluatorContext& ctx) override {
+  auto* state = ctx.GetState();
+  auto* type = state->GetTypeState();
+  // Use diagnostics engine, source location, phase flags, etc.
+}
+
+class DeclEvaluator {
+public:
+  virtual ~DeclEvaluator() = default;
+  virtual DeclEvaluatorKind GetKind() const = 0;
+  virtual void Evaluate(Decl* decl, DeclEvaluatorContext& ctx) = 0;
+};
+
+
+class CodeGenEvaluator : public DeclEvaluator {
+public:
+  DeclEvaluatorKind GetKind() const override {
+    return DeclEvaluatorKind::CodeGen;
+  }
+
+  void Evaluate(Decl* decl, DeclEvaluatorContext& ctx) override {
+    // Emit IR, object code, etc.
+  }
+};
+
+class ASTSession {
+  std::unordered_map<DeclEvaluatorKind, std::unique_ptr<DeclEvaluator>> evaluators;
+
+public:
+  void RegisterEvaluator(std::unique_ptr<DeclEvaluator> eval) {
+    evaluators[eval->GetKind()] = std::move(eval);
+  }
+
+  DeclEvaluator* GetEvaluator(DeclEvaluatorKind kind) const {
+    auto it = evaluators.find(kind);
+    return it != evaluators.end() ? it->second.get() : nullptr;
+  }
+};
+
+bool Decl::Evaluate(DeclEvaluatorKind kind) {
+  if (auto* session = GetASTSession()) {
+    if (auto* eval = session->GetEvaluator(kind)) {
+      DeclEvaluatorContext ctx(GetDeclState());
+      eval->Evaluate(this, ctx);
+      return true;
+    }
+  }
+  return false;
+}
+
+decl->Evaluate(DeclEvaluatorKind::CodeGen);
+
+
+REGISTER_DECL_EVALUATOR(CodeGenEvaluator);
+
+
+
+//DeclEvaluatorRegistry.h
+#pragma once
+
+#include <memory>
+#include "DeclEvaluator.h"
+#include "ASTSession.h"
+
+// Global or thread-local access to ASTSession
+ASTSession& GetGlobalASTSession();
+
+// Macro to register a DeclEvaluator subclass
+#define REGISTER_DECL_EVALUATOR(EvaluatorType) \
+  namespace { \
+    struct EvaluatorType##Registration { \
+      EvaluatorType##Registration() { \
+        auto evaluator = std::make_unique<EvaluatorType>(); \
+        GetGlobalASTSession().RegisterEvaluator(std::move(evaluator)); \
+      } \
+    }; \
+    static EvaluatorType##Registration _reg_##EvaluatorType; \
+  }
+
+
+class CodeGenEvaluator : public DeclEvaluator {
+public:
+  DeclEvaluatorKind GetKind() const override {
+    return DeclEvaluatorKind::CodeGen;
+  }
+
+  void Evaluate(Decl* decl, DeclEvaluatorContext& ctx) override {
+    // Code generation logic
+  }
+};
+
+// Register it at static initialization time
+REGISTER_DECL_EVALUATOR(CodeGenEvaluator);
+
+
+// ASTSessin
+#define REGISTER_DECL_EVALUATOR_IN_SESSION(EvaluatorType, session) \
+  { \
+    auto evaluator = std::make_unique<EvaluatorType>(); \
+    (session).RegisterEvaluator(std::move(evaluator)); \
+  }
+
+
+
+
+///
+// ID, Parent
+DECL_EVALUATOR(ShallowTypeCheck, DeclEvaluator)
+DECL_EVALUATOR(FullTypeCheck, DeclEvaluator)
+DECL_EVALUATOR(ShallowScaffolding, DeclEvaluator)
+DECL_EVALUATOR(FullScaffolding, DeclEvaluator)
+DECL_EVALUATOR(ShallowValidation, DeclEvaluator)
+DECL_EVALUATOR(FullValidation, DeclEvaluator)
+DECL_EVALUATOR(CodeGen, DeclEvaluator)
+DECL_EVALUATOR(Desugar, DeclEvaluator)
+DECL_EVALUATOR(Elaboration, DeclEvaluator)
+
+
+
+class ASTSession {
+  // Evaluator field declarations
+#define DECL_EVALUATOR(ID, Parent) Parent* ID##Evaluator = nullptr;
+#include "stone/AST/DeclEvaluatorNode.def"
+
+  std::unordered_map<DeclEvaluatorKind, DeclEvaluator*> evaluatorMap;
+
+public:
+  void RegisterEvaluators();
+  DeclEvaluator* GetEvaluator(DeclEvaluatorKind kind);
+};
+#include "stone/AST/DeclEvaluatorNode.def"
+#include "stone/AST/DeclEvaluator.h"
+
+void ASTSession::RegisterEvaluators() {
+#define DECL_EVALUATOR(ID, Parent)                                \
+  ID##Evaluator = new (*this) ID##Evaluator();                    \
+  evaluatorMap.emplace(DeclEvaluatorKind::ID, ID##Evaluator);
+#include "stone/AST/DeclEvaluatorNode.def"
+}
+
+DeclEvaluator* ASTSession::GetEvaluator(DeclEvaluatorKind kind) {
+  auto it = evaluatorMap.find(kind);
+  return it != evaluatorMap.end() ? it->second : nullptr;
+}
+
+DeclEvaluator* evaluator = session.GetEvaluator(DeclEvaluatorKind::CodeGen);
+if (evaluator) {
+  evaluator->Evaluate(decl, ctx);
+}
+

@@ -11,14 +11,28 @@
 
 namespace stone {
 
+class DeclState;
+
+// DeclKind enum class definition
 enum class DeclKind : uint8_t {
   None = 0,
-#define DECL(Id, Parent) Id,
-#define LAST_DECL(Id) Count = Id,
-#define DECL_RANGE(Id, FirstId, LastId)                                        \
-  First##Id##Decl = FirstId, Last##Id##Decl = LastId,
+
+  // Core declaration macros
+#define DECL(ID, Parent) ID,
+#define ABSTRACT_DECL(ID, Parent) ID,
+#define ABSTRACT_FUNCTION_DECL(ID, Parent) ID,
+#define NOMINAL_TYPE_DECL(ID, Parent) ID,
+
+// Ranges
+#define LAST_DECL(ID) Count = ID,
+#define DECL_RANGE(ID, FirstId, LastId) \
+  First##ID = FirstId, Last##ID = LastId,
+
 #include "stone/AST/DeclNode.def"
 };
+
+
+
 
 enum : uint8_t {
   NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
@@ -40,9 +54,12 @@ public:
   bool IsJoin() const { return kind == DeclKind::Join; }
 
 public:
+  // void Evaluate(DeclActionKind kind);
+
+public:
   static bool classof(const Decl *D) {
-    return D->GetKind() >= DeclKind::FirstValueDecl &&
-           D->GetKind() <= DeclKind::LastValueDecl;
+    return D->GetKind() >= DeclKind::FirstDecl &&
+           D->GetKind() <= DeclKind::LastDecl;
   }
   static bool classof(const ASTUnit *unit) {
     return unit->GetUnitKind() == ASTUnitKind::Decl;
@@ -94,14 +111,9 @@ public:
   SpaceDecl();
 };
 
-class ValueDecl : public Decl {
+class FunctionDecl : public Decl {
 public:
-  ValueDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
-};
-
-class FunctionDecl : public ValueDecl {
-public:
-  FunctionDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
+  FunctionDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
 };
 
 class FunDecl : public FunctionDecl {
@@ -110,19 +122,19 @@ public:
   FunDecl(ASTSession &session) : FunctionDecl(DeclKind::Fun, session) {}
 };
 
-class TypeDecl : public ValueDecl {
+class TypeDecl : public Decl {
 public:
-  TypeDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
+  TypeDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
 };
 
-class AliasDecl : public ValueDecl {
+class AliasDecl : public TypeDecl {
 public:
-  AliasDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
+  AliasDecl(DeclKind kind, ASTSession &session) : TypeDecl(kind, session) {}
 };
 
-class StorageDecl : public ValueDecl {
+class StorageDecl : public Decl {
 public:
-  StorageDecl(DeclKind kind, ASTSession &session) : ValueDecl(kind, session) {}
+  StorageDecl(DeclKind kind, ASTSession &session) : Decl(kind, session) {}
 };
 
 class VarDecl : public StorageDecl {
@@ -131,7 +143,7 @@ public:
   VarDecl(ASTSession &session) : StorageDecl(DeclKind::Var, session) {}
 };
 
-class TrustDecl final : public ValueDecl {
+class TrustDecl final : public Decl {
 public:
 };
 

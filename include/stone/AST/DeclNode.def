@@ -22,10 +22,6 @@
 #define ITERABLE_TEMPLATE_DECL(ID, Parent) TEMPLATE_DECL(ID, Parent)
 #endif
 
-#ifndef CONTEXT_VALUE_DECL
-#define CONTEXT_VALUE_DECL(ID, Parent) CONTEXT_DECL(ID, Parent)
-#endif
-
 #ifndef ITERABLE_TEMPLATE_VALUE_DECL
 #define ITERABLE_TEMPLATE_VALUE_DECL(ID, Parent) ITERABLE_TEMPLATE_DECL(ID, Parent)
 #endif
@@ -55,36 +51,48 @@
 #endif
 
 
+// Concrete root declarations
 DECL(Join,  Decl)
 DECL(Space, Decl)
 DECL(Using, Decl)
-ABSTRACT_DECL(Value, Decl)
-    ABSTRACT_DECL(Type, ValueDecl)
-        ABSTRACT_DECL(NominalType, TypeDecl)
-            NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
-            NOMINAL_TYPE_DECL(Struct, NominalTypeDecl)
-            NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
-            DECL_RANGE(NominalType, Enum, Interface)
-        VALUE_DECL(Alias, TypeDecl)
-        ABSTRACT_DECL(Module, TypeDecl)
-            CONTEXT_DECL(NormalModule,  ModuleDecl)
-            CONTEXT_DECL(BuiltinModule, ModuleDecl)
-            CONTEXT_DECL(ForeignModule, ModuleDecl)
-        DECL_RANGE(Alias, NormalModule, ForeignModule)
-    ABSTRACT_DECL(Function, ValueDecl)
-        ABSTRACT_FUNCTION_DECL(Fun, FunctionDecl)
-        ABSTRACT_FUNCTION_DECL(Constructor, FunctionDecl)
-        ABSTRACT_FUNCTION_DECL(Destructor, FunctionDecl)
-        DECL_RANGE(Function, Fun, Destructor)
-    ABSTRACT_DECL(Storage, ValueDecl)
-        VALUE_DECL(Var, StorageDecl)
-        VALUE_DECL(Param, VarDecl)
-        DECL_RANGE(Storage, Var, Param)
-    DECL_RANGE(Value, Enum, Param)
 
-DECL(Label, Decl)
+// Type system
+ABSTRACT_DECL(Type, Decl)
+    ABSTRACT_DECL(NominalType, TypeDecl)
+        NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
+        NOMINAL_TYPE_DECL(Struct, NominalTypeDecl)
+        NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
+        DECL_RANGE(NominalType, Enum, Interface)
+
+    DECL(Alias, TypeDecl)
+
+    ABSTRACT_DECL(Module, TypeDecl)
+        CONTEXT_DECL(NormalModule,  ModuleDecl)
+        CONTEXT_DECL(BuiltinModule, ModuleDecl)
+        CONTEXT_DECL(ForeignModule, ModuleDecl)
+        DECL_RANGE(Alias, NormalModule, ForeignModule)
+
+// Function declarations
+ABSTRACT_DECL(Function, Decl)
+    DECL(Fun, FunctionDecl)
+    DECL(Constructor, FunctionDecl)
+    DECL(Destructor, FunctionDecl)
+    DECL_RANGE(Function, Fun, Destructor)
+
+// Storage declarations
+ABSTRACT_DECL(Storage, Decl)
+    DECL(Var, StorageDecl)
+    DECL(Param, VarDecl)
+    DECL_RANGE(Storage, Var, Param)
+
+// Other declarations
 DECL(IfConfig, Decl)
+
+// Enum helpers
 LAST_DECL(IfConfig)
+DECL_RANGE(Decl, Join, IfConfig)
+
+
 
 // Cleanup
 #undef NOMINAL_TYPE_DECL
@@ -92,7 +100,6 @@ LAST_DECL(IfConfig)
 #undef ITERABLE_NONTEMPLATE_DECL
 #undef TEMPLATE_DECL
 #undef ITERABLE_TEMPLATE_DECL
-#undef CONTEXT_VALUE_DECL
 #undef TEMPLATE_VALUE_DECL
 #undef ITERABLE_TEMPLATE_VALUE_DECL
 #undef ABSTRACT_FUNCTION_DECL

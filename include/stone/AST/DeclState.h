@@ -26,8 +26,14 @@ class alignas(1 << DeclAlignInBits) DeclState final
   // The ASTSession associated with this DeclSate
   ASTSession &session;
 
+  // The declaration kind
+  DeclKind kind;
+
   // The declaration name
   DeclName declName;
+
+  // The Decl associated with this DeclState
+  Decl *owner = nullptr;
 
   // The properties for the DeclState
   DeclInfluencerList declInfluencerList;
@@ -45,8 +51,16 @@ public:
 
 public:
   ASTSession &GetASTSession() { return session; }
-  void SetDeclName(DeclName name) { declName = name; }
-  DeclName GetDeclName() { return declName; }
+  void SetName(DeclName name) { declName = name; }
+  DeclName GetName() { return declName; }
+
+  void SetKind(DeclKind K) { kind = K; }
+  DeclKind GetKind() { return kind; }
+
+  void SetOwner(Decl *D) { owner = D; }
+  Decl *GetOwner() { return owner; }
+  bool HasOwner() { return owner != nullptr; }
+
   TypeInfluencerList &GetTypeInfluencerList() { return typeInfluencerList; }
   DeclInfluencerList &GetDeclInfluencerList() { return declInfluencerList; }
 };

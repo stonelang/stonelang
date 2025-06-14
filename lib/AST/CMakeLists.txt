@@ -8,6 +8,7 @@ set(stone_ast_sources
 	ASTSession.cpp
 	ASTUnit.cpp
 	Decl.cpp
+	DeclEvaluator.cpp
 	Expr.cpp
 	ModuleDecl.cpp
 	Scaffolder.cpp
