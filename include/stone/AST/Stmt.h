@@ -29,6 +29,11 @@ public:
 public:
   StmtKind GetKind() const { return kind; }
   ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Stmt; }
+
+public:
+  static bool classof(const ASTUnit *unit) {
+    return unit->GetUnitKind() == ASTUnitKind::Stmt;
+  }
 };
 
 class BraceStmt final : public Stmt {

@@ -41,6 +41,11 @@ public:
   void AddTopLevelDecl(Decl *D) { topLevelDecls.push_back(D); }
   llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
   ASTUnitKind GetUnitKind() const override { return ASTUnitKind::SourceFile; }
+
+public:
+  static bool classof(const ASTUnit *unit) {
+    return unit->GetUnitKind() == ASTUnitKind::SourceFile;
+  }
 };
 
 } // namespace stone

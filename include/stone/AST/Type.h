@@ -48,8 +48,12 @@ public:
 public:
   TypeKind GetKind() const { return kind; }
   TypeState *GetTypeState();
-
   ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Type; }
+
+public:
+  static bool classof(const ASTUnit *unit) {
+    return unit->GetUnitKind() == ASTUnitKind::Type;
+  }
 };
 
 class AnyType : public Type {
