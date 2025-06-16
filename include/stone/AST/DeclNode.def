@@ -28,29 +28,28 @@
 
 // Concrete root declarations
 DECL(Join,  Decl)
-DECL(Space, Decl)
 DECL(Using, Decl)
 
 // Type system
-// Generic layer embedded in spine
-ABSTRACT_DECL(Generic, Decl)
+// Any layer embedded in spine
+ABSTRACT_DECL(Any, Decl)
 
 // Type declarations
-ABSTRACT_DECL(Type, GenericDecl)
+ABSTRACT_DECL(Type, AnyDecl)
     ABSTRACT_DECL(NominalType, TypeDecl)
         NOMINAL_TYPE_DECL(Enum,         NominalTypeDecl)
         NOMINAL_TYPE_DECL(Struct,       NominalTypeDecl)
         NOMINAL_TYPE_DECL(Interface,    NominalTypeDecl)
         DECL_RANGE(NominalType, Enum, Interface)
     DECL(Alias, TypeDecl)
-    ABSTRACT_DECL(Module, TypeDecl)
-        DECL(NormalModule,  ModuleDecl)
-        DECL(BuiltinModule, ModuleDecl)
-        DECL(ForeignModule, ModuleDecl)
-        DECL_RANGE(Alias, NormalModule, ForeignModule)
+    ABSTRACT_DECL(Space, TypeDecl)
+        DECL(NormalSpace,  SpaceDecl)
+        DECL(BuiltinSpace, SpaceDecl)
+        DECL(ForeignSpace, SpaceDecl)
+        DECL_RANGE(Alias, NormalSpace, ForeignSpace)
 
 // Function declarations
-ABSTRACT_DECL(Function, GenericDecl)
+ABSTRACT_DECL(Function, AnyDecl)
     FUNCTION_DECL(Fun,          FunctionDecl)
     FUNCTION_DECL(Constructor,  FunctionDecl)
     FUNCTION_DECL(Destructor,   FunctionDecl)
@@ -69,7 +68,7 @@ ABSTRACT_DECL(Storage, Decl)
       OPERATOR_DECL(PrefixOperator, OperatorDecl)
       OPERATOR_DECL(PostfixOperator, OperatorDecl)
       DECL_RANGE(Operator, New, Free)
-      
+
 // Other declarations
 DECL(IfConfig, Decl)
 

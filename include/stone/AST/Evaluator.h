@@ -11,6 +11,11 @@
 
 namespace stone {
 
+// class EvaluatorObserver {
+//     virtual void WillEvaluate(EvaluatorRequest req);
+//     virtual void DidEvaluate(EvaluatorRequest req, EvalResult res);
+// };
+
 enum class EvaluatorKind : uint8_t {
   None = 0,
 

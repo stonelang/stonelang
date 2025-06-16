@@ -11,7 +11,7 @@ class Stmt;
 class Expr;
 class Type;
 class ASTUnit;
-class ModuleDecl;
+class SpaceDecl;
 
 /// An abstract class used to traverse an AST.
 class ASTWalker {

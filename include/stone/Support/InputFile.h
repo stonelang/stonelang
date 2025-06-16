@@ -8,51 +8,50 @@
 
 namespace stone {
 
-/// Return stone-standard file name from a buffer name set by
-/// llvm::MemoryBuffer::getFileOrSTDIN, which uses "<stdin>" instead of "-".
-llvm::StringRef ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(
-    llvm::StringRef fileName);
-
-class InputFile {
+class InputFile final {
   llvm::StringRef fileName;
   FileType fileType;
-  llvm::MemoryBuffer *memoryBuffer = nullptr;
 
 public:
-  InputFile(llvm::StringRef fileName,
-            llvm::MemoryBuffer *memoryBuffer = nullptr)
-      : InputFile(fileName,
-                  stone::GetFileTypeByExt(llvm::sys::path::extension(fileName)),
-                  memoryBuffer) {}
+  InputFile(const InputFile &) = delete;
+  void operator=(const InputFile &) = delete;
 
-  /// Constructs an input file from the provided data.
-  InputFile(llvm::StringRef fileName, stone::FileType fileType,
-            llvm::MemoryBuffer *memoryBuffer = nullptr)
-      : fileName(
-            stone::ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(
-                fileName)),
-        fileType(fileType), memoryBuffer(memoryBuffer) {
-    assert(!fileName.empty());
+public:
+  InputFile(llvm::StringRef fileName)
+      : InputFile(fileName, stone::GetFileTypeByExt(
+                                llvm::sys::path::extension(fileName))) {}
+
+  InputFile(llvm::StringRef fileName, FileType fileType)
+      : fileName(TranslateName(fileName)), fileType(fileType) {
+    assert(!fileName.empty() && "File name must not be empty");
   }
 
 public:
-  /// The returned file name is guaranteed not to be the empty string.
-  const llvm::StringRef &GetFileName() const {
-    assert(!fileName.empty());
-    return fileName;
-  }
+  const llvm::StringRef &GetFileName() const { return fileName; }
   FileType GetFileType() const { return fileType; }
 
-  bool HasBuffer() const { return memoryBuffer != nullptr; }
-  /// Retrieves the backing buffer for this input file, if any.
-  llvm::MemoryBuffer *GetBuffer() const { return memoryBuffer; }
+public:
+  bool IsStone() const { return fileType == FileType::Stone; }
+  bool IsSpace() const { return fileType == FileType::Space; }
+  bool IsObject() const { return fileType == FileType::Object; }
+  bool IsIR() const { return fileType == FileType::IR; }
+  bool IsBC() const { return fileType == FileType::BC; }
+  bool IsAssembly() const { return fileType == FileType::Assembly; }
+  bool IsStaticLibrary() const { return fileType == FileType::StaticLibrary; }
 
-  bool IsStoneFileType() const { return GetFileType() == FileType::Stone; }
-  bool IsObjectFileType() const { return GetFileType() == FileType::Object; }
-  bool IsIRFileType() const { return GetFileType() == FileType::IR; }
+  void ExpectStone() const {
+    assert(IsStone() && "Expected a .stone source file");
+  }
+  void Expect(FileType expected) const {
+    assert(fileType == expected && "Unexpected file type");
+  }
+
+public:
+  static llvm::StringRef TranslateName(llvm::StringRef fileName) {
+    return fileName.equals("<stdin>") ? "-" : fileName;
+  }
 };
-
-using InputFiles = llvm::SmallVector<InputFile, 16>;
+using InputFileList = llvm::SmallVector<const InputFile, 16>;
 
 } // namespace stone
 #endif

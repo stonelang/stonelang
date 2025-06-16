@@ -1,0 +1,3 @@
+using Syntax.Test[*];
+using Syntax.Test[struct Struct, fun B, const PI];
+

@@ -56,12 +56,12 @@ public:
   }
 };
 
-class AnyType : public Type {
+class ObjectType : public Type {
 public:
-  AnyType(TypeKind kind, TypeState *typeState) : Type(kind, typeState) {}
+  ObjectType(TypeKind kind, TypeState *typeState) : Type(kind, typeState) {}
 };
 
-class BuiltinType : public AnyType {
+class BuiltinType : public ObjectType {
 public:
   explicit BuiltinType(TypeKind kind, TypeState *TS);
 };
@@ -228,9 +228,9 @@ public:
   Float128Type(TypeState *TS) : NumberType(TypeKind::Float128, TS) {}
 };
 
-class NominalType : public AnyType {
+class NominalType : public ObjectType {
 public:
-  NominalType(TypeKind kind, TypeState *TS) : AnyType(kind, TS) {}
+  NominalType(TypeKind kind, TypeState *TS) : ObjectType(kind, TS) {}
 };
 
 class StructType final : public NominalType {
@@ -249,9 +249,9 @@ public:
   EnumType(TypeState *TS) : NominalType(TypeKind::Enum, TS) {}
 };
 
-class SugType : public AnyType {
+class SugType : public ObjectType {
 public:
-  SugType(TypeKind kind, TypeState *TS) : AnyType(TypeKind::Enum, TS) {}
+  SugType(TypeKind kind, TypeState *TS) : ObjectType(TypeKind::Enum, TS) {}
 };
 
 /// A reference to a type alias that is somehow generic, along with the

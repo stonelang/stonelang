@@ -1,9 +1,9 @@
 #ifndef STONE_AST_ASTSESSION_H
 #define STONE_AST_ASTSESSION_H
 
+#include "stone/AST/ASTFile.h"
 #include "stone/AST/Foreign.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/SourceFileKind.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SetVector.h"
@@ -26,11 +26,11 @@ class DeclState;
 class TypeState;
 class SpaceDecl;
 class UsingDecl;
-class SourceFile;
-class ModuleDecl;
-class NormalModuleDecl;
-class BuiltinModuleDecl;
-class ForeignModuleDecl;
+class ASTFile;
+class SpaceDecl;
+class NormalSpaceDecl;
+class BuiltinSpaceDecl;
+class ForeignSpaceDecl;
 
 class ASTMemory {
 protected:
@@ -67,6 +67,8 @@ class ASTSession final : public ASTMemory {
 
   using IdentifierTable = llvm::StringMap<char, llvm::BumpPtrAllocator &>;
   mutable IdentifierTable identifierTable;
+
+  ASTFileList astFiles;
 
 public:
   ASTSession(const ASTSession &) = delete;
@@ -186,21 +188,24 @@ public:
   //         setVector.size());
   //   }
 
+  ASTFileList &GetASTFiles() { return astFiles; }
+  const ASTFileList &GetASTFiles() const { return astFiles; }
+
 public:
   DeclEvaluator *GetEvaluator();
 
 public:
-  SourceFile *CreateSourceFile(SourceFileKind kind, unsigned srcBufferID,
-                               ModuleDecl *owner);
+  ASTFile *CreateASTFile(unsigned bufferID, llvm::StringRef input,
+                         SpaceDecl *owner);
 
 public:
   FunDecl *CreateFunDecl();
   JoinDecl *CreateJoinDecl();
   SpaceDecl *CreateSpaceDecl();
   UsingDecl *CreateUsingDecl();
-  NormalModuleDecl *CreateNormalModuleDecl();
-  BuiltinModuleDecl *CreateBuiltinModuleDecl();
-  ForeignModuleDecl *CreateForeignModuleDecl(ForeignModuleDeclKind kind);
+  NormalSpaceDecl *CreateNormalSpaceDecl();
+  BuiltinSpaceDecl *CreateBuiltinSpaceDecl();
+  ForeignSpaceDecl *CreateForeignSpaceDecl(ForeignSpaceDeclKind kind);
 
 public:
   DeclState *CreateDeclState();

@@ -1,4 +1,4 @@
-#include "stone/Compile/Compile.h"
+#include "stone/Driver/Run.h"
 #include "stone/Support/LLVMInit.h"
 #include "stone/Support/MainExecutablePath.h"
 
@@ -15,7 +15,6 @@ using namespace stone;
 
 int main(int argc, const char **args) {
   START_LLVM_INIT(argc, args);
-  llvm::SmallVector<char> results;
 
   llvm::SmallVector<const char *, 256> argsToExpand(args, args + argc);
   llvm::BumpPtrAllocator ptrAlloc;
@@ -28,7 +27,6 @@ int main(int argc, const char **args) {
       argsToExpand);
 
   llvm::ArrayRef<const char *> argv(argsToExpand);
-  return stone::Compile(
-      llvm::ArrayRef(argv.data() + 1, argv.data() + argv.size()), argv[0],
-      (void *)(intptr_t)stone::GetMainExecutablePath, nullptr);
+  return stone::RunC(llvm::ArrayRef(argv.data() + 1, argv.data() + argv.size()),
+                    argv[0], (void *)(intptr_t)stone::GetMainExecutablePath);
 }

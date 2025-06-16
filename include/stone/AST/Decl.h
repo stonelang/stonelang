@@ -42,7 +42,6 @@ public:
 
 enum class JoinDeclKind : uint8_t {
   None = 0,
-  Module,
   Struct,
   Interface,
   Enum,
@@ -57,8 +56,6 @@ public:
 public:
   void SetJoinKind(JoinDeclKind kind) { joinKind = kind; }
   JoinDeclKind GetJoinKind() { return joinKind; }
-
-  bool IsModule() const { return joinKind == JoinDeclKind::Module; }
   bool IsStruct() const { return joinKind == JoinDeclKind::Struct; }
   bool IsInterface() const { return joinKind == JoinDeclKind::Interface; }
   bool IsEnum() const { return joinKind == JoinDeclKind::Enum; }
@@ -73,6 +70,7 @@ enum class UsingDeclKind : uint8_t {
   Fun,
   Macro,
 };
+/// using A.B{C.D}
 class UsingDecl final : public Decl {
   UsingDeclKind usingKind;
 
@@ -84,22 +82,17 @@ public:
   UsingDeclKind GetUsingKind() { return usingKind; }
 };
 
-class SpaceDecl final : public Decl {
+class AnyDecl : public Decl {
 public:
-  SpaceDecl(DeclState *DS) : Decl(DS) {}
-};
-
-class GenericDecl : public Decl {
-public:
-  GenericDecl(DeclState *DS) : Decl(DS) {}
+  AnyDecl(DeclState *DS) : Decl(DS) {}
 
 public:
   bool HasSignature() const;
 };
 
-class TypeDecl : public GenericDecl {
+class TypeDecl : public AnyDecl {
 public:
-  TypeDecl(DeclState *DS) : GenericDecl(DS) {}
+  TypeDecl(DeclState *DS) : AnyDecl(DS) {}
 };
 
 class AliasDecl final : public TypeDecl {
@@ -107,9 +100,9 @@ public:
   AliasDecl(DeclState *DS) : TypeDecl(DS) {}
 };
 
-class FunctionDecl : public GenericDecl {
+class FunctionDecl : public AnyDecl {
 public:
-  FunctionDecl(DeclState *DS) : GenericDecl(DS) {}
+  FunctionDecl(DeclState *DS) : AnyDecl(DS) {}
 };
 
 class FunDecl : public FunctionDecl {

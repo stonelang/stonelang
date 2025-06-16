@@ -1,11 +1,11 @@
 #include "stone/AST/TypeChecker.h"
-#include "stone/AST/ModuleDecl.h"
+#include "stone/AST/SpaceDecl.h"
 
 using namespace stone;
 
 TypeChecker::TypeChecker() {}
 
-void TypeChecker::CheckModuleDecl(ModuleDecl &moduleDecl) {}
+void TypeChecker::CheckSpaceDecl(SpaceDecl &moduleDecl) {}
 
 void TypeChecker::CheckSourceFile(SourceFile &sourceFile) {}
 

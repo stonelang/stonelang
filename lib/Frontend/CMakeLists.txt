@@ -1,7 +1,7 @@
 set(stone_frontend_sources
   Frontend.cpp
   FrontendArgList.cpp
-  FrontendModule.cpp
+  FrontendSpace.cpp
   FrontendOptions.cpp
   
   LINK_LIBS

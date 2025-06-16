@@ -7,7 +7,7 @@
 namespace stone {
 
 class SourceFile;
-class ModuleDecl;
+class SpaceDecl;
 class ParserObserver;
 class TypeCheckerObserver;
 class CodeGenObserver;
@@ -27,8 +27,8 @@ public:
   /// The command line has been parsed.
   virtual void CompletedParsingOptions(const Frontend &frontend) {}
 
-  /// Completed the creation of ModuleDecl
-  virtual void CompletedModuleDecl(const ModuleDecl *result) {}
+  /// Completed the creation of SpaceDecl
+  virtual void CompletedSpaceDecl(const SpaceDecl *result) {}
 
 public:
   // Set the parser observer

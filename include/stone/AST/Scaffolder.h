@@ -3,7 +3,7 @@
 
 namespace stone {
 class Decl;
-class ModuleDecl;
+class SpaceDecl;
 
 class Scaffolder final {
 
@@ -15,7 +15,7 @@ public:
   void ScaffoldDecl(Decl *D);
 
   /// Produce symbols and resolve names
-  void ScaffoldModuleDecl(ModuleDecl *MD);
+  void ScaffoldSpaceDecl(SpaceDecl *MD);
 };
 
 } // namespace stone

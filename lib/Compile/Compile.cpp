@@ -48,31 +48,23 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return 1;
   }
 
-  FrontendModule *frontendModule = stone::CreateFrontendModule(frontend);
-  if (!frontendModule->Initialize().IsSuccess()) {
+  auto space = frontend.CreateSpace();
+  if (!space->Initialize().IsSuccess()) {
     return 1;
   }
-
-  if (!stone::PerformCompile(*frontendModule).IsSuccess()) {
-    return 1;
-  }
+  space->Evaluate();
   return 0;
 }
 
-FrontendModule *stone::CreateFrontendModule(Frontend &frontend) {
-  assert(frontend.HasASTSession() &&
-         "Cannote create a FrontendModule without an ASTSession!");
-  return new (frontend.GetASTSession()) FrontendModule(frontend);
-}
 /// \return status of compile
 Status stone::PerformCompile(FrontendModule &fm) {
 
-  switch (fm.GetFrontend().GetMode()) {
-  case FrontendMode::Parse: {
-    return stone::PerformParse(
-        fm, [&](FrontendModule &fm) { return Status::Success(); });
-  }
-  }
+  // switch (fm.GetFrontend().GetMode()) {
+  // case FrontendMode::Parse: {
+  //   return stone::PerformParse(
+  //       fm, [&](FrontendModule &fm) { return Status::Success(); });
+  // }
+  // }
   Status::Success();
 }
 

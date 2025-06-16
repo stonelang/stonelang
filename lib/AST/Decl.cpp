@@ -1,7 +1,7 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/ASTSession.h"
 #include "stone/AST/DeclState.h"
-#include "stone/AST/ModuleDecl.h"
+#include "stone/AST/SpaceDecl.h"
 
 using namespace stone;
 

@@ -1,0 +1,10 @@
+#ifndef ACTION
+#error "Define ACTION before including this file"
+#endif
+
+ACTION(Emit)       // stonec --emit artifact
+ACTION(Check)      // stonec --check artifact
+ACTION(Tell)       // stonec --tell artifact
+ACTION(Resolve)    // stonec --resolve artifact
+
+#undef ACTION

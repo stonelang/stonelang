@@ -22,6 +22,7 @@
 namespace stone {
 
 class Frontend;
+class FrontendSpace;
 class FrontendArgListConverter final {
 public:
   FrontendArgListConverter();
@@ -45,7 +46,9 @@ class Frontend final {
   clang::FileSystemOptions clangFileSystemOpts;
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
   FrontendObserver *observer;
+
   std::unique_ptr<ASTSession> session;
+  std::unique_ptr<ClangImporter> clangImporter;
 
   FrontendArgListConverter converter;
   FrontendArgListConverter &GetArgListConverter() { return converter; }
@@ -72,6 +75,8 @@ public:
   ASTSession &GetASTSession() { return *session; }
 
   // llvm::ArrayRef<EvaluatorKind> GetPipeline(FrontendMode mode);
+  FrontendSpace *CreateSpace();
+
 private:
   Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
 };

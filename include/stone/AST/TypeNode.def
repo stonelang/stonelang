@@ -32,9 +32,9 @@
 #endif
 
 // === Root Type ===
-TYPE(Any, Type)
+TYPE(Object, Type)
 // === Builtin Types (Boxable) ===
-ABSTRACT_TYPE(Builtin, AnyType)
+ABSTRACT_TYPE(Builtin, ObjectType)
   ABSTRACT_TYPE(Number, BuiltinType)
     BUILTIN_TYPE(Int, NumberType)
     BUILTIN_TYPE(Int8, NumberType)
@@ -59,7 +59,7 @@ ABSTRACT_TYPE(Builtin, AnyType)
 TYPE_RANGE(Builtin, Int, Null)
 
 // === Sugared Types (Aliases and String) ===
-ABSTRACT_SUG_TYPE(Sug, AnyType)
+ABSTRACT_SUG_TYPE(Sug, ObjectType)
   SUG_TYPE(Alias, SugType)
 TYPE_RANGE(Sug, Alias, Alias)
 
@@ -88,7 +88,7 @@ ABSTRACT_TYPE(Access, Type)
 TYPE_RANGE(Access, Ptr, Ref)
 
 // === Nominal Types (User-defined, Boxable) ===
-ABSTRACT_TYPE(Nominal, AnyType)
+ABSTRACT_TYPE(Nominal, ObjectType)
   TYPE(Enum, NominalType)
   TYPE(Struct, NominalType)
   TYPE(Interface, NominalType)

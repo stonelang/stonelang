@@ -12,6 +12,7 @@ Frontend::Frontend(llvm::StringRef executablePath,
 Status Frontend::SetupASTSession() {
   // Simple for now
   if (!HasASTSession()) {
+    /// Load the evaluators
     session = std::make_unique<ASTSession>();
   }
   return Status::Success();

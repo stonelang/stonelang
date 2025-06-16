@@ -95,7 +95,7 @@ def ResolveImports: Flag<["-"], "resolve-imports">,
 	HelpText<"Parse input file(s)">, ModeOpt,
 	Flags<[FrontendOption, DriverOption]>;
 
-def EmitParse : Flag<["-"], "emit-parse">,
+def EmitParsedAST : Flag<["-"], "emit-parsed-ast">,
  	HelpText<"Parse and emit the ast">, ModeOpt,
   	Flags<[FrontendOption, DriverOption]>;
 
@@ -103,11 +103,11 @@ def TypeCheck : Flag<["-"], "type-check">,
  	HelpText<"Parse and type-check input file(s)">, ModeOpt,
   	Flags<[FrontendOption, DriverOption]>;
 
-def EmitAST : Flag<["-"], "emit-ast">,
+def EmitTypedAST : Flag<["-"], "emit-typed-ast">,
 	HelpText<"Parse, type-check, and emit ast">, ModeOpt,
   	Flags<[FrontendOption, DriverOption]>;
 
-def EmitIR : Flag<["-"], "emit-ir-before">,
+def EmitIR : Flag<["-"], "emit-ir">,
   	HelpText<"Emit LLVM IR file(s)">, ModeOpt,
   	Flags<[FrontendOption, DriverOption]>;
  
@@ -172,7 +172,6 @@ def NoColorDiagnostics : Flag<["-"], "no-color-diagnostics">,
   Flags<[FrontendOption, DoesNotAffectIncrementalBuild]>,
   HelpText<"Print diagnostics in color">;
 
-
 // LTO
 def LTO : Joined<["-"], "lto=">,
   Flags<[FrontendOption]>,
@@ -182,4 +181,23 @@ def LTOLibrary : Separate<["-"], "lto-library">,
   Flags<[FrontendOption, ArgumentIsPath]>,
   HelpText<"Perform LTO with <lto-library>">, MetaVarName<"<lto-library>">;
 
+def PrintSteps : Flag<["-"], "print-steps">,
+  Flags<[DebugOption, DriverOption]>,
+  HelpText<"Print the list of jobs to be executed">;
 
+def PrintJobs : Flag<["-"], "print-jobs">,
+  Flags<[DebugOption, DriverOption]>,
+  HelpText<"Print the list of jobs to be executed">;
+
+def TraceJobs : Flag<["-"], "trace-jobs">,
+  Flags<[DebugOption, DriverOption]>,
+  HelpText<"Print the list of jobs to be executed">;
+
+
+def TraceDriverLifecycle : Flag<["-"], "trace-driver-lifecycle">,
+  Flags<[DebugOption, DriverOption]>,
+  HelpText<"Trace the lifecycle of the driver">;
+
+def TraceFrontendLifecycle : Flag<["-"], "trace-frontend-lifecycle">,
+  Flags<[DebugOption, FrontendOption]>,
+  HelpText<"Trace the lifecycle of the frontend">;

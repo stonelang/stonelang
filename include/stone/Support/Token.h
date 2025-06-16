@@ -257,6 +257,7 @@ public:
   bool IsExpect() const { return kind == tok::kw_expect; }
   bool IsTest() const { return kind == tok::kw_test; }
 
+  bool IsObject() const { return kind == tok::kw_object; }
   bool IsInt() const { return kind == tok::kw_int; }
   bool IsInt8() const { return kind == tok::kw_int8; }
   bool IsInt16() const { return kind == tok::kw_int16; }

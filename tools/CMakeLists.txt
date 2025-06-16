@@ -1,2 +1,2 @@
-add_subdirectory(compile)
-add_subdirectory(stone)
+#add_subdirectory(stonec)
+#add_subdirectory(stonef)

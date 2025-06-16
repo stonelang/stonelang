@@ -382,4 +382,40 @@ DeclEvaluator* evaluator = session.GetEvaluator(DeclEvaluatorKind::CodeGen);
 if (evaluator) {
   evaluator->Evaluate(decl, ctx);
 }
+stonec|stonef [action] [artifact] [modifiers] <input>
+
+
+using Core.Maths[struct Vector3];
+using Core.Maths[fun DotProduct];
+using Core.Maths[enum Axis];
+using Core.Graphics[interface Drawable];
+using Core.Maths[struct *];   // All structs
+using Core.Maths[*];          // All visible entities
+
+
+
+struct SpaceKey {
+  Identifier name;
+  std::vector<Identifier> parameters;
+
+  bool operator==(const SpaceKey& other) const {
+    return name == other.name && parameters == other.parameters;
+  }
+};
+
+// Custom hash
+namespace std {
+template <>
+struct hash<SpaceKey> {
+  size_t operator()(const SpaceKey& key) const {
+    size_t h = hash<Identifier>()(key.name);
+    for (const auto& param : key.parameters)
+      h ^= hash<Identifier>()(param) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    return h;
+  }
+};
+}
+
+
+
 

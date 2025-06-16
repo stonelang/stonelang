@@ -39,7 +39,7 @@ public:
   CodeGenModule(CodeGeneration &codeGeneration);
 
 public:
-  void EmitModuleDecl(const ModuleDecl *moduleDecl);
+  void EmitSpaceDecl(const SpaceDecl *moduleDecl);
 };
 
 } // namespace stone

@@ -5,7 +5,7 @@
 
 namespace stone {
 
-enum class ForeignModuleDeclKind : uint8_t {
+enum class ForeignSpaceDeclKind : uint8_t {
   Clang = 0, ///< Imported via Clang bridge
   DWARF      ///< Possibly from debug symbols
 };

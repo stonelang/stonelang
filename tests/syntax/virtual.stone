@@ -1,4 +1,4 @@
-
+space Syntax[Test];
 
 virtual struct S {
 }

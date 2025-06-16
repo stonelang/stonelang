@@ -8,8 +8,3 @@ struct Decl with Node {
 
 struct FunDecl with Decl {
 }
-
-for(auto i= 0 where i < 10){
-
-
-}

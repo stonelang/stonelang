@@ -2,30 +2,30 @@
 #error "Define FILE_TYPE prior to including this file!"
 #endif
 
-FILE_TYPE(Stone,  					"stone",				"stone")
-FILE_TYPE(Object,					"object",       		"o")
-FILE_TYPE(StaticLibrary,			"static-library",       "a")
+// === Core Input ===
+FILE_TYPE(Stone,         "stone",        "stone")     // [input]  - Primary source file
 
-// Platform specific 
-FILE_TYPE(DynamicLibrary,			"dynamic-library",      "")
+// === Core Compilation Outputs ===
+FILE_TYPE(Space,         "space",        "space")     // [output] - Compiled space artifact (.space)
+FILE_TYPE(SpaceDoc,      "spacedoc",     "spacedoc")  // [output] - Optional documentation for a space
+FILE_TYPE(Spaces,        "spaces",       "spaces")    // [output] - Imported spaces view (module manifest)
 
-// Platform specific 
-FILE_TYPE(Executable,				"executable",       	"")
+// === Lower-Level Compilation Outputs ===
+FILE_TYPE(Object,        "object",       "o")         // [output] - Platform object file
+FILE_TYPE(IR,            "llvm-ir",      "ll")        // [output] - LLVM IR
+FILE_TYPE(BC,            "llvm-bc",      "bc")        // [output] - LLVM Bitcode
+FILE_TYPE(Assembly,      "assembly",     "s")         // [output] - Assembly output
 
-FILE_TYPE(Assembly,					"assembly",	  			"s")
-FILE_TYPE(IR,						"llvm-ir",      		"ll")
-FILE_TYPE(BC,						"llvm-bc",      		"bc")
-FILE_TYPE(Dependencies, 			"dependencies",         "d")
-FILE_TYPE(SerializedDiagnostics,  	"diagnostics",    		"dia")
-FILE_TYPE(Autolink, 				"autolink",             "autolink")
-FILE_TYPE(StoneDeps, 				"stone-dependencies",   "stonedeps")
-FILE_TYPE(StoneModuleSummary,		"stonemodulesummary",   "stonemodulesummary")
-FILE_TYPE(StoneModuleInterface,		"stoneinterface", 	   	"stonetinterface")
-FILE_TYPE(StoneSourceInfo, 			"stonesourceinfo",      "stonesourceinfo")
-FILE_TYPE(StoneModuleFile,			"stonemodule",  		"stonemodule")
-FILE_TYPE(ImportedModules,			"imported-modules",     "importedmodules")
-FILE_TYPE(StoneModuleDoc,			"stonedoc",             "stonedoc")
-FILE_TYPE(TBD, 						"tbd",                  "tbd")
-FILE_TYPE(PCH,  					"pch",                  "pch")
+// === Linking Outputs ===
+FILE_TYPE(StaticLibrary, "static-library", "a")       // [output] - Static archive
+FILE_TYPE(DynamicLibrary,"dynamic-library", "")       // [output] - Dynamic library (.dylib/.so/.dll)
+FILE_TYPE(Executable,    "executable",   "")          // [output] - Final executable binary
+
+// === Tooling & Introspection ===
+FILE_TYPE(Diagnostics,   "diagnostics",  "diag")      // [output] - Diagnostics file (TODO: plain text / JSON / blob)
+FILE_TYPE(Dependencies,  "dependencies", "d")         // [output] - Source-level dependency paths
+FILE_TYPE(Autolink,      "autolink",     "autolink")  // [output] - Linker hint file (TODO: platform-specific?)
+FILE_TYPE(PCH,           "pch",          "pch")       // [output] - Precompiled headers (TODO: may not be needed)
+FILE_TYPE(TBD,           "tbd",          "tbd")       // [output] - Apple-style text-based dynamic lib stub (TODO)
 
 #undef FILE_TYPE

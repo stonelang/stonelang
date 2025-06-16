@@ -1,10 +1,10 @@
 #ifndef STONE_PARSE_PARSER_H
 #define STONE_PARSE_PARSER_H
 
+#include "stone/AST/ASTFile.h"
 #include "stone/AST/ASTScope.h"
 #include "stone/AST/ASTSession.h"
 #include "stone/AST/DeclState.h"
-#include "stone/AST/SourceFile.h"
 #include "stone/AST/TypeState.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"
@@ -92,17 +92,15 @@ public:
 // Evaluator
 class Parser final {
 
-  SourceFile &sourceFile;
-
-  Parser(SourceFile &sourceFile, ASTSession &session,
-         std::unique_ptr<Lexer> lexer);
+  ASTFile &file;
+  Parser(ASTFile &file, ASTSession &session, std::unique_ptr<Lexer> lexer);
 
 public:
-  Parser(SourceFile &sourceFile, ASTSession &session);
+  Parser(ASTFile &file, ASTSession &session);
   ~Parser();
 
 public:
-  SourceFile &GetSourceFile() { return sourceFile; }
+  ASTFile &GetASTFile() { return file; }
 };
 
 } // namespace stone

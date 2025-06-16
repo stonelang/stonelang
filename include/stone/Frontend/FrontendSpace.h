@@ -1,22 +1,23 @@
 #ifndef STONE_FRONTEND_FRONTEND_MODULE_H
 #define STONE_FRONTEND_FRONTEND_MODULE_H
 
-#include "stone/AST/ModuleDecl.h"
+#include "stone/AST/SpaceDecl.h"
 #include "stone/Frontend/Frontend.h"
 #include "stone/Support/Status.h"
 
 namespace stone {
 
-class FrontendModule final : public NormalModuleDecl {
+class FrontendSpace final : public NormalSpaceDecl {
   Frontend &frontend;
 
 public:
-  FrontendModule(const FrontendModule &) = delete;
-  void operator=(const FrontendModule &) = delete;
+  FrontendSpace(const FrontendSpace &) = delete;
+  void operator=(const FrontendSpace &) = delete;
 
 public:
-  explicit FrontendModule(Frontend &frontend);
+  explicit FrontendSpace(Frontend &frontend);
   Status Initialize();
+  Status Evaluate();
 
 public:
   Frontend &GetFrontend() { return frontend; }

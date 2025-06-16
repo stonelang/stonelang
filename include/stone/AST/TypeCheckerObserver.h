@@ -16,7 +16,7 @@ public:
   virtual void CompletedSourceFile(const SourceFile *result) {}
 
   /// Completed semantic analysis
-  virtual void CompletedModuleDecl(const ModuleDecl *result) {}
+  virtual void CompletedSpaceDecl(const SpaceDecl *result) {}
 };
 
 } // namespace stone

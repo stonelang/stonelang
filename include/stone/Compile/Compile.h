@@ -10,45 +10,44 @@ namespace stone {
 
 class SourceFile;
 class Frontend;
-class FrontendModule;
+class FrontendSpace;
 class FrontendObserver;
-using FrontendModuleCallback = std::function<Status(FrontendModule &fm)>;
 
-int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
-            FrontendObserver *observer = nullptr);
+int RunF(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
+         FrontendObserver *observer = nullptr);
 
 /// \return a frontend module
-FrontendModule *CreateFrontendModule(Frontend &frontend);
+FrontendSpace *CreateFrontendSpace(Frontend &frontend);
 
 /// \return status of compile
-Status PerformCompile(FrontendModule &fm);
+Status PerformCompile(FrontendSpace &fm);
 
 /// \return Success if we compiled an ir file.
-Status PerformCompileLLVM(FrontendModule &fm);
+Status PerformCompileLLVM(FrontendSpace &fm);
 
 /// \return Success if syntax analysis is successful
-Status PerformParse(FrontendModule &fm, FrontendModuleCallback cb);
+Status PerformParse(FrontendSpace &fm);
 
 /// \return Success if syntax analysis is successful
 Status PerformParse(SourceFile *SF);
 
 // \return true if syntax analysis is successful
-Status PerformScaffolding(FrontendModule &fm, FrontendModuleCallback cb);
+Status PerformScaffolding(FrontendSpace &fm);
 
 /// \return true if syntax analysis is successful
 Status PerformScaffolding(SourceFile *S);
 
 /// \return true if syntax analysis is successful
-Status PerformCheckTypes(FrontendModule &fm, FrontendModuleCallback cb);
+Status PerformCheckTypes(FrontendSpace &fm);
 
 /// \return true if syntax analysis is successful
 Status PerformCheckTypes(SourceFile *S);
 
 // \return true if syntax analysis is successful
-Status PerformCodeGen(FrontendModule &fm, FrontendModuleCallback cb);
+Status PerformCodeGen(FrontendSpace &fm);
 
 // \return true if syntax analysis is successful
-Status PerformBackend(FrontendModule &fm, FrontendModuleCallback cb);
+Status PerformBackend(FrontendSpace &fm);
 
 } // namespace stone
 

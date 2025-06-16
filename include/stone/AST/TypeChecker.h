@@ -4,20 +4,20 @@
 namespace stone {
 class Decl;
 class SourceFile;
-class ModuleDecl;
+class SpaceDecl;
 class Expr;
 class Stmt;
 class Type;
 class ValueDecl;
 
-class ModuleDecl;
+class SpaceDecl;
 
 class TypeChecker final {
 public:
   TypeChecker();
 
 public:
-  void CheckModuleDecl(ModuleDecl &moduleDecl);
+  void CheckSpaceDecl(SpaceDecl &moduleDecl);
   /// Check the module
 
   /// Check the source file
