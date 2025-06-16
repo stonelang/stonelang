@@ -14,6 +14,9 @@ ASTSession::ASTSession() : identifierTable(allocator) {
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
   Builtin##Name##Identifier = GetIdentifier(IdStr);
 #include "stone/AST/BuiltinIdentifiers.def"
+
+  // We create the Space here -- no point in waiting.
+  space = (*this)Space(*this);
 }
 
 ASTSession::~ASTSession() {}

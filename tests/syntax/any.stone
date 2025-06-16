@@ -2,5 +2,5 @@ space Syntax;
 
 fun TestAny() {
 
-	any i = 10;
+	object i = 10;
 }

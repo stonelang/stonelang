@@ -18,6 +18,7 @@
 namespace stone {
 class Type;
 class FunDecl;
+class Space;
 class Scaffolder;
 class DeclEvaluator;
 class TypeChecker;
@@ -68,7 +69,7 @@ class ASTSession final : public ASTMemory {
   using IdentifierTable = llvm::StringMap<char, llvm::BumpPtrAllocator &>;
   mutable IdentifierTable identifierTable;
 
-  ASTFileList astFiles;
+  Space *space = nullptr;
 
 public:
   ASTSession(const ASTSession &) = delete;
@@ -188,8 +189,8 @@ public:
   //         setVector.size());
   //   }
 
-  ASTFileList &GetASTFiles() { return astFiles; }
-  const ASTFileList &GetASTFiles() const { return astFiles; }
+  Space *GetSpace() { return space; }
+  const Space &GetSpace() const { return space; }
 
 public:
   DeclEvaluator *GetEvaluator();

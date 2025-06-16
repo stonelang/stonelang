@@ -21,6 +21,7 @@ class Decl;
 class DeclState;
 class TypeState;
 class ASTSession;
+class ParamList;
 
 class alignas(1 << DeclAlignInBits) DeclState final
     : public ASTAllocation<DeclState> {
@@ -55,7 +56,7 @@ class alignas(1 << DeclAlignInBits) DeclState final
   // The properties for the DeclState
   TypeInfluencerList typeInfluencerList;
 
-  GenericParamList *genericParamList;
+  ParamList *paramList;
 
 public:
   // Direct comparison is disabled for states
@@ -90,8 +91,8 @@ public:
   TypeInfluencerList &GetTypeInfluencerList() { return typeInfluencerList; }
   DeclInfluencerList &GetDeclInfluencerList() { return declInfluencerList; }
 
-  void SetGenericParamList(GenericParamList *GPL) { genericParamList = GPL; }
-  GenericParamList GetGenericParamList() { return genericParamList; }
+  void SetParamList(ParamList *PL) { paramList = PL; }
+  ParamList GetParamList() { return paramList; }
 
 public:
   bool IsJoin() { return GetKind() == DeclKind::Join; }
@@ -99,11 +100,17 @@ public:
   bool IsUsing() { return GetKind() == DeclKind::Using; }
 };
 
-class GenericDeclState : public DeclState {
-public:
-  // Every DeclState must have a context
-  explicit GenericDeclState(ASTSession &session);
-};
+// class TemplateDeclState : public DeclState {
+// public:
+//   // Every DeclState must have a context
+//   explicit TemplateDeclState(ASTSession &session);
+// };
+
+// class ScopeDeclState : public TemplateDeclState {
+// public:
+//   // Every DeclState must have a context
+//   explicit ScopeDeclState(ASTSession &session);
+// };
 
 } // namespace stone
 #endif

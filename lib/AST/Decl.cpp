@@ -15,8 +15,6 @@ Decl::Decl(DeclState *DS) : ASTUnit(stone::GetASTSession(DS)) {}
 
 DeclState *Decl::GetDeclState() { return DS; }
 
-DeclKind Decl::GetDeclKind() const { return DS->GetKind(); }
-
 // void Decl::Evaluate(DeclActionKind kind) {
 //   GetDeclState()->GetASTSession().GetDeclEvaluator().Evaluate(this, kind);
 // }

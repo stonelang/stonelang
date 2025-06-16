@@ -28,5 +28,5 @@ int main(int argc, const char **args) {
 
   llvm::ArrayRef<const char *> argv(argsToExpand);
   return stone::RunC(llvm::ArrayRef(argv.data() + 1, argv.data() + argv.size()),
-                    argv[0], (void *)(intptr_t)stone::GetMainExecutablePath);
+                     argv[0], (void *)(intptr_t)stone::GetMainExecutablePath);
 }

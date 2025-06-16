@@ -21,8 +21,6 @@
 
 namespace stone {
 
-class Frontend;
-class FrontendSpace;
 class FrontendArgListConverter final {
 public:
   FrontendArgListConverter();
@@ -34,6 +32,19 @@ public:
   Status ParseDiagnosticOptions();
   Status ParseTargetOptions();
   Status ParseCodeGenOptions();
+};
+
+class FrontendCommandLine {
+  friend FrontendArgListConverter;
+
+  FrontendArgListConverter converter;
+  FrontendArgListConverter &GetArgListConverter() { return converter; }
+
+public:
+  FrontendCommandLine() {}
+
+public:
+  Status ParseArgStrings(llvm::ArrayRef<const char *> args);
 };
 
 class Frontend final {
@@ -49,6 +60,9 @@ class Frontend final {
 
   std::unique_ptr<ASTSession> session;
   std::unique_ptr<ClangImporter> clangImporter;
+
+  std::unique_ptr<ASTMemory> astMemory;
+  Space *space = nullptr;
 
   FrontendArgListConverter converter;
   FrontendArgListConverter &GetArgListConverter() { return converter; }

@@ -7,13 +7,13 @@ set(LLVM_LINK_COMPONENTS
 set(stone_ast_sources
 	ASTSession.cpp
 	ASTUnit.cpp
-	ASTFile.cpp
+	Module.cpp
+	ModuleFile.cpp
 	Decl.cpp
 	Diagnostics.cpp
 	DiagnosticID.cpp
 	Evaluator.cpp
 	Expr.cpp
-	Space.cpp
 	Scaffolder.cpp
 	Stmt.cpp
 	Type.cpp

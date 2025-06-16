@@ -12,21 +12,21 @@
 namespace stone {
 
 class DeclState;
+class FunDecl;
+class JoinDecl;
+class SpaceDecl;
+class UsingDecl;
 
 // Introduces a name and associates it with a type such as:
 // int x where x is the declaration, int is the type.
 class alignas(1 << DeclAlignInBits) Decl : public ASTUnit {
   DeclState *DS;
 
-  // protected:
-  //   ASTSession &GetASTSession(DeclState *DS);
-
 public:
   Decl(DeclState *DS);
 
 public:
   DeclState *GetDeclState();
-  DeclKind GetDeclKind() const;
   ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Decl; }
   // void Evaluate(DeclActionKind kind);
 public:
@@ -38,6 +38,22 @@ public:
   static bool classof(const ASTUnit *unit) {
     return unit->GetUnitKind() == ASTUnitKind::Decl;
   }
+};
+
+class ScopeDecl final : public Decl {
+  llvm::SmallVector<Decl *, 8> members;
+
+public:
+  ScopeDecl(DeclState *DS) : Decl(DS) {}
+
+public:
+  // llvm::ArrayRef<Decl*> GetMembers() const { return members; }
+  // void AddMember(Decl* D) { members.push_back(D); }
+};
+
+class SpaceDecl final : public ScopeDecl {
+public:
+  SpaceDecl(DeclState *DS) : ScopeDecl(DS) {}
 };
 
 enum class JoinDeclKind : uint8_t {
@@ -61,6 +77,24 @@ public:
   bool IsEnum() const { return joinKind == JoinDeclKind::Enum; }
 };
 
+class DotPath {
+  llvm::SmallVector<Identifier, 4> segments;
+
+public:
+  DotPath() = default;
+  DotPath(llvm::ArrayRef<Identifier> segs)
+      : segments(segs.begin(), segs.end()) {}
+
+  llvm::ArrayRef<Identifier> GetSegments() const { return segments; }
+  Identifier GetTail() const { return segments.back(); }
+  Identifier GetHead() const { return segments.front(); }
+
+  void Print(llvm::raw_ostream &os) const;
+};
+
+// using Physics.Quantum[struct Light];
+// using Physics.Quantum[fun Fire];
+// using Physics.Quantum[interface Particle];
 enum class UsingDeclKind : uint8_t {
   None = 0,
   Module,
@@ -82,17 +116,17 @@ public:
   UsingDeclKind GetUsingKind() { return usingKind; }
 };
 
-class AnyDecl : public Decl {
+class TemplateDecl : public Decl {
 public:
-  AnyDecl(DeclState *DS) : Decl(DS) {}
+  TemplateDecl(DeclState *DS) : Decl(DS) {}
 
 public:
-  bool HasSignature() const;
+  // bool HasSignature() const;
 };
 
-class TypeDecl : public AnyDecl {
+class TypeDecl : public TemplateDecl {
 public:
-  TypeDecl(DeclState *DS) : AnyDecl(DS) {}
+  TypeDecl(DeclState *DS) : TemplateDecl(DS) {}
 };
 
 class AliasDecl final : public TypeDecl {
@@ -100,9 +134,9 @@ public:
   AliasDecl(DeclState *DS) : TypeDecl(DS) {}
 };
 
-class FunctionDecl : public AnyDecl {
+class FunctionDecl : public TemplateDecl {
 public:
-  FunctionDecl(DeclState *DS) : AnyDecl(DS) {}
+  FunctionDecl(DeclState *DS) : TemplateDecl(DS) {}
 };
 
 class FunDecl : public FunctionDecl {

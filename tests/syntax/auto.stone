@@ -1,6 +1,6 @@
 space Syntax;
 
-poly[T, U] struct Map {
+any[T, U] struct Map {
 }
 
 fun TestAuto() {

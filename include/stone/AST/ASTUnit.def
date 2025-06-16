@@ -6,7 +6,9 @@ AST_UNIT(Decl)
 AST_UNIT(Expr)
 AST_UNIT(Stmt)
 AST_UNIT(Type)
-AST_UNIT(File)
+AST_UNIT(ModuleFile)
+AST_UNIT(Module)
+AST_UNIT(Builtin)
 
 #undef LAST_DECL
 

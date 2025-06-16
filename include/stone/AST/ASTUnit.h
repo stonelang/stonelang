@@ -2,12 +2,11 @@
 #define STONE_AST_ASTUNIT_H
 
 #include "stone/AST/ASTAllocation.h"
+#include "stone/AST/Identifier.h"
 
 #include <stdint.h>
 
 namespace stone {
-
-class ASTSession;
 
 enum class ASTUnitKind : uint8_t {
   None = 0,
@@ -16,11 +15,10 @@ enum class ASTUnitKind : uint8_t {
 };
 
 class ASTUnit : public ASTAllocation<ASTUnit> {
-  ASTSession &session;
   ASTUnit *parent = nullptr;
 
 public:
-  ASTUnit(ASTSession &session, ASTUnit *parent = nullptr);
+  ASTUnit(ASTUnit *parent = nullptr);
   // virtual ~ASTUnit() = default;
 
 public:
@@ -31,7 +29,6 @@ public:
   virtual ASTUnitKind GetUnitKind() const = 0;
   bool HasParent() const { return parent != nullptr; }
   ASTUnit *GetParent() { return parent; }
-  ASTSession &GetASTSession();
 
   // virtual void Evaluate(EvaluatorKind kind);
 
@@ -40,7 +37,8 @@ public:
   bool IsExpr() const { return GetUnitKind() == ASTUnitKind::Expr; }
   bool IsStmt() const { return GetUnitKind() == ASTUnitKind::Stmt; }
   bool IsType() const { return GetUnitKind() == ASTUnitKind::Type; }
-  bool IsFile() const { return GetUnitKind() == ASTUnitKind::File; }
+  bool IsModuleFile() const { return GetUnitKind() == ASTUnitKind::ModuleFile; }
+  bool IsModule() const { return GetUnitKind() == ASTUnitKind::Module; }
 
 public:
   // static bool classof(const ASTUnit *unit) {

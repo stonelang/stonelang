@@ -6,7 +6,7 @@
 namespace stone {
 
 enum class ParamListKind : uint8_t {
-  Any = 0,
+  Template = 0,
   Using,
   Space,
 };
@@ -18,7 +18,7 @@ public:
   ParamList(ParamListKind kind) : kind(kind) {}
 };
 
-class AnyParamList : public ParamList {
+class TemplateParamList : public ParamList {
 public:
   AnyParamList() : ParamList(ParamList::Any) {}
 };

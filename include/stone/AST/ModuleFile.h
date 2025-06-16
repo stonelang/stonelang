@@ -1,16 +1,15 @@
-#ifndef STONE_AST_AST_FILE_H
-#define STONE_AST_AST_FILE_H
+#ifndef STONE_AST_MODULEFILE_H
+#define STONE_AST_MODULEFILE_H
 
-#include "stone/AST/ASTFileKind.h"
 #include "stone/AST/ASTUnit.h"
 #include "stone/AST/Decl.h"
+#include "stone/AST/ModuleFileKind.h"
 
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
 class SpaceDecl;
-
-enum class ASTFileStage : uint8_t {
+enum class ModuleFileStage : uint8_t {
   None = 1 << 0,
   CompletedParsing = 1 << 1,      ///< Syntax analysis
   CompletedScaffolding = 1 << 2,  ///< Semantic analysis
@@ -18,19 +17,19 @@ enum class ASTFileStage : uint8_t {
   CompletedCodeGen = 1 << 4,      ///< Generate IR
 };
 
-inline bool HasStage(ASTFileStage current, ASTFileStage check) {
+inline bool HasStage(ModuleFileStage current, ModuleFileStage check) {
   return static_cast<uint8_t>(current) & static_cast<uint8_t>(check);
 }
 
-class ASTFile final : public ASTUnit {
+class ModuleFile final : public FileUnit {
   unsigned bufferID;
   llvm::StringRef input;
   ASTScope *scope = nullptr;
   std::vector<Decl *> topLevelDecls;
-  ASTFileStage stage = ASTFileStage::None;
+  ModuleFileStage stage = ModuleFileStage::None;
 
 public:
-  ASTFile(unsigned bufferID, llvm::StringRef input, ASTSession &session);
+  ModuleFile(unsigned bufferID, llvm::StringRef input, Module *parent);
 
   explicit operator bool() const {
     return HasFirstDecl() && llvm::cast<SpaceDecl>(GetFirstDecl());
@@ -48,35 +47,21 @@ public:
 
   void AddTopLevelDecl(Decl *D) { topLevelDecls.push_back(D); }
   llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
-  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::File; }
 
-  llvm::StringRef ASTFile::GetDisplayName() const {
+  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::File; }
+  void Flush() override;
+
+  llvm::StringRef ModuleFile::GetDisplayName() const {
     return input ? input->GetName() : "<builtin>";
   }
   void Dump(llvm::raw_ostream &os) const;
 
 public:
   static bool classof(const ASTUnit *unit) {
-    return unit->GetUnitKind() == ASTUnitKind::ASTFile;
+    return unit->GetUnitKind() == ASTUnitKind::File;
   }
 };
 
-class ASTFileList final {
-  friend class ASTSession;
-
-  llvm::SmallVector<ASTFile *, 16> files;
-
-public:
-  ASTFileList(const ASTFileList &) = delete;
-  void operator=(const ASTFileList &) = delete;
-
-public:
-  ASTFileList() {}
-
-public:
-  llvm::ArrayRef<ASTFile *> GetFiles() const { return files; }
-  void AddFile(ASTFile *file) { files.push_back(file); }
-};
 } // namespace stone
 
 #endif

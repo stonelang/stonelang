@@ -2,6 +2,7 @@
 #define STONE_AST_IDENTIFIER_H
 
 #include "stone/Support/EditorPlaceholder.h"
+#include "llvm/Support/Allocator.h"
 
 #include "llvm/ADT/StringRef.h"
 
@@ -112,6 +113,7 @@ public:
   bool operator<(Identifier RHS) const { return dataPointer < RHS.dataPointer; }
 };
 
+using IdentifierTable = llvm::StringMap<char, llvm::BumpPtrAllocator &>;
 } // namespace stone
 
 #endif

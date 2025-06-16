@@ -415,7 +415,45 @@ struct hash<SpaceKey> {
   }
 };
 }
+using ASTEntity = llvm::PointerUnion<Decl*, Expr*>;
+
+class DeclHierarchy {
+    ASTEntity entity;
+
+public:
+    DeclHierarchy(ASTEntity e) : entity(e) {}
+
+    void walk() {
+        if (Decl* D = entity.dyn_cast<Decl*>()) {
+            // Work directly with Decl
+        } else if (Expr* E = entity.dyn_cast<Expr*>()) {
+            // Work directly with Expr
+        }
+    }
+
+    Decl* asDecl() const { return entity.dyn_cast<Decl*>(); }
+    Expr* asExpr() const { return entity.dyn_cast<Expr*>(); }
+};
 
 
+class DotPath final {
+  llvm::SmallVector<Identifier, 4> segments;
 
+public:
+  DotPath() = default;
 
+  void AddSegment(Identifier id) { segments.push_back(id); }
+  llvm::ArrayRef<Identifier> GetSegments() const { return segments; }
+
+  Identifier GetHead() const { return segments.front(); }
+  Identifier GetTail() const { return segments.back(); }
+
+  std::string str() const {
+    std::string result;
+    for (size_t i = 0; i < segments.size(); ++i) {
+      if (i > 0) result += '.';
+      result += segments[i].str();
+    }
+    return result;
+  }
+};

@@ -7,7 +7,7 @@
 
 namespace stone {
 
-class FrontendSpace final : public NormalSpaceDecl {
+class FrontendSpace final : {
   Frontend &frontend;
 
 public:
