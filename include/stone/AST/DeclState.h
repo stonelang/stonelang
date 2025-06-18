@@ -133,25 +133,6 @@ public:
   bool IsUsing() { return GetKind() == DeclKind::Using; }
 };
 
-/// Represents state for built-in types like int, float, char, bool, etc.
-class BuiltinTypeState : public TypeState {
-
-public:
-  BuiltinTypeState(TypeKind kind) : TypeState(kind) {}
-
-  TypeKind GetKind() const { return kind; }
-
-  uint8_t GetBitWidth() const { return bitWidth; }
-  bool IsInteger() const {
-    return kind >= TypeKind::Int && kind <= TypeKind::UInt128;
-  }
-  bool IsFloat() const {
-    return kind >= TypeKind::Float && kind <= TypeKind::Float128;
-  }
-  bool IsChar() const { return kind == TypeKind::Char; }
-  bool IsBool() const { return kind == TypeKind::Bool; }
-};
-
 //   class DeclState {
 //   TemplateParameterList *templateParams;
 // public:

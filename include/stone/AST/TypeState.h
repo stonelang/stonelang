@@ -3,6 +3,7 @@
 
 #include "stone/AST/Artifact.h"
 #include "stone/AST/MemoryAllocation.h"
+#include "stone/AST/Number.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeInfluencer.h"
 
@@ -36,7 +37,6 @@ class alignas(1 << TypeAlignInBits) TypeState : public Artifact {
 
 public:
   explicit TypeState(TypeKind kind) : kind(kind) {}
-
   virtual ArtifactKind GetTypeStateKind() const = 0;
 
 public:
@@ -65,9 +65,53 @@ public:
 };
 
 // May have to pass the Module
-class BuiltinTypeState final : public TypeState {
+
+/// Represents state for built-in types like int, float, char, bool, etc.
+class BuiltinTypeState : public TypeState {
 public:
-  BuiltinTypeState() {}
+  BuiltinTypeState(TypeKind kind) : TypeState(kind) {}
+
+public:
+  bool IsNumberType() const;
+  NumberBitWidth GetNumberBitWidth() const;
+
+  bool IsInt() const {
+    return kind >= TypeKind::Int && kind <= TypeKind::UInt128;
+  }
+  bool IsSInt() const {
+    return kind >= TypeKind::Int && kind <= TypeKind::Int128;
+  }
+  bool IsUInt() const {
+    return kind >= TypeKind::UInt && kind <= TypeKind::UInt128;
+  }
+  bool IsFloat() const {
+    return kind >= TypeKind::Float && kind <= TypeKind::Float128;
+  }
+  bool IsChar() const { return kind == TypeKind::Char; }
+  bool IsBool() const { return kind == TypeKind::Bool; }
+
+public:
+  DeclStateKind GetDeclStateKind() const override {
+    return DeclStateKind::Builtin;
+  }
+
+public:
+  static bool IsNumberType(TypeKind kind) const;
+  static NumberBitWidth GetNumberBitWidth(TypeKind kind) const;
+};
+
+class FunctionTypeState final : public TypeState {
+public:
+  FunctionTypeState(TypeKind kind);
+
+public:
+  DeclStateKind GetDeclStateKind() const override {
+    return DeclStateKind::Function;
+  }
+
+public:
+  static bool IsNumberType(TypeKind kind) const;
+  static NumberBitWidth GetNumberBitWidth(TypeKind kind) const;
 };
 
 // TypeState

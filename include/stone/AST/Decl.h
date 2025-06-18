@@ -11,12 +11,6 @@
 
 namespace stone {
 
-class DeclState;
-class FunDecl;
-class JoinDecl;
-class SpaceDecl;
-class UsingDecl;
-
 class alignas(1 << DeclAlignInBits) Decl : public Tree {
   DeclState *DS = nullptr;
 

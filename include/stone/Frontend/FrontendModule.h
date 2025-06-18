@@ -37,6 +37,11 @@ public:
 public:
   Frontend &GetFrontend() { return frontend; }
   Module *GetPointer() { return underlyingModule; }
+
+public:
+  void PlanEvaluators();
+  void Evaluate();
+  void Evaluate(EvaluatorKind kind);
 };
 } // namespace stone
 

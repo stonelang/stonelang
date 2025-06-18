@@ -2,7 +2,8 @@
 #define STONE_AST_MODULEFILE_H
 
 #include "stone/AST/Decl.h"
-#include "stone/AST/FileArtifact.h"
+#include "stone/AST/Tree.h"
+// #include "stone/AST/FileArtifact.h"
 #include "stone/AST/Scope.h"
 
 #include "llvm/ADT/SmallVector.h"
@@ -22,7 +23,7 @@ inline bool HasStage(ModuleFileStage current, ModuleFileStage check) {
   return static_cast<uint8_t>(current) & static_cast<uint8_t>(check);
 }
 
-class ModuleFile final : public FileArtifact {
+class ModuleFile final : public Tree {
   unsigned bufferID;
   llvm::StringRef input;
   Scope *scope = nullptr;
@@ -52,7 +53,7 @@ public:
   ArtifactKind ArtifactKind() const override {
     return ArtifactKind::ModuleFile;
   }
-  void Flush() override;
+  // void Flush() override;
 
   llvm::StringRef ModuleFile::GetDisplayName() const {
     return input ? input->GetName() : "<builtin>";

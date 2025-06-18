@@ -1,6 +1,7 @@
 #ifndef STONE_AST_DECL_ACTION_H
 #define STONE_AST_DECL_ACTION_H
 
+#include "stone/AST/Artifact.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/MemoryAllocation.h"
 #include "stone/AST/TypeAlignment.h"
@@ -17,15 +18,15 @@ namespace stone {
 // };
 
 enum class EvaluatorKind : uint8_t {
-  None = 0,
-
-  // Type Checking
-  ShallowTypeCheck,
-  FullTypeCheck,
+  Syntax = 0,
 
   // Scaffolding
   ShallowScaffolding,
   FullScaffolding,
+
+  // Type Checking
+  ShallowTypeCheck,
+  FullTypeCheck,
 
   // Validation
   ShallowValidation,
@@ -42,8 +43,7 @@ enum class EvaluatorKind : uint8_t {
   Elaboration
 };
 
-class alignas(1 << DeclAlignInBits) Evaluator
-    : public MemoryAllocation<Evaluator> {
+class alignas(1 << DeclAlignInBits) Evaluator : Artifact {
   EvaluatorKind kind;
 
 public:
@@ -55,15 +55,9 @@ public:
   virtual void Evaluate(Decl *decl) = 0;
 };
 
-class ShallowTypeCheckEvaluator : public Evaluator {
+class SyntaxEvaluator : public Evaluator {
 public:
-  ShallowTypeCheckEvaluator() : Evaluator(EvaluatorKind::ShallowTypeCheck) {}
-  void Evaluate(Decl *decl) override;
-};
-
-class FullTypeCheckEvaluator : public Evaluator {
-public:
-  FullTypeCheckEvaluator() : Evaluator(EvaluatorKind::FullTypeCheck) {}
+  SyntaxEvaluator() : Evaluator(EvaluatorKind::Syntax) {}
   void Evaluate(Decl *decl) override;
 };
 
@@ -77,6 +71,18 @@ public:
 class FullScaffoldingEvaluator : public Evaluator {
 public:
   FullScaffoldingEvaluator() : Evaluator(EvaluatorKind::FullScaffolding) {}
+  void Evaluate(Decl *decl) override;
+};
+
+class ShallowTypeCheckEvaluator : public Evaluator {
+public:
+  ShallowTypeCheckEvaluator() : Evaluator(EvaluatorKind::ShallowTypeCheck) {}
+  void Evaluate(Decl *decl) override;
+};
+
+class FullTypeCheckEvaluator : public Evaluator {
+public:
+  FullTypeCheckEvaluator() : Evaluator(EvaluatorKind::FullTypeCheck) {}
   void Evaluate(Decl *decl) override;
 };
 

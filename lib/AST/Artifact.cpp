@@ -2,4 +2,4 @@
 
 using namespace stone;
 
-Artifact::Artifact(Artifact *parent) : parent(parent) {}
+Artifact::Artifact() {}

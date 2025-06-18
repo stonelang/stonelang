@@ -6,7 +6,7 @@ using namespace stone;
 namespace stone {
 
 ModuleFile::ModuleFile(unsigned bufferID, llvm::StringRef input, Module *parent)
-    : FileArtifact(parent), kind(kind), bufferID(bufferID) {}
+    : Tree(parent), kind(kind), bufferID(bufferID) {}
 
 Decl *ModuleFile::GetFirstDecl() const { return nullptr; }
 
@@ -16,7 +16,7 @@ llvm::ArrayRef<Decl *> ModuleFile::GetTopLevelDecls() const {
   return topLevelDecls;
 }
 
-void ModuleFile::Flush() {}
+// void ModuleFile::Flush() {}
 
 // ModuleFile *ASTSession::CreateModuleFile(unsigned bufferID, llvm::StringRef
 // input,

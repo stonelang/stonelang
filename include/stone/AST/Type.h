@@ -18,7 +18,6 @@ namespace stone {
 
 class Type;
 class TypeState;
-class AliasDecl;
 
 class alignas(1 << TypeAlignInBits) Type : public Tree {
   TypeState *TS = nullptr;
@@ -67,19 +66,9 @@ public:
   NullType(TypeState *TS) : BuiltinType(TS) {}
 };
 
-enum class NumberBitWidth : uint8_t {
-  Platform,
-  Size8,
-  Size16,
-  Size32,
-  Size64,
-  Size128
-};
-
 class NumberType : public BuiltinType {
 public:
   NumberType(TypeState *TS) : BuiltinType(TS) {}
-  NumberBitWidth GetBitWidth() const;
 };
 
 class IntType : public NumberType {

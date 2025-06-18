@@ -3,7 +3,6 @@
 
 using namespace stone;
 
-// Every DeclState must have a context
 DeclState::DeclState(DeclState *parent) : parent(parent) {}
 
 // DeclState *Decl::GetDeclState() { return DS; }

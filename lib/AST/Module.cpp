@@ -10,4 +10,4 @@ ModuleFile *Module::GetFirstFile() const {
   assert(!files.empty() && "Module has no module files!");
   return files.front();
 }
-void Module::Flush() {}
+// void Module::Flush() {}

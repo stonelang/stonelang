@@ -7,12 +7,19 @@
 
 namespace stone {
 
+/// TreeConext { Tree* scope ... }
 class Tree : public Artifact {
   Tree *parent = nullptr;
   llvm::SmallVector<Tree *, 16> children;
 
 public:
-  Tree(Tree *parent = nullptr) : Artifact(parent) {}
+  Tree(Tree *parent = nullptr) : parent(parent) {}
+
+public:
+  bool HasParent() const { return parent != nullptr; }
+  Artifact *GetParent() { return parent; }
+  void SetParent(Tree *tree) { parent = tree; }
+
   virtual ArtifactKind GetArtifactKind() const = 0;
 };
 
