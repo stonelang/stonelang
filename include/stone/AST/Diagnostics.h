@@ -102,7 +102,8 @@ public:
   stone::Type getType() const { return t; }
 };
 
-enum class DiagnosticArgumentKind {
+enum class DiagnosticArgumentKind : uint8_t {
+  None = 0,
   Bool,
   String,
   Integer,
@@ -127,6 +128,16 @@ enum class DiagnosticBehavior : uint8_t {
   Ignore,
 };
 
+/// TODO:
+// enum class DiagnosticLevel : uint8_t {
+//   Error = 0,   // Must fix
+//   Warn,        // Something is likely wrong, but allowed
+//   Hint,        // Actionable suggestion
+//   Note,        // Clarifying or contextual message
+//   Hide         // Explicitly filtered
+// };
+
+// TODO:  I do not like this
 enum class DiagnosticModifier {
   Error = 0,
   Select,
@@ -1832,6 +1843,21 @@ protected:
   void PrintDiagnosticWithLLVMFormattingStyle(SrcMgr &SM,
                                               const DiagnosticInfo &Info);
 };
+
+inline InFlightDiagnostic Error(SrcLoc loc, DiagID id, auto &&...args) {
+  return diagnose(loc, Diagnostic(id, std::forward<decltype(args)>(args)...))
+      .limitBehavior(DiagnosticBehavior::Error);
+}
+
+inline InFlightDiagnostic Warn(SrcLoc loc, DiagID id, auto &&...args) {
+  return diagnose(loc, Diagnostic(id, std::forward<decltype(args)>(args)...))
+      .limitBehavior(DiagnosticBehavior::Warning);
+}
+
+inline InFlightDiagnostic Note(SrcLoc loc, DiagID id, auto &&...args) {
+  return diagnose(loc, Diagnostic(id, std::forward<decltype(args)>(args)...))
+      .limitBehavior(DiagnosticBehavior::Note);
+}
 
 } // namespace stone
 

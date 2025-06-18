@@ -5,7 +5,7 @@
 
 namespace stone {
 
-enum class ForeignSpaceKind : uint8_t {
+enum class ForeignLanguageKind : uint8_t {
   Clang = 0, ///< Imported via Clang bridge
   DWARF      ///< Possibly from debug symbols
 };

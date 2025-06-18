@@ -1,5 +1,4 @@
 #include "stone/AST/Diagnostics.h"
-#include "stone/AST/ASTSession.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/DiagnosticsCore.h"
 #include "stone/AST/SpaceDecl.h"

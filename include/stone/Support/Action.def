@@ -1,10 +1,21 @@
 #ifndef ACTION
-#error "Define ACTION before including this file"
+#define ACTION(A)
 #endif
 
-ACTION(Emit)       // stonec --emit artifact
-ACTION(Check)      // stonec --check artifact
-ACTION(Tell)       // stonec --tell artifact
-ACTION(Resolve)    // stonec --resolve artifact
+#ifndef FRONTEND_ACTION
+#define FRONTEND_ACTION(A) ACTION(A)
+#endif
+
+#ifndef DRIVER_ACTION
+#define DRIVER_ACTION(A)  ACTION(A)
+#endif
+
+FRONTEND_ACTION(Emit)       // stonec --emit artifact
+FRONTEND_ACTION(Check)      // stonec --check artifact
+FRONTEND_ACTION(Resolve)    // stonec --resolve artifact
+
+DRIVER_ACTION(Tell)       // stonec --tell artifact
 
 #undef ACTION
+#undef FRONTEND_ACTION
+#undef DRIVER_ACTION

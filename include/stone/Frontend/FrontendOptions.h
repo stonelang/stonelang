@@ -8,12 +8,6 @@
 
 namespace stone {
 
-enum class FrontendMode : uint8_t {
-  None = 0,
-#define FRONTEND_MODE(A) A,
-#include "stone/Support/Mode.def"
-};
-
 class FrontendInputFile final : public InputFile {
   friend class Frontend;
   friend class FrontendOptions;
@@ -34,17 +28,23 @@ public:
   FileSpecificPaths GetFileSpecificPaths() const { return fileSpecificPaths; }
 };
 
+enum class FrontendAction : uint8_t {
+  None = 0,
+#define FRONTEND_ACTION(A) A,
+#include "stone/Support/Action.def"
+};
+
 class FrontendOptions final {
   friend class Frontend;
 
-  /// The base set of options
-  LangOptions langOpts;
-
-  std::vector<FrontendInputFile> inputs;
-
 public:
-  /// The frontend mode that we are in -- parse, type-check, etc.
-  FrontendMode Mode = FrontendMode::None;
+  /// The frontend action that we are in -- parse, type-check, etc.
+  FrontendAction CurrentAction = FrontendAction::None;
+
+  /// The base set of options
+  LangOptions CurrentLangOpts;
+
+  std::vector<FrontendInputFile> Inputs;
 
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool MustParseAsStdLib = false;
@@ -52,12 +52,12 @@ public:
   /// Indicates that we must process duplicate files
   bool MustProcessDuplicateInputFile = false;
 
-  /// In Single-threaded WMO mode, all inputs are used
+  /// In Single-threaded WMO action, all inputs are used
   /// both for importing and compiling.
   bool IsSingleThreadedWMO = false;
 
-  /// Punt where needed to enable batch mode experiments.
-  bool AreBatchModeChecksBypassed = false;
+  /// Punt where needed to enable batch action experiments.
+  bool AreBatchActionChecksBypassed = false;
 
   /// Recover missing inputs. Note that recovery itself is users responsibility.
   bool ShouldRecoverMissingInputs = false;
@@ -94,31 +94,31 @@ public:
 
 public:
   /// \return true if the given action requires a proper module name
-  static bool DoesModeNeedProperModuleName(FrontendMode mode);
+  static bool DoesActionNeedProperModuleName(FrontendAction action);
   /// \return true if the given action only parses without doing other
   /// compilation steps.
-  static bool ShouldModeOnlyParse(FrontendMode mode);
+  static bool ShouldActionOnlyParse(FrontendAction action);
   /// \return true if the given action should generates IR
-  static bool DoesModeGenerateIR(FrontendMode mode);
+  static bool DoesActionGenerateIR(FrontendAction action);
   /// \return true if the given action should generate native code
-  static bool DoesModeGenerateNativeCode(FrontendMode mode);
+  static bool DoesActionGenerateNativeCode(FrontendAction action);
   /// \return true if the given action requires the standard library to be
   /// loaded before it is run.
-  static bool DoesModeRequireStoneStandardLibrary(FrontendMode mode);
+  static bool DoesActionRequireStoneStandardLibrary(FrontendAction action);
   /// \return true if the given action requires input files to be provided.
-  static bool DoesModeRequireInputs(FrontendMode mode);
+  static bool DoesActionRequireInputs(FrontendAction action);
   /// \return true if the given action produces output
-  static bool DoesModeProduceOutput(FrontendMode mode);
+  static bool DoesActionProduceOutput(FrontendAction action);
   /// \return true if the given action requires input files to be provided.
-  static bool DoesModePerformEndOfPipelineModes(FrontendMode mode);
+  static bool DoesActionPerformEndOfPipelineActions(FrontendAction action);
   /// \return true if the given action supports caching.
-  static bool DoesModeSupportCompilationCaching(FrontendMode mode);
+  static bool DoesActionSupportCompilationCaching(FrontendAction action);
   /// \return the FileType for the action
-  static stone::FileType GetModeOutputFileType(FrontendMode mode);
+  static stone::FileType GetActionOutputFileType(FrontendAction action);
   /// \return the string name of the action
-  static llvm::StringRef GetModeString(FrontendMode mode);
+  static llvm::StringRef GetActionString(FrontendAction action);
   /// \return true if this is any action.
-  static bool IsAnyMode(FrontendMode mode);
+  static bool IsAnyAction(FrontendAction action);
 
   void ForAllOutputPaths(const FrontendInputFile &input,
                          std::function<void(StringRef)> callbac) const;

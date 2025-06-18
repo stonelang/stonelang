@@ -1,35 +1,27 @@
-#include "stone/AST/ASTSession.h"
+#include "stone/AST/ModuleContext.h"
 #include "stone/AST/Type.h"
 #include "stone/AST/TypeState.h"
 
 using namespace stone;
 
-ASTSession::ASTSession() : identifierTable(allocator) {
+ModuleContext::ModuleContext(MemoryManager &memory,
+                             IdentifierTable &identifiers)
+    : memory(memory), identifiers(identifiers) {
 
 #define BUILTIN_TYPE(ID, Parent)                                               \
-  Builtin##ID##Type = new (*this) ID##Type(new (*this) BuiltinTypeState(*this));
+  Builtin##ID##Type = new (memory) ID##Type(new (memory) BuiltinTypeState());
 #include "stone/AST/TypeNode.def"
 
   // Initialize all of the known identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
   Builtin##Name##Identifier = GetIdentifier(IdStr);
 #include "stone/AST/BuiltinIdentifiers.def"
-
-  // We create the Space here -- no point in waiting.
-  space = (*this)Space(*this);
 }
 
-ASTSession::~ASTSession() {}
-
-Identifier ASTSession::GetIdentifier(llvm::StringRef name) const {
+Identifier ModuleContext::GetIdentifier(llvm::StringRef name) const {
   if (name.empty()) {
     return Identifier();
   }
   auto it = identifierTable.insert({name, 0}).first;
   return Identifier(it->getKeyData());
-}
-
-void *stone::AllocateInASTSession(size_t bytes, const ASTSession &session,
-                                  unsigned alignment) {
-  return session.AllocateMemory(bytes, alignment);
 }

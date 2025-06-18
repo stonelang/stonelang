@@ -1,9 +1,9 @@
 #ifndef STONE_AST_DECL_H
 #define STONE_AST_DECL_H
 
-#include "stone/AST/ASTUnit.h"
 #include "stone/AST/DeclKind.h"
 #include "stone/AST/Identifier.h"
+#include "stone/AST/Tree.h"
 #include "stone/AST/TypeAlignment.h"
 #include "llvm/Support/Casting.h"
 
@@ -17,26 +17,23 @@ class JoinDecl;
 class SpaceDecl;
 class UsingDecl;
 
-// Introduces a name and associates it with a type such as:
-// int x where x is the declaration, int is the type.
-class alignas(1 << DeclAlignInBits) Decl : public ASTUnit {
-  DeclState *DS;
+class alignas(1 << DeclAlignInBits) Decl : public Tree {
+  DeclState *DS = nullptr;
 
 public:
   Decl(DeclState *DS);
 
 public:
-  DeclState *GetDeclState();
-  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Decl; }
-  // void Evaluate(DeclActionKind kind);
-public:
+  DeclState *GetDeclState() { return DS; }
+  ArtifactKind GetArtifactKind() const override { return ArtifactKind::Decl; }
+
 public:
   static bool classof(const Decl *D) {
-    return D->GetDeclKind() >= DeclKind::FirstDecl &&
-           D->GetDeclKind() <= DeclKind::LastDecl;
+    return D->GetDeclKind() >= DeclKind::Join &&
+           D->GetDeclKind() < DeclKind::Count;
   }
-  static bool classof(const ASTUnit *unit) {
-    return unit->GetUnitKind() == ASTUnitKind::Decl;
+  static bool classof(const Artifact *artifact) {
+    return artifact->GetArtifactKind() == ArtifactKind::Decl;
   }
 };
 
@@ -45,10 +42,6 @@ class ScopeDecl final : public Decl {
 
 public:
   ScopeDecl(DeclState *DS) : Decl(DS) {}
-
-public:
-  // llvm::ArrayRef<Decl*> GetMembers() const { return members; }
-  // void AddMember(Decl* D) { members.push_back(D); }
 };
 
 class SpaceDecl final : public ScopeDecl {
@@ -56,77 +49,36 @@ public:
   SpaceDecl(DeclState *DS) : ScopeDecl(DS) {}
 };
 
-enum class JoinDeclKind : uint8_t {
-  None = 0,
-  Struct,
-  Interface,
-  Enum,
-};
-
 class JoinDecl final : public Decl {
-  JoinDeclKind joinKind;
 
 public:
   JoinDecl(DeclState *DS) : Decl(DS) {}
-
-public:
-  void SetJoinKind(JoinDeclKind kind) { joinKind = kind; }
-  JoinDeclKind GetJoinKind() { return joinKind; }
-  bool IsStruct() const { return joinKind == JoinDeclKind::Struct; }
-  bool IsInterface() const { return joinKind == JoinDeclKind::Interface; }
-  bool IsEnum() const { return joinKind == JoinDeclKind::Enum; }
 };
 
-class DotPath {
-  llvm::SmallVector<Identifier, 4> segments;
-
-public:
-  DotPath() = default;
-  DotPath(llvm::ArrayRef<Identifier> segs)
-      : segments(segs.begin(), segs.end()) {}
-
-  llvm::ArrayRef<Identifier> GetSegments() const { return segments; }
-  Identifier GetTail() const { return segments.back(); }
-  Identifier GetHead() const { return segments.front(); }
-
-  void Print(llvm::raw_ostream &os) const;
-};
-
-// using Physics.Quantum[struct Light];
-// using Physics.Quantum[fun Fire];
-// using Physics.Quantum[interface Particle];
-enum class UsingDeclKind : uint8_t {
-  None = 0,
-  Module,
-  Struct,
-  Interface,
-  Enum,
-  Fun,
-  Macro,
-};
-/// using A.B{C.D}
 class UsingDecl final : public Decl {
-  UsingDeclKind usingKind;
 
 public:
   UsingDecl(DeclState *DS) : Decl(DS) {}
+};
 
+class MacroDecl : public Decl {
 public:
-  void SetUsingKind(UsingDeclKind kind) { usingKind = kind; }
-  UsingDeclKind GetUsingKind() { return usingKind; }
+  MacroDecl(DeclState *DS) : Decl(DS) {}
 };
 
 class TemplateDecl : public Decl {
 public:
   TemplateDecl(DeclState *DS) : Decl(DS) {}
-
-public:
-  // bool HasSignature() const;
 };
 
 class TypeDecl : public TemplateDecl {
 public:
   TypeDecl(DeclState *DS) : TemplateDecl(DS) {}
+};
+
+class BuiltinDecl : public TypeDecl {
+public:
+  BuiltinDecl(DeclState *DS) : TypeDecl(DS) {}
 };
 
 class AliasDecl final : public TypeDecl {
@@ -140,19 +92,16 @@ public:
 };
 
 class FunDecl : public FunctionDecl {
-
 public:
   FunDecl(DeclState *DS) : FunctionDecl(DS) {}
 };
 
 class ConstructorDecl : public FunctionDecl {
-
 public:
   ConstructorDecl(DeclState *DS) : FunctionDecl(DS) {}
 };
 
 class DestructorDecl : public FunctionDecl {
-
 public:
   DestructorDecl(DeclState *DS) : FunctionDecl(DS) {}
 };
@@ -163,7 +112,6 @@ public:
 };
 
 class VarDecl : public StorageDecl {
-
 public:
   VarDecl(DeclState *DS) : StorageDecl(DS) {}
 };
@@ -197,10 +145,12 @@ class InfixOperatorDecl final : public OperatorDecl {
 public:
   InfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
 };
+
 class PostfixOperatorDecl final : public OperatorDecl {
 public:
   PostfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
 };
 
 } // namespace stone
+
 #endif

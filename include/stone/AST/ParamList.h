@@ -20,16 +20,16 @@ public:
 
 class TemplateParamList : public ParamList {
 public:
-  AnyParamList() : ParamList(ParamList::Any) {}
+  TemplateParamList() : ParamList(ParamListKind::Any) {}
 };
 class UsingParamList : public ParamList {
 public:
-  AnyParamList() : ParamList(ParamList::Using) {}
+  UsingParamList() : ParamList(ParamListKind::Using) {}
 };
 
 class SpaceParamList : public ParamList {
 public:
-  SpaceParamList() : ParamList(ParamList::Space) {}
+  SpaceParamList() : ParamList(ParamListKind::Space) {}
 };
 
 } // namespace stone

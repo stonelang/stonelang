@@ -1,11 +1,12 @@
 #ifndef STONE_AST_DECLINFLUENCER_H
 #define STONE_AST_DECLINFLUENCER_H
 
+#include "stone/AST/Artifact.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
+#include "stone/AST/MemoryManager.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/Visibility.h"
-#include "stone/Support/SrcLoc.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"
@@ -16,22 +17,25 @@
 #include <cassert>
 #include <cstdint>
 #include <vector>
+
 namespace stone {
 
 enum class DeclInfluencerKind : uint8_t {
-  None = 0, // Default value for uninitialized or null properties
+  None = 0,
 #define DECL_INFLUENCER(ID, Parent) ID,
 #define LAST_DECL_INFLUENCER(ID) Last_Type = ID,
 #define DECL_INFLUENCER_RANGE(ID, FirstID, LastID)                             \
   First_##ID##Type = FirstID, Last_##ID##Type = LastID,
 #include "stone/AST/DeclInfluencerNode.def"
 };
+
+enum class DeclInfluencerClass { Modifier, Attribute };
+
 } // namespace stone
 
 namespace llvm {
 
 template <> struct DenseMapInfo<stone::DeclInfluencerKind> {
-
   static inline stone::DeclInfluencerKind getEmptyKey() {
     return stone::DeclInfluencerKind::None;
   }
@@ -52,20 +56,22 @@ template <> struct DenseMapInfo<stone::DeclInfluencerKind> {
 
 namespace stone {
 
-class alignas(1 << DeclAlignInBits) DeclInfluencer
-    : public ASTAllocation<DeclInfluencer> {
+class alignas(1 << DeclAlignInBits) DeclInfluencer : public Artifact {
   DeclInfluencerKind kind;
   SrcLoc loc;
 
 public:
   DeclInfluencer(DeclInfluencerKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
 
-public:
   DeclInfluencerKind GetKind() const { return kind; }
   SrcLoc GetLoc() const { return loc; }
 
-public:
-  // Convenience checks
+  ArtifactKind GetArtifactKind() const override {
+    return ArtifactKind::DeclInfluencer;
+  }
+
+  virtual DeclInfluencerClass GetClass() const = 0;
+
   bool IsTrust() const { return kind == DeclInfluencerKind::Trust; }
   bool IsOpen() const { return kind == DeclInfluencerKind::Open; }
   bool IsVirtual() const { return kind == DeclInfluencerKind::Virtual; }
@@ -74,17 +80,18 @@ public:
   bool IsDeprecated() const { return kind == DeclInfluencerKind::Deprecated; }
   bool IsIntrinsic() const { return kind == DeclInfluencerKind::Intrinsic; }
   bool IsInline() const { return kind == DeclInfluencerKind::Inline; }
-  bool IsHardware() { return GetKind() == DeclInfluencerKind::Hardware; }
-  bool IsExclusive() { return GetKind() == DeclInfluencerKind::Exclusive; }
+  bool IsHardware() const { return kind == DeclInfluencerKind::Hardware; }
+  bool IsExclusive() const { return kind == DeclInfluencerKind::Exclusive; }
 };
 
-// --------------------
-// DeclModifier Hierarchy
-// --------------------
 class DeclModifier : public DeclInfluencer {
 public:
   DeclModifier(DeclInfluencerKind kind, SrcLoc loc)
       : DeclInfluencer(kind, loc) {}
+
+  DeclInfluencerClass GetClass() const override {
+    return DeclInfluencerClass::Modifier;
+  }
 };
 
 class TrustModifier : public DeclModifier {
@@ -119,6 +126,7 @@ public:
   HardwareModifier(SrcLoc loc)
       : DeclModifier(DeclInfluencerKind::Hardware, loc) {}
 };
+
 class ExclusiveModifier : public DeclModifier {
 public:
   ExclusiveModifier(SrcLoc loc)
@@ -136,13 +144,13 @@ public:
   void SetLevel(VisibilityLevel lvl) { level = lvl; }
 };
 
-// --------------------
-// DeclAttribute Hierarchy
-// --------------------
 class DeclAttribute : public DeclInfluencer, public Attribute {
 public:
   DeclAttribute(DeclInfluencerKind kind, SrcLoc loc, SrcRange range)
       : DeclInfluencer(kind, loc), Attribute(loc, range) {}
+  DeclInfluencerClass GetClass() const override {
+    return DeclInfluencerClass::Attribute;
+  }
 };
 
 class DeprecatedAttribute : public DeclAttribute {
@@ -169,33 +177,25 @@ enum class IntrinsicKind : uint8_t {
   CountLeadingZeros,
   CountTrailingZeros,
   BitReverse,
-
   SaturatingAddSigned,
   SaturatingAddUnsigned,
   FusedMulAdd,
   SqrtFloat,
   SqrtDouble,
-
   Memcpy,
   Memmove,
   Memset,
   MemoryFence,
-
   AtomicAdd,
   AtomicSub,
   AtomicAnd,
   AtomicOr,
   AtomicXor,
   AtomicCompareExchange,
-
   Expect,
   Trap,
   DebugTrap,
-  Unreachable,
-
-  // (optional future: target-specific)
-  // X86SSE2Sqrt,
-  // ARMNEONAdd
+  Unreachable
 };
 
 class IntrinsicAttribute : public DeclAttribute {
@@ -218,7 +218,6 @@ public:
   AbstractDeclInfluencerList()
       : mask(static_cast<unsigned>(DeclInfluencerKind::Last_Type) + 1) {}
 
-  // Overload the bool operator
   explicit operator bool() const { return !influencers.empty(); }
 
 protected:
@@ -226,9 +225,11 @@ protected:
     influencers[influencer->GetKind()] = influencer;
     mask.set(static_cast<unsigned>(influencer->GetKind()));
   }
+
   bool Has(DeclInfluencerKind kind) const {
     return mask.test(static_cast<unsigned>(kind));
   }
+
   bool Has(DeclInfluencer *influencer) const {
     assert(influencer && "Cannot add null decl-influencer!");
     return Has(influencer->GetKind());
@@ -240,52 +241,46 @@ public:
     return it != influencers.end() ? it->second : nullptr;
   }
 
-public:
-  bool IsEmpty() const { return influencers.size() == 0; }
+  bool IsEmpty() const { return influencers.empty(); }
 };
 
 class DeclInfluencerList final : public AbstractDeclInfluencerList {
-  ASTSession &session;
+  MemoryManager &mem;
 
 public:
-  explicit DeclInfluencerList(ASTSession &session) : session(session) {}
+  explicit DeclInfluencerList(MemoryManager &mem) : mem(mem) {}
 
-public:
-  ASTSession &GetASTSession() { return session; }
+  MemoryManager &GetMemory() { return mem; }
 
-public:
-  void AddTrust(SrcLoc loc) { Add(new (session) TrustModifier(loc)); }
-  void AddPure(SrcLoc loc) { Add(new (session) PureModifier(loc)); }
-  void AddVirtual(SrcLoc loc) { Add(new (session) VirtualModifier(loc)); }
-  void AddPersonal(SrcLoc loc) { Add(new (session) PersonalModifier(loc)); }
+  void AddTrust(SrcLoc loc) { Add(mem.Create<TrustModifier>(loc)); }
+  void AddPure(SrcLoc loc) { Add(mem.Create<PureModifier>(loc)); }
+  void AddVirtual(SrcLoc loc) { Add(mem.Create<VirtualModifier>(loc)); }
+  void AddPersonal(SrcLoc loc) { Add(mem.Create<PersonalModifier>(loc)); }
   void AddPublic(SrcLoc loc) {
-    Add(new (session) VisibilityModifier(VisibilityLevel::Public, loc));
+    Add(mem.Create<VisibilityModifier>(VisibilityLevel::Public, loc));
   }
   void AddPrivate(SrcLoc loc) {
-    Add(new (session) VisibilityModifier(VisibilityLevel::Private, loc));
+    Add(mem.Create<VisibilityModifier>(VisibilityLevel::Private, loc));
   }
   void AddInternal(SrcLoc loc) {
-    Add(new (session) VisibilityModifier(VisibilityLevel::Internal, loc));
+    Add(mem.Create<VisibilityModifier>(VisibilityLevel::Internal, loc));
   }
 
-public:
   bool HasTrust() { return Has(DeclInfluencerKind::Trust); }
   bool HasPure() { return Has(DeclInfluencerKind::Pure); }
-  bool HasVritual() { return Has(DeclInfluencerKind::Virtual); }
+  bool HasVirtual() { return Has(DeclInfluencerKind::Virtual); }
   bool HasPersonal() { return Has(DeclInfluencerKind::Personal); }
   bool HasVisibility() { return Has(DeclInfluencerKind::Visibility); }
   bool HasHardware() const { return Has(DeclInfluencerKind::Hardware); }
   bool HasExclusive() const { return Has(DeclInfluencerKind::Exclusive); }
 
-public:
   void AddIntrinsic(IntrinsicKind kind, SrcLoc loc, SrcRange srcRange) {
-    Add(new (session) IntrinsicAttribute(kind, loc, srcRange));
+    Add(mem.Create<IntrinsicAttribute>(kind, loc, srcRange));
   }
   void AddExtern(SrcLoc loc, SrcRange srcRange) {
-    Add(new (session) ExternAttribute(loc, srcRange));
+    Add(mem.Create<ExternAttribute>(loc, srcRange));
   }
 
-public:
   bool HasIntrinsic() { return Has(DeclInfluencerKind::Intrinsic); }
   bool HasExtern() { return Has(DeclInfluencerKind::Extern); }
 };

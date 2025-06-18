@@ -29,17 +29,25 @@ static const FileTypeInfo &GetFileTypeInfo(FileType fileType) {
 bool stone::IsAnyFileType(FileType fileType) {
   switch (fileType) {
   case FileType::Stone:
-  case FileType::IR:
+  case FileType::Space:
+  case FileType::SpaceDoc:
+  case FileType::Spaces:
   case FileType::Object:
-  case FileType::Assembly:
+  case FileType::IR:
   case FileType::BC:
-  case FileType::StoneModuleFile:
+  case FileType::Assembly:
+  case FileType::StaticLibrary:
+  case FileType::DynamicLibrary:
+  case FileType::Executable:
+  case FileType::Diagnostics:
+  case FileType::Dependencies:
+  case FileType::Autolink:
+  case FileType::PCH:
+  case FileType::TBD:
     return true;
-  case FileType::None:
-  case FileType::INVALID:
+  default:
     return false;
   }
-  return false;
 }
 
 llvm::StringRef stone::GetFileTypeName(FileType fileType) {
@@ -51,9 +59,8 @@ llvm::StringRef stone::GetFileTypeExt(FileType fileType) {
 }
 
 FileType stone::GetFileTypeByExt(const llvm::StringRef ext) {
-  if (ext.empty()) {
+  if (ext.empty())
     return FileType::INVALID;
-  }
   assert(ext.front() == '.' && "not a file extension");
   return llvm::StringSwitch<FileType>(ext.drop_front())
 #define FILE_TYPE(TYPE, NAME, EXT) .Case(EXT, FileType::TYPE)
@@ -62,9 +69,8 @@ FileType stone::GetFileTypeByExt(const llvm::StringRef ext) {
 }
 
 FileType stone::GetFileTypeByName(const llvm::StringRef name) {
-  if (name.empty()) {
+  if (name.empty())
     return FileType::INVALID;
-  }
   return llvm::StringSwitch<FileType>(name)
 #define FILE_TYPE(TYPE, NAME, EXT) .Case(NAME, FileType::TYPE)
 #include "stone/Support/FileType.def"
@@ -72,23 +78,19 @@ FileType stone::GetFileTypeByName(const llvm::StringRef name) {
 }
 
 FileType stone::GetFileTypeByPath(const llvm::StringRef path) {
-  if (!llvm::sys::path::has_extension(path)) {
+  if (!llvm::sys::path::has_extension(path))
     return FileType::INVALID;
-  }
   auto ext = llvm::sys::path::extension(path).str();
   auto fileType = stone::GetFileTypeByExt(ext);
   if (fileType == FileType::INVALID) {
     auto pathStem = llvm::sys::path::stem(path);
-    // If this path has a multiple '.' extension (e.g. .abi.json),
-    // then iterate over all preceeding possible extension variants.
     while (llvm::sys::path::has_extension(pathStem)) {
       auto nextExtension = llvm::sys::path::extension(pathStem);
       pathStem = llvm::sys::path::stem(pathStem);
       ext = nextExtension.str() + ext;
       fileType = stone::GetFileTypeByExt(ext);
-      if (fileType != FileType::INVALID) {
+      if (fileType != FileType::INVALID)
         break;
-      }
     }
   }
   return fileType;
@@ -99,64 +101,63 @@ bool stone::IsTextual(FileType ty) {
   case FileType::Stone:
   case FileType::Assembly:
   case FileType::IR:
+  case FileType::Space:
+  case FileType::SpaceDoc:
+  case FileType::Diagnostics:
+  case FileType::Dependencies:
+  case FileType::TBD:
     return true;
-  case FileType::Object:
-  case FileType::BC:
-  case FileType::None:
+  default:
     return false;
-  case FileType::INVALID:
-    llvm_unreachable("Invalid type ID.");
   }
-
-  // Work around MSVC warning: not all control paths return a value
-  llvm_unreachable("All switch cases are covered");
 }
 
-/// Returns true if this file type is None
 bool stone::IsNoneFileType(FileType fileType) {
   return fileType == FileType::None;
 }
 
-/// Returns true if this file type is Stone
 bool stone::IsStoneFileType(FileType fileType) {
   return fileType == FileType::Stone;
 }
 
-/// Returns true if this file type is Object
 bool stone::IsObjectFileType(FileType fileType) {
   return fileType == FileType::Object;
 }
 
-/// Returns true if this file type is outputable
 bool stone::IsOutputFileType(FileType fileType) {
-
   switch (fileType) {
-  case FileType::Assembly:
+  case FileType::Space:
+  case FileType::SpaceDoc:
+  case FileType::Spaces:
+  case FileType::Object:
   case FileType::IR:
   case FileType::BC:
-  case FileType::Object:
+  case FileType::Assembly:
+  case FileType::StaticLibrary:
+  case FileType::DynamicLibrary:
+  case FileType::Executable:
+  case FileType::Diagnostics:
+  case FileType::Dependencies:
+  case FileType::Autolink:
+  case FileType::PCH:
+  case FileType::TBD:
     return true;
-  case FileType::Stone:
+  default:
     return false;
-  case FileType::INVALID:
-    llvm_unreachable("Invalid type ID.");
   }
 }
 
-/// Returns true if this file type is outputable
 bool stone::IsInputFileType(FileType fileType) {
   switch (fileType) {
   case FileType::Stone:
   case FileType::IR:
   case FileType::Object:
-  case FileType::StoneModuleFile:
   case FileType::Autolink:
+  case FileType::PCH:
     return true;
-  case FileType::Assembly:
-  case FileType::BC:
+  default:
     return false;
   }
-  llvm_unreachable("Invalid type ID.");
 }
 
 bool stone::IsAfterLLVM(FileType ty) {
@@ -165,55 +166,36 @@ bool stone::IsAfterLLVM(FileType ty) {
   case FileType::IR:
   case FileType::BC:
   case FileType::Object:
+  case FileType::StaticLibrary:
+  case FileType::DynamicLibrary:
+  case FileType::Executable:
     return true;
-  case FileType::Stone:
-  case FileType::None:
+  default:
     return false;
-  case FileType::INVALID:
-    llvm_unreachable("Invalid type ID.");
   }
-
-  // Work around MSVC warning: not all control paths return a value
-  llvm_unreachable("All switch cases are covered");
 }
 
 bool stone::IsPartOfStoneCompilation(FileType ty) {
   switch (ty) {
   case FileType::Stone:
+  case FileType::Space:
     return true;
-  case FileType::Assembly:
-  case FileType::IR:
-  case FileType::BC:
-  case FileType::Object:
-  case FileType::None:
+  default:
     return false;
-  case FileType::INVALID:
-    llvm_unreachable("Unknown type.");
   }
-  // Work around MSVC warning: not all control paths return a value
-  llvm_unreachable("All switch cases are covered");
 }
 
 bool stone::IsPartOfLLVMCompilation(FileType ty) {
   switch (ty) {
   case FileType::IR:
   case FileType::BC:
-    return true;
-  case FileType::Stone:
-  case FileType::Assembly:
   case FileType::Object:
-  case FileType::None:
+    return true;
+  default:
     return false;
-  case FileType::INVALID:
-    llvm_unreachable("Unknown type.");
   }
-  // Work around MSVC warning: not all control paths return a value
-  llvm_unreachable("All switch cases are covered");
 }
 
-/// Returns true if the type is a file that is linkable
-///
-/// These need to be passed to the stone Compile
 bool stone::ShouldCompileFileType(FileType ty) {
   switch (ty) {
   case FileType::Stone:
@@ -221,34 +203,27 @@ bool stone::ShouldCompileFileType(FileType ty) {
   default:
     return false;
   }
-  // Work around MSVC warning: not all control paths return a value
-  llvm_unreachable("All switch cases are covered");
 }
 
-/// Returns true if the type is a file that is linkable
-///
-/// These need to be passed to the stone Compile
 bool stone::CanLinkFileType(FileType ty) {
   switch (ty) {
   case FileType::Object:
+  case FileType::StaticLibrary:
+  case FileType::DynamicLibrary:
     return true;
   default:
     return false;
   }
-  // Work around MSVC warning: not all control paths return a value
-  llvm_unreachable("All switch cases are covered");
 }
 
 bool stone::FileExists(llvm::StringRef name) {
-  if (llvm::sys::fs::exists(name)) {
-    return true;
-  }
-  return false;
+  return llvm::sys::fs::exists(name);
 }
 
 llvm::StringRef stone::GetFileExt(llvm::StringRef name) {
   return llvm::sys::path::extension(name);
 }
+
 llvm::StringRef stone::GetFilePath(llvm::StringRef name) {
   return llvm::sys::path::root_name(name);
 }
@@ -256,6 +231,7 @@ llvm::StringRef stone::GetFilePath(llvm::StringRef name) {
 llvm::StringRef stone::GetFileStem(llvm::StringRef path) {
   return llvm::sys::path::stem(path);
 }
+
 bool stone::CanExecuteFile(std::string path) {
   return llvm::sys::fs::can_execute(llvm::Twine(path));
 }

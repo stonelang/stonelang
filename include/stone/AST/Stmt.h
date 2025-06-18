@@ -1,19 +1,11 @@
 #ifndef STONE_AST_STMT_H
 #define STONE_AST_STMT_H
 
-#include "stone/AST/ASTUnit.h"
+#include "stone/AST/Artifact.h"
 
 namespace stone {
 
-enum class StmtKind : uint8_t {
-#define STMT(ID, PARENT) ID,
-#define LAST_STMT(ID) Last_Stmt = ID,
-#define STMT_RANGE(Id, FirstId, LastId)                                        \
-  First_##Id##Stmt = FirstId, Last_##Id##Stmt = LastId,
-#include "stone/AST/StmtNode.def"
-};
-
-class alignas(8) Stmt : public ASTUnit {
+class alignas(8) Stmt : public Artifact {
   StmtKind kind;
 
 public:
@@ -24,31 +16,34 @@ public:
   Stmt &operator=(Stmt &&) = delete;
 
 public:
-  Stmt(StmtKind kind, ASTSession &session);
+  Stmt(StmtKind kind);
 
 public:
   StmtKind GetKind() const { return kind; }
-  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Stmt; }
+  ArtifactKind GetArtifactKind() const override { return ArtifactKind::Stmt; }
 
 public:
-  static bool classof(const ASTUnit *unit) {
-    return unit->GetUnitKind() == ASTUnitKind::Stmt;
+  static bool classof(const Stmt *stmt) {
+    return (stmt->GetKind() >= LastStmt && stmt->GetKind() <= FirstStmt);
+  }
+  static bool classof(const Artifact *artifact) {
+    return unit->GetArtifactKind() == ArtifactKind::Stmt;
   }
 };
 
 class BraceStmt final : public Stmt {
 public:
-  BraceStmt(ASTSession &session) : Stmt(StmtKind::Brace, session) {}
+  BraceStmt() : Stmt(StmtKind::Brace) {}
 };
 
 class ResturnStmt final : public Stmt {
 public:
-  ResturnStmt(ASTSession &session) : Stmt(StmtKind::Return, session) {}
+  ResturnStmt() : Stmt(StmtKind::Return) {}
 };
 
 class FreeStmt final : public Stmt {
 public:
-  FreeStmt(ASTSession &session) : Stmt(StmtKind::Free, session) {}
+  FreeStmt() : Stmt(StmtKind::Free) {}
 };
 
 } // namespace stone

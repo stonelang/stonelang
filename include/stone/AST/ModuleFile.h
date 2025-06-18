@@ -1,13 +1,14 @@
 #ifndef STONE_AST_MODULEFILE_H
 #define STONE_AST_MODULEFILE_H
 
-#include "stone/AST/ASTUnit.h"
 #include "stone/AST/Decl.h"
-#include "stone/AST/ModuleFileKind.h"
+#include "stone/AST/FileArtifact.h"
+#include "stone/AST/Scope.h"
 
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
+class Module;
 class SpaceDecl;
 enum class ModuleFileStage : uint8_t {
   None = 1 << 0,
@@ -21,10 +22,10 @@ inline bool HasStage(ModuleFileStage current, ModuleFileStage check) {
   return static_cast<uint8_t>(current) & static_cast<uint8_t>(check);
 }
 
-class ModuleFile final : public FileUnit {
+class ModuleFile final : public FileArtifact {
   unsigned bufferID;
   llvm::StringRef input;
-  ASTScope *scope = nullptr;
+  Scope *scope = nullptr;
   std::vector<Decl *> topLevelDecls;
   ModuleFileStage stage = ModuleFileStage::None;
 
@@ -39,8 +40,8 @@ public:
   unsigned GetSrcBufferID() { return srcBufferID; }
   llvm::StringRef GetInput() const { return input; }
 
-  ASTScope *GetScope() const { return scope; }
-  void SetScope(ASTScope *S) { scope = S; }
+  Scope *GetScope() const { return scope; }
+  void SetScope(Scope *S) { scope = S; }
 
   Decl *GetFirstDecl() const;
   bool HasFirstDecl() const;
@@ -48,7 +49,9 @@ public:
   void AddTopLevelDecl(Decl *D) { topLevelDecls.push_back(D); }
   llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
 
-  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::File; }
+  ArtifactKind ArtifactKind() const override {
+    return ArtifactKind::ModuleFile;
+  }
   void Flush() override;
 
   llvm::StringRef ModuleFile::GetDisplayName() const {
@@ -57,8 +60,8 @@ public:
   void Dump(llvm::raw_ostream &os) const;
 
 public:
-  static bool classof(const ASTUnit *unit) {
-    return unit->GetUnitKind() == ASTUnitKind::File;
+  static bool classof(const Artifact *unit) {
+    return unit->GetUnitKind() == ArtifactKind::ModuleFile;
   }
 };
 

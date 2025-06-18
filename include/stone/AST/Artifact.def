@@ -1,0 +1,23 @@
+#ifndef ARTIFACT
+#define ARTIFACT(Kind)
+#endif
+
+ARTIFACT(Decl)
+ARTIFACT(Expr)
+ARTIFACT(Stmt)
+ARTIFACT(Type)
+ARTIFACT(Module)
+ARTIFACT(ModuleFile)
+
+//ARTIFACT(Builtin)
+
+ARTIFACT(DeclState)
+ARTIFACT(TypeState)
+
+ARTIFACT(TypeInfluencer)
+ARTIFACT(DeclInfluencer)
+
+
+#undef LAST_DECL
+
+

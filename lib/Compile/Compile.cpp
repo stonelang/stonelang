@@ -20,39 +20,39 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (!frontend.ParseArgStrings(args).IsSuccess()) {
     return 1;
   }
-  switch (frontend.GetMode()) {
-  case FrontendMode::PrintHelp: {
-    // instance.GetInvocation().GetCompilerOptions().PrintHelp();
-    // return FinishCompile();
-  }
-  case FrontendMode::PrintHelpHidden: {
-    // instance.GetInvocation().GetCompilerOptions().PrintHelp(true);
-    // return FinishCompile();
-  }
-  case FrontendMode::PrintVersion: {
-    // stone::PrintCompilerVersion();
-    // return FinishCompile();
-  }
-  case FrontendMode::PrintFeature: {
-    // stone::PrintCompilerFeatures();
-    // return FinishCompile();
-  }
-  default: {
-    break;
-  }
-  }
+  // switch (frontend.GetMode()) {
+  // case FrontendMode::PrintHelp: {
+  //   // instance.GetInvocation().GetCompilerOptions().PrintHelp();
+  //   // return FinishCompile();
+  // }
+  // case FrontendMode::PrintHelpHidden: {
+  //   // instance.GetInvocation().GetCompilerOptions().PrintHelp(true);
+  //   // return FinishCompile();
+  // }
+  // case FrontendMode::PrintVersion: {
+  //   // stone::PrintCompilerVersion();
+  //   // return FinishCompile();
+  // }
+  // case FrontendMode::PrintFeature: {
+  //   // stone::PrintCompilerFeatures();
+  //   // return FinishCompile();
+  // }
+  // default: {
+  //   break;
+  // }
+  // }
 
-  frontend.SetObserver(observer);
-  // Simple for now
-  if (!frontend.SetupASTSession().IsSuccess()) {
-    return 1;
-  }
+  // frontend.SetObserver(observer);
+  // // Simple for now
+  // if (!frontend.SetupASTSession().IsSuccess()) {
+  //   return 1;
+  // }
 
-  auto space = frontend.CreateSpace();
-  if (!space->Initialize().IsSuccess()) {
-    return 1;
-  }
-  space->Evaluate();
+  // auto space = frontend.CreateSpace();
+  // if (!space->Initialize().IsSuccess()) {
+  //   return 1;
+  // }
+  // space->Evaluate();
   return 0;
 }
 

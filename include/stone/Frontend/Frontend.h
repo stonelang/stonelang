@@ -21,34 +21,7 @@
 
 namespace stone {
 
-class FrontendArgListConverter final {
-public:
-  FrontendArgListConverter();
-
-public:
-  Status Convert(Frontend &frontend);
-  Status ParseFrontendOptions();
-  Status ParseFrontendMode();
-  Status ParseDiagnosticOptions();
-  Status ParseTargetOptions();
-  Status ParseCodeGenOptions();
-};
-
-class FrontendCommandLine {
-  friend FrontendArgListConverter;
-
-  FrontendArgListConverter converter;
-  FrontendArgListConverter &GetArgListConverter() { return converter; }
-
-public:
-  FrontendCommandLine() {}
-
-public:
-  Status ParseArgStrings(llvm::ArrayRef<const char *> args);
-};
-
 class Frontend final {
-  friend FrontendArgListConverter;
 
   FrontendOptions frontendOpts;
   CodeGenOptions codeGenOpts;
@@ -58,19 +31,13 @@ class Frontend final {
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
   FrontendObserver *observer;
 
-  std::unique_ptr<ASTSession> session;
+  std::unique_ptr<MemoryManager> astMemory;
   std::unique_ptr<ClangImporter> clangImporter;
-
-  std::unique_ptr<ASTMemory> astMemory;
-  Space *space = nullptr;
-
-  FrontendArgListConverter converter;
-  FrontendArgListConverter &GetArgListConverter() { return converter; }
 
 public:
   Frontend(llvm::StringRef executablePath, llvm::StringRef executableNam);
   Status ParseArgStrings(llvm::ArrayRef<const char *> args);
-  FrontendMode GetMode() { return frontendOpts.Mode; }
+  FrontendAction GetAction() { return frontendOpts.CurrentAction; }
 
 public:
   FrontendOptions &GetFronendOptions() { return frontendOpts; }
@@ -83,16 +50,16 @@ public:
   void SetObserver(FrontendObserver *obs) { observer = obs; }
   FrontendObserver *GetObserver() { return observer; }
 
-public:
-  Status SetupASTSession();
-  bool HasASTSession() { return session != nullptr; }
-  ASTSession &GetASTSession() { return *session; }
-
-  // llvm::ArrayRef<EvaluatorKind> GetPipeline(FrontendMode mode);
-  FrontendSpace *CreateSpace();
-
 private:
   Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
+
+private:
+  Status ConvertArgList(llvm::opt::InputArgList &argList);
+  Status ParseFrontendOptions();
+  Status ParseFrontendAction();
+  Status ParseDiagnosticOptions();
+  Status ParseTargetOptions();
+  Status ParseCodeGenOptions();
 };
 
 } // namespace stone

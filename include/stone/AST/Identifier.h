@@ -4,6 +4,7 @@
 #include "stone/Support/EditorPlaceholder.h"
 #include "llvm/Support/Allocator.h"
 
+#include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 
 #include <stdint.h>

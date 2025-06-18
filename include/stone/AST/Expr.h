@@ -1,8 +1,8 @@
 #ifndef STONE_AST_EXPR_H
 #define STONE_AST_EXPR_H
 
-#include "stone/AST/ASTUnit.h"
 #include "stone/AST/ASTWalker.h"
+#include "stone/AST/Artifact.h"
 
 namespace stone {
 
@@ -15,7 +15,7 @@ enum class ExprKind : uint8_t {
 
 };
 
-class alignas(8) Expr : public ASTUnit {
+class alignas(8) Expr : public Artifact {
   ExprKind kind;
 
 public:
@@ -26,13 +26,13 @@ public:
   Expr &operator=(Expr &&) = delete;
 
 public:
-  Expr(ExprKind kind, ASTSession &session);
+  Expr(ExprKind kind);
 
   // ExprKind kind, Type qualTy, ExprValueKind VK, ExprObjectKind OK
 
 public:
   ExprKind GetKind() const { return kind; }
-  ASTUnitKind GetUnitKind() const override { return ASTUnitKind::Expr; }
+  ArtifactKind GetUnitKind() const override { return ArtifactKind::Expr; }
   /// This recursively walks the AST rooted at this expression.
   // Expr *Walk(ASTWalker &walker);
   // Expr *Walk(ASTWalker &&walker) { return Walk(walker); }
@@ -42,15 +42,15 @@ public:
   //   return D->GetKind() >= ExprKind::FirstValueDecl &&
   //          D->GetKind() <= ExprKind::LastValueDecl;
   // }
-  static bool classof(const ASTUnit *unit) {
-    return unit->GetUnitKind() == ASTUnitKind::Expr;
+  static bool classof(const Artifact *unit) {
+    return unit->GetUnitKind() == ArtifactKind::Expr;
   }
 };
 
 class NewExpr final : public Expr {
 
 public:
-  NewExpr(ASTSession &session) : Expr(ExprKind::New, session) {}
+  NewExpr() : Expr(ExprKind::New) {}
 };
 // if: error then "error"
 //                 else if warning then "warn"

@@ -3,8 +3,6 @@
 
 using namespace stone;
 
-FrontendArgListConverter::FrontendArgListConverter() {}
-
 Status Frontend::ParseArgStrings(llvm::ArrayRef<const char *> args) {
   // Frontend CL options
   unsigned missingArgIndex;
@@ -13,10 +11,10 @@ Status Frontend::ParseArgStrings(llvm::ArrayRef<const char *> args) {
       frontendOpts.GetLangOptions().GetOptTable().ParseArgs(
           args, missingArgIndex, missingArgCount, opts::FrontendOption));
 
-  return GetArgListConverter().Convert(*this);
+  return Status::Success();
 }
 
-Status FrontendArgListConverter::Convert(Frontend &frontend) {
+Status Frontend::ConvertArgList(llvm::opt::InputArgList &argList) {
 
   return Status::Success();
 }

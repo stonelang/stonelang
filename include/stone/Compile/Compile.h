@@ -7,47 +7,45 @@
 #include "llvm/IR/Module.h"
 
 namespace stone {
-
-class SourceFile;
 class Frontend;
-class FrontendSpace;
+class FrontendModule;
 class FrontendObserver;
 
-int RunF(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
-         FrontendObserver *observer = nullptr);
+int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
+            FrontendObserver *observer = nullptr);
 
-/// \return a frontend module
-FrontendSpace *CreateFrontendSpace(Frontend &frontend);
+// /// \return a frontend module
+// FrontendSpace *CreateFrontendSpace(Frontend &frontend);
 
-/// \return status of compile
-Status PerformCompile(FrontendSpace &fm);
+// /// \return status of compile
+// Status PerformCompile(FrontendSpace &fm);
 
-/// \return Success if we compiled an ir file.
-Status PerformCompileLLVM(FrontendSpace &fm);
+// /// \return Success if we compiled an ir file.
+// Status PerformCompileLLVM(FrontendSpace &fm);
 
-/// \return Success if syntax analysis is successful
-Status PerformParse(FrontendSpace &fm);
+// /// \return Success if syntax analysis is successful
+// Status PerformParse(FrontendSpace &fm);
 
-/// \return Success if syntax analysis is successful
-Status PerformParse(SourceFile *SF);
+// /// \return Success if syntax analysis is successful
+// Status PerformParse(SourceFile *SF);
 
-// \return true if syntax analysis is successful
-Status PerformScaffolding(FrontendSpace &fm);
+// // \return true if syntax analysis is successful
+// Status PerformScaffolding(FrontendSpace &fm);
 
-/// \return true if syntax analysis is successful
-Status PerformScaffolding(SourceFile *S);
+// /// \return true if syntax analysis is successful
+// Status PerformScaffolding(SourceFile *S);
 
-/// \return true if syntax analysis is successful
-Status PerformCheckTypes(FrontendSpace &fm);
+// /// \return true if syntax analysis is successful
+// Status PerformCheckTypes(FrontendSpace &fm);
 
-/// \return true if syntax analysis is successful
-Status PerformCheckTypes(SourceFile *S);
+// /// \return true if syntax analysis is successful
+// Status PerformCheckTypes(SourceFile *S);
 
-// \return true if syntax analysis is successful
-Status PerformCodeGen(FrontendSpace &fm);
+// // \return true if syntax analysis is successful
+// Status PerformCodeGen(FrontendSpace &fm);
 
-// \return true if syntax analysis is successful
-Status PerformBackend(FrontendSpace &fm);
+// // \return true if syntax analysis is successful
+// Status PerformBackend(FrontendSpace &fm);
 
 } // namespace stone
 

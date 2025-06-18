@@ -5,11 +5,13 @@ set(LLVM_LINK_COMPONENTS
  )
 
 set(stone_ast_sources
-	ASTSession.cpp
-	ASTUnit.cpp
-	Module.cpp
-	ModuleFile.cpp
+	Artifact.cpp
+	AST.cpp
 	Decl.cpp
+	Module.cpp
+	ModuleContext.cpp
+	ModuleFile.cpp
+	DeclState.cpp
 	Diagnostics.cpp
 	DiagnosticID.cpp
 	Evaluator.cpp
@@ -18,6 +20,7 @@ set(stone_ast_sources
 	Stmt.cpp
 	Type.cpp
 	TypeChecker.cpp
+	TypeState.cpp
 	Visibility.cpp
 
 	LINK_LIBS

@@ -2,4 +2,4 @@
 
 using namespace stone;
 
-Stmt::Stmt(StmtKind kind, ASTSession &session) : ASTUnit(session), kind(kind) {}
+Stmt::Stmt(StmtKind kind) : Artifact(nullptr), kind(kind) {}

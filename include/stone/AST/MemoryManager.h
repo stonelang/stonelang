@@ -1,5 +1,5 @@
-#ifndef STONE_AST_MEMORY_H
-#define STONE_AST_MEMORY_H
+#ifndef STONE_AST_MEMORYMANAGER_H
+#define STONE_AST_MEMORYMANAGER_H
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SetVector.h"
@@ -7,14 +7,14 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/Allocator.h"
 
-class ASTMemory final {
-protected:
+namespace stone {
+class MemoryManager final {
   mutable llvm::BumpPtrAllocator allocator;
 
 public:
-  ASTMemory() = default;
-  ASTMemory(const ASTMemory &) = delete;
-  ASTMemory &operator=(const ASTMemory &) = delete;
+  MemoryManager() = default;
+  MemoryManager(const MemoryManager &) = delete;
+  MemoryManager &operator=(const MemoryManager &) = delete;
 
 public:
   /// Raw memory allocation
@@ -95,11 +95,26 @@ public:
     return {AllocateCopy<T>(setVec.begin(), setVec.end()), setVec.size()};
   }
 
+  template <typename T, typename... Args> T *Create(Args &&...args) const {
+    T *res = AllocateMemory<T>();
+    new (res) T(std::forward<Args>(args)...);
+    return res;
+  }
+
+  /// Create and initialize an array of objects
+  template <typename T, typename... Args>
+  llvm::MutableArrayRef<T> CreateArray(size_t count, Args &&...args) const {
+    T *data = AllocateMemory<T>(count);
+    for (size_t i = 0; i < count; ++i)
+      new (data + i) T(std::forward<Args>(args)...);
+    return {data, count};
+  }
+
   /// Access allocator
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
-
   /// Get total memory used
   size_t GetTotalMemoryAllocated() const { return allocator.getTotalMemory(); }
 };
 
+} // namespace stone
 #endif // STONE_AST_MEMORY_H

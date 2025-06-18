@@ -3,6 +3,7 @@
 
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
+#include "stone/AST/MemoryManager.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/Visibility.h"
 #include "stone/Support/SrcLoc.h"
@@ -25,7 +26,7 @@
 namespace stone {
 
 enum class TypeInfluencerKind : uint8_t {
-  None = 0, // Default value for uninitialized or null influencers
+  None = 0,
 #define TYPE_INFLUENCER(ID, Parent) ID,
 #define LAST_TYPE_INFLUENCER(ID) Last_Type = ID,
 #define TYPE_INFLUENCER_RANGE(ID, FirstID, LastID)                             \
@@ -58,8 +59,7 @@ template <> struct DenseMapInfo<stone::TypeInfluencerKind> {
 } // namespace llvm
 
 namespace stone {
-class alignas(1 << TypeAlignInBits) TypeInfluencer
-    : public ASTAllocation<TypeInfluencer> {
+class alignas(1 << TypeAlignInBits) TypeInfluencer : public Artifact {
   TypeInfluencerKind kind;
   SrcLoc loc;
 
@@ -69,6 +69,10 @@ public:
 public:
   TypeInfluencerKind GetKind() { return kind; }
   SrcLoc GetLoc() { return loc; }
+
+  ArtifactKind GetArtifactKind() const override {
+    return ArtifactKind::TypeInfluencer;
+  }
 
 public:
   bool IsStone() { return GetKind() == TypeInfluencerKind::Stone; }
@@ -153,19 +157,19 @@ public:
 };
 
 class TypeInfluencerList final : public AbstractTypeInfluencerList {
-  const ASTSession &session;
+  MemoryManager &mem;
 
 public:
-  explicit TypeInfluencerList(const ASTSession &session) : session(session) {}
+  explicit TypeInfluencerList(MemoryManager &mem) : mem(mem) {}
 
 public:
-  const ASTSession &GetASTSession() { return session; }
+  MemoryManager &GetMemory() { return mem; }
 
 public:
-  void AddStone(SrcLoc loc) { Add(new (session) StoneModifier(loc)); }
-  void AddOwn(SrcLoc loc) { Add(new (session) OwnModifier(loc)); }
-  void AddSafe(SrcLoc loc) { Add(new (session) SafeModifier(loc)); }
-  void AddNot(SrcLoc loc) { Add(new (session) NotModifier(loc)); }
+  void AddStone(SrcLoc loc) { Add(mem.Create<StoneModifier>(loc)); }
+  void AddOwn(SrcLoc loc) { Add(mem.Create<OwnModifier>(loc)); }
+  void AddSafe(SrcLoc loc) { Add(mem.Create<SafeModifier>(loc)); }
+  void AddNot(SrcLoc loc) { Add(mem.Create<NotModifier>(loc)); }
 
 public:
   bool HasStone() const { return Has(TypeInfluencerKind::Stone); }

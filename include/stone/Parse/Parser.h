@@ -2,9 +2,9 @@
 #define STONE_PARSE_PARSER_H
 
 #include "stone/AST/ASTFile.h"
-#include "stone/AST/ASTScope.h"
 #include "stone/AST/ASTSession.h"
 #include "stone/AST/DeclState.h"
+#include "stone/AST/Scope.h"
 #include "stone/AST/TypeState.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"

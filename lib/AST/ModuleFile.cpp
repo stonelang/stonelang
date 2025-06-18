@@ -1,13 +1,12 @@
 #include "stone/AST/ModuleFile.h"
-#include "stone/AST/ASTSession.h"
-#include "stone/AST/SpaceDecl.h"
+#include "stone/AST/Decl.h"
 
 using namespace stone;
 
 namespace stone {
 
 ModuleFile::ModuleFile(unsigned bufferID, llvm::StringRef input, Module *parent)
-    : FileUnit(parent), kind(kind), bufferID(bufferID) {}
+    : FileArtifact(parent), kind(kind), bufferID(bufferID) {}
 
 Decl *ModuleFile::GetFirstDecl() const { return nullptr; }
 

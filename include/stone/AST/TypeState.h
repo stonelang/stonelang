@@ -1,7 +1,8 @@
 #ifndef STONE_AST_TYPESTATE_H
 #define STONE_AST_TYPESTATE_H
 
-#include "stone/AST/ASTAllocation.h"
+#include "stone/AST/Artifact.h"
+#include "stone/AST/MemoryAllocation.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeInfluencer.h"
 
@@ -9,11 +10,15 @@ namespace stone {
 
 class DeclState;
 
-class alignas(1 << TypeAlignInBits) TypeState
-    : public ASTAllocation<TypeState> {
+enum class TypeStateKind {
+  Builtin,
+  Function,
+};
 
-  friend class ASTSession;
-  ASTSession &session;
+class alignas(1 << TypeAlignInBits) TypeState : public Artifact {
+
+  // The type that we are dealing with
+  TypeKind kind = TypeKind::None;
 
   // The type that owns this TypeState
   ///\ If the owner type is null
@@ -30,10 +35,13 @@ class alignas(1 << TypeAlignInBits) TypeState
   DeclState *declState = nullptr;
 
 public:
-  explicit TypeState(ASTSession &session) : session(session) {}
+  explicit TypeState(TypeKind kind) : kind(kind) {}
+
+  virtual ArtifactKind GetTypeStateKind() const = 0;
 
 public:
-  ASTSession &GetASTSession() { return session; }
+  void SetKind(TypeKind K) { kind = K; }
+  TypeKind GetKind() { return kind; }
 
   void SetCanType(Type *T) {
     assert(T && "TypeState cannot be assigned a null Type!");
@@ -50,13 +58,25 @@ public:
   void SetLoc(SrcLoc loc) { typeLoc = loc; }
   SrcLoc GetLoc() { return typeLoc; }
   bool HasLoc() { return typeLoc.isValid(); }
+
+  ArtifactKind GetArtifactKind() const override {
+    return ArtifactKind::TypeState;
+  }
 };
 
+// May have to pass the Module
 class BuiltinTypeState final : public TypeState {
-
 public:
-  BuiltinTypeState(ASTSession &session) : TypeState(session) {}
+  BuiltinTypeState() {}
 };
+
+// TypeState
+//  ├── BuiltinTypeState
+//  ├── NominalTypeState
+//  ├── SugTypeState
+//  ├── AccessTypeState
+//  ├── DeducedTypeState
+//  └── FunctionTypeState
 
 } // namespace stone
 

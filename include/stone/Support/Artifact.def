@@ -1,12 +1,9 @@
-// Artifact.def
-// Define TELL_ARTIFACT, CHECK_ARTIFACT, EMIT_ARTIFACT before including this file
-
 #ifndef ARTIFACT
 #define ARTIFACT(M)
 #endif
 
 #ifndef TELL_ARTIFACT
-#define TELL_ARTIFACT(M)
+#define TELL_ARTIFACT(M) 
 #endif
 
 #ifndef CHECK_ARTIFACT
@@ -17,28 +14,28 @@
 #define EMIT_ARTIFACT(M)
 #endif
 
-
 TELL_ARTIFACT(Lifecycle)
 TELL_ARTIFACT(Stats)
-TELL_ARTIFACT(Space)
+TELL_ARTIFACT(Module)
 TELL_ARTIFACT(Version)
 TELL_ARTIFACT(Options) // --tell options --driver or --frontend --stats
 
  
 CHECK_ARTIFACT(Syntax)
 CHECK_ARTIFACT(Types)
-CHECK_ARTIFACT(Space)
+CHECK_ARTIFACT(Module)
  
  
 EMIT_ARTIFACT(AST)
 EMIT_ARTIFACT(IR)
 EMIT_ARTIFACT(Assembly)
-EMIT_ARTIFACT(Space)
+EMIT_ARTIFACT(Module)
 EMIT_ARTIFACT(Object)
 EMIT_ARTIFACT(BC)
 EMIT_ARTIFACT(Executable)
 EMIT_ARTIFACT(Library)
 
- 
+
+RESOLVE_ARTIFACT(Using)
 
 #endif
