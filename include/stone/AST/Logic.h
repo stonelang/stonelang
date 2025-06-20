@@ -1,5 +1,5 @@
-#ifndef STONE_AST_TYPECHECKER_H
-#define STONE_AST_TYPECHECKER_H
+#ifndef STONE_AST_LOGIC_H
+#define STONE_AST_LOGIC_H
 
 namespace stone {
 class Decl;
@@ -8,9 +8,9 @@ class Stmt;
 class Type;
 class SpaceDecl;
 
-class TypeChecker final {
+class Logic final {
 public:
-  TypeChecker();
+  Logic();
 
 public:
   // void CheckSpaceDecl(SpaceDecl &moduleDecl);

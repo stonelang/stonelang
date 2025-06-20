@@ -9,14 +9,14 @@ namespace stone {
 class SourceFile;
 class SpaceDecl;
 class ParserObserver;
-class TypeCheckerObserver;
+class LogicObserver;
 class CodeGenObserver;
 class Frontend;
 
 class FrontendObserver {
 
   ParserObserver *parserObserver = nullptr;
-  TypeCheckerObserver *typeCheckerObserver = nullptr;
+  LogicObserver *typeCheckerObserver = nullptr;
   CodeGenObserver *codeGenObserver = nullptr;
 
 public:
@@ -42,16 +42,16 @@ public:
   bool HasParserObserver() { return GetParserObserver() != nullptr; }
 
 public:
-  // Set the TypeChecker observer
-  void SetTypeCheckerObserver(TypeCheckerObserver *observer) {
+  // Set the Logic observer
+  void SetLogicObserver(LogicObserver *observer) {
     typeCheckerObserver = observer;
   }
 
   /// Callbacks into the parsing pipeline
-  TypeCheckerObserver *GetTypeCheckerObserver() { return typeCheckerObserver; }
+  LogicObserver *GetLogicObserver() { return typeCheckerObserver; }
 
-  ///\return ture if there exist a TypeCheckerObserver
-  bool HasTypeCheckerObserver() { return GetTypeCheckerObserver() != nullptr; }
+  ///\return ture if there exist a LogicObserver
+  bool HasLogicObserver() { return GetLogicObserver() != nullptr; }
 
 public:
   // Callbacks into the parsing pipeline

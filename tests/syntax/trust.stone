@@ -1,0 +1,12 @@
+struct A {
+ trust int i; 
+}
+struct B with A {
+
+}
+join B public fun Do(){
+	Print(i);
+
+}
+
+

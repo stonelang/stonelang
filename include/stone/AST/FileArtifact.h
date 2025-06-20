@@ -9,7 +9,7 @@ namespace stone {
 
 class FileArtifact : public Artifact {
 public:
-  FileArtifact(Artifact *parent) : Artifact(parent) {}
+  FileArtifact(Artifact *parent) {}
 
 public:
   virtual ArtifactKind GetArtifactKind() const = 0;

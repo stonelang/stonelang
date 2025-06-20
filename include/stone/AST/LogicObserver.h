@@ -1,12 +1,12 @@
-#ifndef STONE_AST_TYPECHECKER_OBSERVER_H
-#define STONE_AST_TYPECHECKER_OBSERVER_H
+#ifndef STONE_AST_LOGIC_OBSERVER_H
+#define STONE_AST_LOGIC_OBSERVER_H
 
 namespace stone {
-class TypeCheckerObserver {
+class LogicObserver {
 
 public:
-  TypeCheckerObserver() {}
-  virtual ~TypeCheckerObserver() = default;
+  LogicObserver() {}
+  virtual ~LogicObserver() = default;
 
 public:
   /// Completed semantic analysis

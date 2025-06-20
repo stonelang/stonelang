@@ -2,7 +2,7 @@
 #define STONE_AST_MODULEFILE_H
 
 #include "stone/AST/Decl.h"
-#include "stone/AST/Tree.h"
+#include "stone/AST/Node.h"
 // #include "stone/AST/FileArtifact.h"
 #include "stone/AST/Scope.h"
 
@@ -23,7 +23,7 @@ inline bool HasStage(ModuleFileStage current, ModuleFileStage check) {
   return static_cast<uint8_t>(current) & static_cast<uint8_t>(check);
 }
 
-class ModuleFile final : public Tree {
+class ModuleFile final : public Node {
   unsigned bufferID;
   llvm::StringRef input;
   Scope *scope = nullptr;
@@ -38,7 +38,7 @@ public:
   }
 
 public:
-  unsigned GetSrcBufferID() { return srcBufferID; }
+  unsigned GetSrcBufferID() { return bufferID; }
   llvm::StringRef GetInput() const { return input; }
 
   Scope *GetScope() const { return scope; }
@@ -50,19 +50,20 @@ public:
   void AddTopLevelDecl(Decl *D) { topLevelDecls.push_back(D); }
   llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
 
-  ArtifactKind ArtifactKind() const override {
+  ArtifactKind GetArtifactKind() const override {
     return ArtifactKind::ModuleFile;
   }
   // void Flush() override;
 
-  llvm::StringRef ModuleFile::GetDisplayName() const {
-    return input ? input->GetName() : "<builtin>";
-  }
+  llvm::StringRef GetInputName() { return input; }
+  // llvm::StringRef ModuleFile::GetDisplayName() const {
+  //   return input ? input->GetName() : "<builtin>";
+  // }
   void Dump(llvm::raw_ostream &os) const;
 
 public:
   static bool classof(const Artifact *unit) {
-    return unit->GetUnitKind() == ArtifactKind::ModuleFile;
+    return unit->GetArtifactKind() == ArtifactKind::ModuleFile;
   }
 };
 

@@ -7,30 +7,45 @@
 
 namespace stone {
 
-/// TreeConext { Tree* scope ... }
-class Tree : public Artifact {
-  Tree *parent = nullptr;
-  llvm::SmallVector<Tree *, 16> children;
+// void Walk(ArtifactWalker &walker);
+// void Walk(ArtifactWalker &&walker) { Walk(walker); }
+// void Visit(ASTVisitor& visitor);
+/// NodeConext { Node* scope ... }
+
+class Node : public Artifact {
+  Node *parent = nullptr;
+  llvm::SmallVector<Node *, 16> children;
 
 public:
-  Tree(Tree *parent = nullptr) : parent(parent) {}
+  Node(Node *parent = nullptr) : parent(parent) {}
 
 public:
   bool HasParent() const { return parent != nullptr; }
-  Artifact *GetParent() { return parent; }
-  void SetParent(Tree *tree) { parent = tree; }
+  Node *GetParent() { return parent; }
+  void SetParent(Node *node) { parent = node; }
+  void AddChild(Node *node);
 
+  llvm::ArrayRef<Node *> GetChildren() const { return children; }
+  llvm::SmallVectorImpl<Node *> &GetChildrenMutable() { return children; }
+  bool HasChildren() const { return !children.empty(); }
+  size_t GetNumChildren() const { return children.size(); }
+
+  // Optional: For range-based for-loops
+  auto begin() const { return children.begin(); }
+  auto end() const { return children.end(); }
+
+public:
   virtual ArtifactKind GetArtifactKind() const = 0;
 };
 
-class TreeWalker {
+class Walker {
 public:
-  TreeWalker();
+  Walker();
 
   // virtual ~ArtifactWalker() = default;
 
   // /// Unified dispatcher
-  // virtual bool Walk(Tree *A) {
+  // virtual bool Walk(Node *A) {
 
   // }
 
@@ -43,12 +58,12 @@ public:
   // virtual bool WalkModule(Module *M) { return true; }
   // virtual bool WalkModuleFile(ModuleFile *MF) { return true; }
 
-  // virtual void Walk(Tree *node) = 0;
+  // virtual void Walk(Node *node) = 0;
 };
 
-class TreeVisitor {
+class Visitor {
 public:
-  TreeVisitor();
+  Visitor();
 
   // virtual ~ArtifactVisitor() = default;
 
@@ -72,14 +87,14 @@ public:
   //   return;
   // }
 
-  // virtual void Visit(Tree *node) {} // fallback
+  // virtual void Visit(Node *node) {} // fallback
 
   // virtual void VisitDecl(Decl *decl) {
-  //   Visit(static_cast<TreeArtifact *>(decl));
+  //   Visit(static_cast<Node *>(decl));
   // }
 
   // virtual void VisitType(Type *type) {
-  //   Visit(static_cast<TreeArtifact *>(type));
+  //   Visit(static_cast<Node *>(type));
   // }
 
   // Optional fine-grained visits

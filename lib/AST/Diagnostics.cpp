@@ -1,7 +1,6 @@
 #include "stone/AST/Diagnostics.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/DiagnosticsCore.h"
-#include "stone/AST/SpaceDecl.h"
 #include "stone/AST/Stmt.h"
 #include "stone/Support/Range.h"
 #include "stone/Support/SrcMgr.h"
@@ -987,7 +986,7 @@ CreateDiagnosticInfoForDecl(const Diagnostic &diagnostic) {
     // TODO:
     //  If a declaration was provided instead of a location, and that
     //  declaration has a location we can point to, use that location.
-    loc = decl->GetDeclState()->GetNameLoc();
+    loc = decl->GetNameLoc();
     if (loc.isInvalid()) {
       // SrcLoc ppLoc = PrettyPrintedDeclarations[decl];
       // if (ppLoc.isInvalid()) {
@@ -1011,7 +1010,7 @@ DiagnosticEngine::diagnosticInfoForDiagnostic(const Diagnostic &diagnostic) {
     const stone::Decl *decl = diagnostic.getDecl();
     // If a declaration was provided instead of a location, and that declaration
     // has a location we can point to, use that location.
-    loc = decl->GetDeclState()->GetNameLoc();
+    loc = decl->GetNameLoc();
   }
 
   if (loc.isInvalid()) {

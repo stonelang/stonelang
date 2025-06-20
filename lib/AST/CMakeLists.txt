@@ -6,20 +6,21 @@ set(LLVM_LINK_COMPONENTS
 
 set(stone_ast_sources
 	Artifact.cpp
-	AST.cpp
 	Decl.cpp
 	Module.cpp
 	ModuleContext.cpp
 	ModuleFile.cpp
+	Node.cpp
 	DeclState.cpp
 	Diagnostics.cpp
 	DiagnosticID.cpp
-	Evaluator.cpp
+	EvaluatorEngine.cpp
 	Expr.cpp
 	Scaffolder.cpp
+	Scope.cpp
 	Stmt.cpp
 	Type.cpp
-	TypeChecker.cpp
+	Logic.cpp
 	TypeState.cpp
 	Visibility.cpp
 

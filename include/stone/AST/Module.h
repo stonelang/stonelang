@@ -3,15 +3,17 @@
 
 #include "stone/AST/FileArtifact.h"
 #include "stone/AST/MemoryManager.h"
-#include "stone/AST/Tree.h"
+#include "stone/AST/Node.h"
 
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
-class Module;
-class Scope;
 
-class Module final : public Tree {
+class Scope;
+class ModuleFile;
+class ModuleContext;
+
+class Module final : public Node {
   ModuleContext &context;
   Scope *scope = nullptr;
   llvm::SmallVector<ModuleFile *, 16> files;
@@ -28,7 +30,7 @@ public:
 public:
   llvm::ArrayRef<ModuleFile *> GetFiles() const { return files; }
   void AddFile(ModuleFile *file) { files.push_back(file); }
-  ArtifactKind GetUnitKind() const override { return ArtifactKind::Module; }
+  ArtifactKind GetArtifactKind() const override { return ArtifactKind::Module; }
   // void Flush() override;
 
   ModuleFile *GetFirstFile() const;
@@ -41,7 +43,7 @@ public:
   void AddDep(const Module *S) { deps.push_back(S); }
 
   Identifier GetIdentifier(llvm::StringRef text) const;
-  MemoryManager &GetMemory() { return memory; }
+  ModuleContext &GetMemory() { return context; }
 };
 
 } // namespace stone

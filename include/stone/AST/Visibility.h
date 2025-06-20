@@ -15,9 +15,8 @@ class Decl;
 class Type;
 
 enum class VisibilityLevel : uint8_t {
-  Private = 0, // Only within the type or file
-  Internal,    // Anywhere in the module
-  Public       // Visible to other modules
+  Local = 0, // Scope visibilty.
+  Public     // Visible to other modules
 };
 
 /// At a high level, this checks the given declaration's signature does not

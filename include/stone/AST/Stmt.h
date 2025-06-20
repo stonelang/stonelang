@@ -1,11 +1,12 @@
 #ifndef STONE_AST_STMT_H
 #define STONE_AST_STMT_H
 
-#include "stone/AST/Artifact.h"
+#include "stone/AST/Node.h"
+#include "stone/AST/StmtKind.h"
 
 namespace stone {
 
-class alignas(8) Stmt : public Artifact {
+class alignas(8) Stmt : public Node {
   StmtKind kind;
 
 public:
@@ -27,7 +28,7 @@ public:
     return (stmt->GetKind() >= LastStmt && stmt->GetKind() <= FirstStmt);
   }
   static bool classof(const Artifact *artifact) {
-    return unit->GetArtifactKind() == ArtifactKind::Stmt;
+    return artifact->GetArtifactKind() == ArtifactKind::Stmt;
   }
 };
 

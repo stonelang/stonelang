@@ -1,6 +1,0 @@
-space Syntax;
-
-fun TestAny() {
-
-	object i = 10;
-}

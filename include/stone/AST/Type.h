@@ -2,7 +2,7 @@
 #define STONE_AST_TYPE_H
 
 #include "stone/AST/InlineBitfield.h"
-#include "stone/AST/Tree.h"
+#include "stone/AST/Node.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeKind.h"
 
@@ -19,232 +19,218 @@ namespace stone {
 class Type;
 class TypeState;
 
-class alignas(1 << TypeAlignInBits) Type : public Tree {
+class alignas(1 << TypeAlignInBits) Type : public Node {
   TypeState *TS = nullptr;
 
 public:
-  Type(TypeState *TS) : Tree(nullptr), TS(TS) {
-    assert(TS && "Expected TypeState for a Type!");
-    TS->SetOwner(this);
-  }
+  Type(TypeState *TS);
 
 public:
-  virtual TypeKind GetKind() const { return TS->GetKind(); }
+  TypeKind GetKind() const;
   TypeState *GetTypeState() { return TS; }
+  bool IsCanType() const;
   ArtifactKind GetArtifactKind() const override { return ArtifactKind::Type; }
 
-  bool IsCanType() const {
-    return (TS->HasCanType() && TS->GetCanType() == this);
-  }
-
+public:
   static bool classof(const Type *ty);
-  static bool classof(const Tree *node);
+  static bool classof(const Node *node);
 };
 
+// === Function Type ===
+// class FunType final : public Type {
+// public:
+//   explicit FunType(TypeState *TS) : Type(TS) {}
+// };
+
+// // === Object Types (boxable, runtime types) ===
 class ObjectType : public Type {
 public:
-  ObjectType(TypeState *TS) : Type(TS) {}
+  explicit ObjectType(TypeState *TS) : Type(TS) {}
 };
 
+// // === Nominal Types ===
+// class NominalType : public ObjectType {
+// public:
+//   explicit NominalType(TypeState *TS) : ObjectType(TS) {}
+// };
+
+// class EnumType final : public NominalType {
+// public:
+//   explicit EnumType(TypeState *TS) : NominalType(TS) {}
+// };
+
+// class StructType final : public NominalType {
+// public:
+//   explicit StructType(TypeState *TS) : NominalType(TS) {}
+
+// public:
+// };
+
+// class InterfaceType final : public NominalType {
+// public:
+//   explicit InterfaceType(TypeState *TS) : NominalType(TS) {}
+
+// public:
+// };
+
+// // === Builtin Types ===
 class BuiltinType : public ObjectType {
 public:
-  BuiltinType(TypeState *TS) : ObjectType(TS) {}
+  explicit BuiltinType(TypeState *TS);
 };
 
-class CharType final : public BuiltinType {
-public:
-  CharType(TypeState *TS) : BuiltinType(TS) {}
-};
+// class NumberType : public BuiltinType {
+// public:
+//   explicit NumberType(TypeState *TS) : BuiltinType(TS) {}
+// };
 
-class BoolType final : public BuiltinType {
-public:
-  BoolType(TypeState *TS) : BuiltinType(TS) {}
-};
+// // Integers
+// class IntType final : public NumberType {
+// public:
+//   explicit IntType(TypeState *TS) : NumberType(TS) {}
+// };
+// class Int8Type final : public NumberType {
+// public:
+//   explicit Int8Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class Int16Type final : public NumberType {
+// public:
+//   explicit Int16Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class Int32Type final : public NumberType {
+// public:
+//   explicit Int32Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class Int64Type final : public NumberType {
+// public:
+//   explicit Int64Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class Int128Type final : public NumberType {
+// public:
+//   explicit Int128Type(TypeState *TS) : NumberType(TS) {}
+// };
 
-class NullType final : public BuiltinType {
-public:
-  NullType(TypeState *TS) : BuiltinType(TS) {}
-};
+// // Unsigned integers
+// class UIntType final : public NumberType {
+// public:
+//   explicit UIntType(TypeState *TS) : NumberType(TS) {}
+// };
+// class UInt8Type final : public NumberType {
+// public:
+//   explicit UInt8Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class UInt16Type final : public NumberType {
+// public:
+//   explicit UInt16Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class UInt32Type final : public NumberType {
+// public:
+//   explicit UInt32Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class UInt64Type final : public NumberType {
+// public:
+//   explicit UInt64Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class UInt128Type final : public NumberType {
+// public:
+//   explicit UInt128Type(TypeState *TS) : NumberType(TS) {}
+// };
 
-class NumberType : public BuiltinType {
-public:
-  NumberType(TypeState *TS) : BuiltinType(TS) {}
-};
+// // Floating point
+// class FloatType final : public NumberType {
+// public:
+//   explicit FloatType(TypeState *TS) : NumberType(TS) {}
+// };
+// class Float16Type final : public NumberType {
+// public:
+//   explicit Float16Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class Float32Type final : public NumberType {
+// public:
+//   explicit Float32Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class Float64Type final : public NumberType {
+// public:
+//   explicit Float64Type(TypeState *TS) : NumberType(TS) {}
+// };
+// class Float128Type final : public NumberType {
+// public:
+//   explicit Float128Type(TypeState *TS) : NumberType(TS) {}
+// };
 
-class IntType : public NumberType {
-public:
-  IntType(TypeState *TS) : NumberType(TS) {}
-};
+// // Other builtins
+// class BoolType final : public BuiltinType {
+// public:
+//   explicit BoolType(TypeState *TS) : BuiltinType(TS) {}
+// };
 
-class Int8Type : public NumberType {
-public:
-  Int8Type(TypeState *TS) : NumberType(TS) {}
-};
+// class CharType final : public BuiltinType {
+// public:
+//   explicit CharType(TypeState *TS) : BuiltinType(TS) {}
+// };
 
-class Int16Type : public NumberType {
-public:
-  Int16Type(TypeState *TS) : NumberType(TS) {}
-};
+// class NullType final : public BuiltinType {
+// public:
+//   explicit NullType(TypeState *TS) : BuiltinType(TS) {}
+// };
 
-class Int32Type : public NumberType {
-public:
-  Int32Type(TypeState *TS) : NumberType(TS) {}
-};
+// class StringType final : public BuiltinType {
+// public:
+//   explicit StringType(TypeState *TS) : BuiltinType(TS) {}
+// };
 
-class Int64Type : public NumberType {
-public:
-  Int64Type(TypeState *TS) : NumberType(TS) {}
-};
+// // === Magic (non-canonical) Types ===
+// class MagicType : public Type {
+// public:
+//   explicit MagicType(TypeState *TS) : Type(TS) {}
+// };
 
-class Int128Type : public NumberType {
-public:
-  Int128Type(TypeState *TS) : NumberType(TS) {}
-};
+// class AliasType final : public MagicType {
+// public:
+//   explicit AliasType(TypeState *TS) : MagicType(TS) {}
+// };
 
-class UIntType : public NumberType {
-public:
-  UIntType(TypeState *TS) : NumberType(TS) {}
-};
+// class AutoType final : public MagicType {
+// public:
+//   explicit AutoType(TypeState *TS) : MagicType(TS) {}
+// };
 
-class UInt8Type : public NumberType {
-public:
-  UInt8Type(TypeState *TS) : NumberType(TS) {}
-};
+// // === Access Types (non-boxable) ===
+// class AccessType : public Type {
+// public:
+//   explicit AccessType(TypeState *TS) : Type(TS) {}
+// };
 
-class UInt16Type : public NumberType {
-public:
-  UInt16Type(TypeState *TS) : NumberType(TS) {}
-};
+// class PtrType final : public AccessType {
+// public:
+//   explicit PtrType(TypeState *TS) : AccessType(TS) {}
+// };
 
-class UInt32Type : public NumberType {
-public:
-  UInt32Type(TypeState *TS) : NumberType(TS) {}
-};
+// class RefType final : public AccessType {
+// public:
+//   explicit RefType(TypeState *TS) : AccessType(TS) {}
+// };
 
-class UInt64Type : public NumberType {
-public:
-  UInt64Type(TypeState *TS) : NumberType(TS) {}
-};
+// // === Aggregate Types (structural composites) ===
+// class AggregateType : public ObjectType {
+// public:
+//   explicit AggregateType(TypeState *TS) : ObjectType(TS) {}
+// };
 
-class UInt128Type : public NumberType {
-public:
-  UInt128Type(TypeState *TS) : NumberType(TS) {}
-};
+// class ArrayType final : public AggregateType {
+// public:
+//   explicit ArrayType(TypeState *TS) : AggregateType(TS) {}
+// };
 
-class FloatType : public NumberType {
-public:
-  FloatType(TypeState *TS) : NumberType(TS) {}
-  const llvm::fltSemantics &GetAPFloatSemantics() const;
-};
+// class TupleType final : public AggregateType {
+// public:
+//   explicit TupleType(TypeState *TS) : AggregateType(TS) {}
+// };
 
-class Float16Type : public NumberType {
-public:
-  Float16Type(TypeState *TS) : NumberType(TS) {}
-};
-
-class Float32Type : public NumberType {
-public:
-  Float32Type(TypeState *TS) : NumberType(TS) {}
-};
-
-class Float64Type : public NumberType {
-public:
-  Float64Type(TypeState *TS) : NumberType(TS) {}
-};
-
-class Float128Type : public NumberType {
-public:
-  Float128Type(TypeState *TS) : NumberType(TS) {}
-};
-
-class NominalType : public ObjectType {
-public:
-  NominalType(TypeState *TS) : ObjectType(TS) {}
-};
-
-class StructType final : public NominalType {
-public:
-  StructType(TypeState *TS) : NominalType(TS) {}
-};
-
-class InterfaceType final : public NominalType {
-public:
-  InterfaceType(TypeState *TS) : NominalType(TS) {}
-};
-
-class EnumType final : public NominalType {
-public:
-  EnumType(TypeState *TS) : NominalType(TS) {}
-};
-
-class SugType : public ObjectType {
-public:
-  SugType(TypeState *TS) : ObjectType(TS) {}
-};
-
-class AliasType final : public SugType,
-                        public llvm::FoldingSetNode,
-                        llvm::TrailingObjects<AliasType, Type> {
-  // In TypeState AliasDecl *aliasDecl;
-
-public:
-  AliasType(TypeState *TS) : SugType(TS) {}
-};
-
-class StringType final : public SugType {
-public:
-  StringType(TypeState *TS) : SugType(TS) {}
-};
-
-class DeducedType : public Type {
-public:
-  DeducedType(TypeState *TS) : Type(TS) {}
-};
-
-class AutoType final : public DeducedType {
-public:
-  AutoType(TypeState *TS) : DeducedType(TS) {}
-};
-
-class AccessType : public Type {
-public:
-  AccessType(TypeState *TS) : Type(TS) {}
-};
-
-class PointerType : public AccessType {
-public:
-  PointerType(TypeState *TS) : AccessType(TS) {}
-};
-
-class PtrType final : public PointerType {
-public:
-  PtrType(TypeState *TS) : PointerType(TS) {}
-};
-
-class MoveType final : public PointerType {
-public:
-  MoveType(TypeState *TS) : PointerType(TS) {}
-};
-
-class OwnType final : public PointerType {
-public:
-  OwnType(TypeState *TS) : PointerType(TS) {}
-};
-
-class SafeType final : public PointerType {
-public:
-  SafeType(TypeState *TS) : PointerType(TS) {}
-};
-
-class ReferenceType : public AccessType {
-public:
-  ReferenceType(TypeState *TS) : AccessType(TS) {}
-};
-
-class RefType final : public ReferenceType {
-public:
-  RefType(TypeState *TS) : ReferenceType(TS) {}
-};
+// class VariadicType final : public AggregateType {
+// public:
+//   explicit VariadicType(TypeState *TS) : AggregateType(TS) {}
+// };
 
 } // namespace stone
 

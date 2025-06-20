@@ -1,4 +1,4 @@
-join Core;
+space Core;
 
-type[T] public struct Collection {
+some[T] public struct Collection {
 }

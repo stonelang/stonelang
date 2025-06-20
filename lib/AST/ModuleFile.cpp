@@ -1,12 +1,11 @@
 #include "stone/AST/ModuleFile.h"
 #include "stone/AST/Decl.h"
+#include "stone/AST/Module.h"
 
 using namespace stone;
 
-namespace stone {
-
 ModuleFile::ModuleFile(unsigned bufferID, llvm::StringRef input, Module *parent)
-    : Tree(parent), kind(kind), bufferID(bufferID) {}
+    : Node(parent), bufferID(bufferID) {}
 
 Decl *ModuleFile::GetFirstDecl() const { return nullptr; }
 

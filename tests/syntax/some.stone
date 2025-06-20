@@ -1,0 +1,9 @@
+space Syntax;
+
+
+some[T] struct Vec { }
+
+
+fun Main() -> int32{
+	just[int] Vec v = Vec{}
+}

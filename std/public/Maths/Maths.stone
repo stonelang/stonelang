@@ -1,12 +1,12 @@
 join Maths;
 
-type[T where T using FloatingPoint]
+some[T where T with FloatingPoint]
 public struct Complex{
     T real;
     T imag;
 }
 
-type[T where T using FloatingPoint]
+some[T where T with FloatingPoint]
 public struct Imaginary {
     T imag;
 }

@@ -12,10 +12,10 @@ public:
 
 public:
   /// Produce symbols and resolve names
-  void ScaffoldDecl(Decl *D);
+  void ScaffoldSpaceDecl(SpaceDecl *SD);
 
   /// Produce symbols and resolve names
-  void ScaffoldSpaceDecl(SpaceDecl *MD);
+  void ScaffoldDecl(Decl *D);
 };
 
 } // namespace stone

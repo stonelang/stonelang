@@ -22,6 +22,6 @@ Identifier ModuleContext::GetIdentifier(llvm::StringRef name) const {
   if (name.empty()) {
     return Identifier();
   }
-  auto it = identifierTable.insert({name, 0}).first;
-  return Identifier(it->getKeyData());
+  auto result = identifiers.insert(name);
+  return Identifier(result.first->getKeyData());
 }

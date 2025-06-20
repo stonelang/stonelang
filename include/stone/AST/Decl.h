@@ -3,147 +3,162 @@
 
 #include "stone/AST/DeclKind.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/Tree.h"
+#include "stone/AST/Node.h"
 #include "stone/AST/TypeAlignment.h"
+#include "stone/Support/SrcLoc.h"
 #include "llvm/Support/Casting.h"
 
 #include <stdint.h>
 
 namespace stone {
+class Artifact;
+class DeclState;
 
-class alignas(1 << DeclAlignInBits) Decl : public Tree {
+class alignas(1 << DeclAlignInBits) Decl : public Node {
   DeclState *DS = nullptr;
 
 public:
-  Decl(DeclState *DS);
+  explicit Decl(DeclState *DS);
+  DeclState *GetDeclState();
 
 public:
-  DeclState *GetDeclState() { return DS; }
+  DeclKind GetKind() const;
+  SrcLoc GetKindLoc() const;
+  Identifier GetName() const;
+  SrcLoc GetNameLoc() const;
   ArtifactKind GetArtifactKind() const override { return ArtifactKind::Decl; }
 
 public:
-  static bool classof(const Decl *D) {
-    return D->GetDeclKind() >= DeclKind::Join &&
-           D->GetDeclKind() < DeclKind::Count;
-  }
-  static bool classof(const Artifact *artifact) {
-    return artifact->GetArtifactKind() == ArtifactKind::Decl;
-  }
+  static bool classof(const Decl *D);
+  static bool classof(const Artifact *artifact);
 };
 
-class ScopeDecl final : public Decl {
-  llvm::SmallVector<Decl *, 8> members;
+// === Top-Level Declarations ===
+// class JoinDecl final : public Decl {
+// public:
+//   explicit JoinDecl(DeclState *DS) : Decl(DS) {}
+// };
 
+class SpaceDecl final : public Decl {
 public:
-  ScopeDecl(DeclState *DS) : Decl(DS) {}
+  explicit SpaceDecl(DeclState *DS) : Decl(DS) {}
 };
 
-class SpaceDecl final : public ScopeDecl {
-public:
-  SpaceDecl(DeclState *DS) : ScopeDecl(DS) {}
-};
+// class FunDecl final : public Decl {
+// public:
+//   explicit FunDecl(DeclState *DS) : Decl(DS) {}
+// };
 
-class JoinDecl final : public Decl {
+// DeclState(DeclState(DeclKind::Some))
+// class SomeDecl final : public Decl {
+// public:
+//   explicit SomeDecl(DeclState *DS) : Decl(DS) {}
+// };
 
-public:
-  JoinDecl(DeclState *DS) : Decl(DS) {}
-};
+// class JustDecl final : public Decl {
+// public:
+//   explicit JustDecl(DeclState *DS) : Decl(DS) {}
+// };
 
-class UsingDecl final : public Decl {
+// class IfConfigDecl final : public Decl {
+// public:
+//   explicit IfConfigDecl(DeclState *DS) : Decl(DS) {}
+// };
 
-public:
-  UsingDecl(DeclState *DS) : Decl(DS) {}
-};
+// class MacroDecl final : public Decl {
+// public:
+//   explicit MacroDecl(DeclState *DS) : Decl(DS) {}
+// };
 
-class MacroDecl : public Decl {
-public:
-  MacroDecl(DeclState *DS) : Decl(DS) {}
-};
+// // === Type Declarations ===
+// class TypeDecl : public Decl {
+// public:
+//   explicit TypeDecl(DeclState *DS) : Decl(DS) {}
+// };
 
-class TemplateDecl : public Decl {
-public:
-  TemplateDecl(DeclState *DS) : Decl(DS) {}
-};
+// class AliasDecl final : public TypeDecl {
+// public:
+//   explicit AliasDecl(DeclState *DS) : TypeDecl(DS) {}
+// };
 
-class TypeDecl : public TemplateDecl {
-public:
-  TypeDecl(DeclState *DS) : TemplateDecl(DS) {}
-};
+// class StructDecl final : public TypeDecl {
+// public:
+//   explicit StructDecl(DeclState *DS) : TypeDecl(DS) {}
+// };
 
-class BuiltinDecl : public TypeDecl {
-public:
-  BuiltinDecl(DeclState *DS) : TypeDecl(DS) {}
-};
+// class InterfaceDecl final : public TypeDecl {
+// public:
+//   explicit InterfaceDecl(DeclState *DS) : TypeDecl(DS) {}
+// };
 
-class AliasDecl final : public TypeDecl {
-public:
-  AliasDecl(DeclState *DS) : TypeDecl(DS) {}
-};
+// class EnumDecl final : public TypeDecl {
+// public:
+//   explicit EnumDecl(DeclState *DS) : TypeDecl(DS) {}
+// };
 
-class FunctionDecl : public TemplateDecl {
-public:
-  FunctionDecl(DeclState *DS) : TemplateDecl(DS) {}
-};
+// class UsingDecl final : public TypeDecl {
+// public:
+//   explicit UsingDecl(DeclState *DS) : TypeDecl(DS) {}
+// };
 
-class FunDecl : public FunctionDecl {
-public:
-  FunDecl(DeclState *DS) : FunctionDecl(DS) {}
-};
+// // === Operator Declarations ===
+// class OperatorDecl : public Decl {
+// public:
+//   explicit OperatorDecl(DeclState *DS) : Decl(DS) {}
+// };
 
-class ConstructorDecl : public FunctionDecl {
-public:
-  ConstructorDecl(DeclState *DS) : FunctionDecl(DS) {}
-};
+// class NewOperatorDecl final : public OperatorDecl {
+// public:
+//   explicit NewOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+// };
 
-class DestructorDecl : public FunctionDecl {
-public:
-  DestructorDecl(DeclState *DS) : FunctionDecl(DS) {}
-};
+// class FreeOperatorDecl final : public OperatorDecl {
+// public:
+//   explicit FreeOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+// };
 
-class StorageDecl : public Decl {
-public:
-  StorageDecl(DeclState *DS) : Decl(DS) {}
-};
+// class InfixOperatorDecl final : public OperatorDecl {
+// public:
+//   explicit InfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+// };
 
-class VarDecl : public StorageDecl {
-public:
-  VarDecl(DeclState *DS) : StorageDecl(DS) {}
-};
+// class PrefixOperatorDecl final : public OperatorDecl {
+// public:
+//   explicit PrefixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+// };
 
-class TrustDecl final : public Decl {
-public:
-  TrustDecl(DeclState *DS) : Decl(DS) {}
-};
+// class PostfixOperatorDecl final : public OperatorDecl {
+// public:
+//   explicit PostfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+// };
 
-class OperatorDecl : public Decl {
-public:
-  OperatorDecl(DeclState *DS) : Decl(DS) {}
-};
+// // === Binding Declarations ===
+// class BindingDecl : public Decl {
+// public:
+//   explicit BindingDecl(DeclState *DS) : Decl(DS) {}
+// };
 
-class NewOperatorDecl final : public OperatorDecl {
-public:
-  NewOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
-};
+// class VarDecl : public BindingDecl {
+// public:
+//   explicit VarDecl(DeclState *DS) : BindingDecl(DS) {}
+// };
 
-class FreeOperatorDecl final : public OperatorDecl {
-public:
-  FreeOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
-};
+// class ParamDecl final : public VarDecl {
+// public:
+//   explicit ParamDecl(DeclState *DS) : VarDecl(DS) {}
+// };
 
-class PrefixOperatorDecl final : public OperatorDecl {
-public:
-  PrefixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
-};
+// #define DECL(ID, Parent)                     \
+// class ID##Decl : public Parent {             \
+// public:                                      \
+//   ID##Decl(DeclState* DS) : Parent(DS) {}    \
+// };
 
-class InfixOperatorDecl final : public OperatorDecl {
-public:
-  InfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
-};
-
-class PostfixOperatorDecl final : public OperatorDecl {
-public:
-  PostfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
-};
+// #define ABSTRACT_DECL(ID, Parent) \
+// class ID##Decl : public Parent {  \
+// public:                           \
+//   ID##Decl(DeclState* DS) : Parent(DS) {} \
+// };
 
 } // namespace stone
 

@@ -2,4 +2,4 @@
 
 using namespace stone;
 
-Expr::Expr(ExprKind kind) : Artifact(nullptr), kind(kind) {}
+Expr::Expr(ExprKind kind) : kind(kind) {}

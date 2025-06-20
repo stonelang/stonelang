@@ -1,25 +1,9 @@
-//===----------------------------------------------------------------------===//
-// Declaration Macros
-//===----------------------------------------------------------------------===//
+#ifndef DECL
+#define DECL(ID, Parent)
+#endif
 
 #ifndef ABSTRACT_DECL
 #define ABSTRACT_DECL(ID, Parent)
-#endif
-
-#ifndef NOMINAL_TYPE_DECL
-#define NOMINAL_TYPE_DECL(ID, Parent) DECL(ID, Parent)
-#endif
-
-#ifndef FUNCTION_DECL
-#define FUNCTION_DECL(ID, Parent) DECL(ID, Parent)
-#endif
-
-#ifndef OPERATOR_DECL
-#define OPERATOR_DECL(ID, Parent) DECL(ID, Parent)
-#endif
-
-#ifndef STORAGE_DECL
-#define STORAGE_DECL(ID, Parent) DECL(ID, Parent)
 #endif
 
 #ifndef DECL_RANGE
@@ -30,84 +14,48 @@
 #define LAST_DECL(ID)
 #endif
 
-//===----------------------------------------------------------------------===//
-// Root Declarations
-//===----------------------------------------------------------------------===//
-
-DECL(Join, Decl)
-DECL(Using, Decl)
-
-//===----------------------------------------------------------------------===//
-// Abstract Layered Declarations
-//===----------------------------------------------------------------------===//
-
-ABSTRACT_DECL(Template, Decl)                   // Templatething with type identity
-ABSTRACT_DECL(Type, TemplateDecl)              // Template that is a type
-    ABSTRACT_DECL(ScopeDecl, TypeDecl)        // Types that define a scope
-        ABSTRACT_DECL(NominalType, ScopeDecl) // Named types with members
-            NOMINAL_TYPE_DECL(Enum,      NominalTypeDecl)
-            NOMINAL_TYPE_DECL(Struct,    NominalTypeDecl)
-            NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
-        DECL(Space, ScopeDecl)               // e.g., space Physics[Light]
-        DECL_RANGE(NominalType, Enum, Interface)
-    DECL(Alias, TypeDecl)                    // Type aliases
-    DECL_RANGE(Alias, Alias, Alias)
-
-
-//ABSTRACT_DECL(BlockDecl, ScopeDecl)
-
-//===----------------------------------------------------------------------===//
-// Function Declarations
-//===----------------------------------------------------------------------===//
-
-ABSTRACT_DECL(Function, ScopeDecl)
-    FUNCTION_DECL(Fun,         FunctionDecl)
-    FUNCTION_DECL(Constructor, FunctionDecl)
-    FUNCTION_DECL(Destructor,  FunctionDecl)
-    DECL_RANGE(Function, Fun, Destructor)
-
-//===----------------------------------------------------------------------===//
-// Storage Declarations
-//===----------------------------------------------------------------------===//
-
-ABSTRACT_DECL(Storage, Decl)
-    STORAGE_DECL(Var,   StorageDecl)
-    STORAGE_DECL(Param, VarDecl)
-    DECL_RANGE(Storage, Var, Param)
-
-//===----------------------------------------------------------------------===//
-// Operator Declarations
-//===----------------------------------------------------------------------===//
-
-ABSTRACT_DECL(Operator, Decl)
-    OPERATOR_DECL(New,             OperatorDecl)
-    OPERATOR_DECL(Free,            OperatorDecl)
-    OPERATOR_DECL(InfixOperator,   OperatorDecl)
-    OPERATOR_DECL(PrefixOperator,  OperatorDecl)
-    OPERATOR_DECL(PostfixOperator, OperatorDecl)
-    DECL_RANGE(Operator, New, Free)
-
-//===----------------------------------------------------------------------===//
-// Conditional Compilation
-//===----------------------------------------------------------------------===//
-
+// === Top-level Declarations ===
+DECL(Join,     Decl)
+DECL(Space,    Decl)
+DECL(Fun,      Decl)
+DECL(Some,     Decl)
+DECL(Just,     Decl)
 DECL(IfConfig, Decl)
+DECL(Macro,    Decl)
 
-//===----------------------------------------------------------------------===//
-// Enum Utilities
-//===----------------------------------------------------------------------===//
+// === Type Declarations ===
+ABSTRACT_DECL(Type, Decl)
+  DECL(Alias,     TypeDecl)
+  DECL(Struct,    TypeDecl)
+  DECL(Interface, TypeDecl)
+  DECL(Enum,      TypeDecl)
+  DECL(Using,     TypeDecl)
+DECL_RANGE(TypeDecl, Alias, Using)
 
-LAST_DECL(IfConfig)
-DECL_RANGE(Decl, Join, IfConfig)
+// === Operator Declarations ===
+ABSTRACT_DECL(Operator, Decl)
+  DECL(NewOperator,     OperatorDecl)
+  DECL(FreeOperator,    OperatorDecl)
+  DECL(InfixOperator,   OperatorDecl)
+  DECL(PrefixOperator,  OperatorDecl)
+  DECL(PostfixOperator, OperatorDecl)
+DECL_RANGE(Operator, NewOperator, PostfixOperator)
 
-//===----------------------------------------------------------------------===//
-// Cleanup
-//===----------------------------------------------------------------------===//
+// === Binding Declarations ===
+ABSTRACT_DECL(Binding, Decl)
+  DECL(Var,   BindingDecl)
+    DECL(Param, VarDecl)
+DECL_RANGE(Binding, Var, Param)
 
+// === Final Tag ===
+LAST_DECL(Macro)
+
+// === Total Decl Range ===
+DECL_RANGE(Decl, Join, Macro)
+
+
+// === Cleanup ===
+#undef DECL
 #undef ABSTRACT_DECL
-#undef NOMINAL_TYPE_DECL
-#undef FUNCTION_DECL
-#undef STORAGE_DECL
-#undef OPERATOR_DECL
 #undef DECL_RANGE
 #undef LAST_DECL

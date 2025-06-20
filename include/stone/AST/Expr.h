@@ -1,8 +1,7 @@
 #ifndef STONE_AST_EXPR_H
 #define STONE_AST_EXPR_H
 
-#include "stone/AST/ASTWalker.h"
-#include "stone/AST/Artifact.h"
+#include "stone/AST/Node.h"
 
 namespace stone {
 
@@ -15,7 +14,7 @@ enum class ExprKind : uint8_t {
 
 };
 
-class alignas(8) Expr : public Artifact {
+class alignas(8) Expr : public Node {
   ExprKind kind;
 
 public:
@@ -32,18 +31,18 @@ public:
 
 public:
   ExprKind GetKind() const { return kind; }
-  ArtifactKind GetUnitKind() const override { return ArtifactKind::Expr; }
+  ArtifactKind GetArtifactKind() const override { return ArtifactKind::Expr; }
   /// This recursively walks the AST rooted at this expression.
-  // Expr *Walk(ASTWalker &walker);
-  // Expr *Walk(ASTWalker &&walker) { return Walk(walker); }
+  // Expr *Walk(Walker &walker);
+  // Expr *Walk(Walker &&walker) { return Walk(walker); }
 
 public:
   // static bool classof(const Expr *E) {
   //   return D->GetKind() >= ExprKind::FirstValueDecl &&
   //          D->GetKind() <= ExprKind::LastValueDecl;
   // }
-  static bool classof(const Artifact *unit) {
-    return unit->GetUnitKind() == ArtifactKind::Expr;
+  static bool classof(const Artifact *artifact) {
+    return artifact->GetArtifactKind() == ArtifactKind::Expr;
   }
 };
 
@@ -52,20 +51,33 @@ class NewExpr final : public Expr {
 public:
   NewExpr() : Expr(ExprKind::New) {}
 };
+
+class ParmetricExpr : public Expr {
+public:
+};
+
+class IfExpr : public ParmetricExpr {
+public:
+};
+
+class MatchExpr : public ParmetricExpr {
+public:
+};
+
+class UniqueExpr : public ParmetricExpr {
+public:
+};
+
 // if: error then "error"
 //                 else if warning then "warn"
 //                 else if debug then "debug"
 //                 else "ok";
 
-class IfSemiExpr : public Expr {};
-
-// auto result = match: value
+// auto result = match[ value
 //     case a then true
 //     case b then false
 //     else       null;
-// match: val case 1 then "one" case 2 then "many"
-
-class MatchExpr : public Expr {};
+// match: val case 1 then "one" case 2 then "many"];
 
 } // namespace stone
 

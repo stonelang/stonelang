@@ -1,6 +1,6 @@
 #include "stone/AST/Scaffolder.h"
-#include "stone/AST/Evaluator.h"
-#include "stone/AST/SpaceDecl.h"
+#include "stone/AST/Decl.h"
+#include "stone/AST/EvaluatorEngine.h"
 
 using namespace stone;
 

@@ -30,8 +30,7 @@ public:
   Identifier GetIdentifier(llvm::StringRef text) const;
 
 public:
-  ModuleContext(MemoryManager &memory, IdentifierTable &identifiers)
-      : memory(memory), identifiers(identifiers) {}
+  ModuleContext(MemoryManager &memory, IdentifierTable &identifiers);
 
 public:
   MemoryManager &GetMemory() { return memory; }

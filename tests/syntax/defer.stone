@@ -3,4 +3,5 @@
 fun TryDefer() {
 	~fun(){
 	}
+	// ~fun print; 
 }

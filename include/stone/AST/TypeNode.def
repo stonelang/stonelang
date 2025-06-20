@@ -2,26 +2,9 @@
 #define TYPE(ID, Parent)
 #endif
 
-// REAL TYPES
-#ifndef BUILTIN_TYPE
-#define BUILTIN_TYPE(ID, Parent) TYPE(ID, Parent)
-#endif
-
-#ifndef SUG_TYPE
-#define SUG_TYPE(ID, Parent) TYPE(ID, parent)
-#endif
-
-
-// ABSTRACT TYPPES
 #ifndef ABSTRACT_TYPE
 #define ABSTRACT_TYPE(ID, Parent)
 #endif
-
-#ifndef ABSTRACT_SUG_TYPE
-#define ABSTRACT_SUG_TYPE(ID, Parent) ABSTRACT_TYPE(ID, Parent)
-#endif
-
-
 
 #ifndef TYPE_RANGE
 #define TYPE_RANGE(ID, First, Last) /* Specify range metadata */
@@ -31,76 +14,64 @@
 #define LAST_TYPE(ID)
 #endif
 
-// === Root Type ===
-TYPE(Object, Type)
-// === Builtin Types (Boxable) ===
-ABSTRACT_TYPE(Builtin, ObjectType)
-  ABSTRACT_TYPE(Number, BuiltinType)
-    BUILTIN_TYPE(Int, NumberType)
-    BUILTIN_TYPE(Int8, NumberType)
-    BUILTIN_TYPE(Int16, NumberType)
-    BUILTIN_TYPE(Int32, NumberType)
-    BUILTIN_TYPE(Int64, NumberType)
-    BUILTIN_TYPE(Int128, NumberType)
-    BUILTIN_TYPE(UInt, NumberType)
-    BUILTIN_TYPE(UInt8, NumberType)
-    BUILTIN_TYPE(UInt16, NumberType)
-    BUILTIN_TYPE(UInt32, NumberType)
-    BUILTIN_TYPE(UInt64, NumberType)
-    BUILTIN_TYPE(UInt128, NumberType)
-    BUILTIN_TYPE(Float, NumberType)
-    BUILTIN_TYPE(Float16, NumberType)
-    BUILTIN_TYPE(Float32, NumberType)
-    BUILTIN_TYPE(Float64, NumberType)
-    BUILTIN_TYPE(Float128, NumberType)
-    BUILTIN_TYPE(Bool, BuiltinType)
-    BUILTIN_TYPE(Char, BuiltinType)
-    BUILTIN_TYPE(Null, BuiltinType)
-TYPE_RANGE(Builtin, Int, Null)
-
-// === Sugared Types (Aliases and String) ===
-ABSTRACT_SUG_TYPE(Sug, ObjectType)
-  SUG_TYPE(Alias, SugType)
-TYPE_RANGE(Sug, Alias, Alias)
-
-
-// === Deduced Types ===
-ABSTRACT_TYPE(Deduced, Type)
-  TYPE(Auto, DeducedType)
-TYPE_RANGE(Deduced, Auto, Auto)
-
-// === Function Types ===
-ABSTRACT_TYPE(Function, Type)
-  TYPE(Fun, FunctionType)
-TYPE_RANGE(Function, Fun, Fun)
-
-// === Access Types (Non-boxable, modifiers) ===
+// === Root Function Type ===
+TYPE(Fun, Type)
+// === Object Types (boxable, runtime types) ===
+ABSTRACT_TYPE(Object, Type)
+  // === Nominal Types (user-defined) ===
+  ABSTRACT_TYPE(Nominal, ObjectType)
+    TYPE(Enum, NominalType)
+    TYPE(Struct, NominalType)
+    TYPE(Interface, NominalType)
+  TYPE_RANGE(Nominal, Enum, Interface)
+  // === Builtin Types (primitive and runtime-backed) ===
+  ABSTRACT_TYPE(Builtin, ObjectType)
+    ABSTRACT_TYPE(Number, BuiltinType)
+      TYPE(Int,     NumberType)
+      TYPE(Int8,    NumberType)
+      TYPE(Int16,   NumberType)
+      TYPE(Int32,   NumberType)
+      TYPE(Int64,   NumberType)
+      TYPE(Int128,  NumberType)
+      TYPE(UInt,    NumberType)
+      TYPE(UInt8,   NumberType)
+      TYPE(UInt16,  NumberType)
+      TYPE(UInt32,  NumberType)
+      TYPE(UInt64,  NumberType)
+      TYPE(UInt128, NumberType)
+      TYPE(Float,   NumberType)
+      TYPE(Float16, NumberType)
+      TYPE(Float32, NumberType)
+      TYPE(Float64, NumberType)
+      TYPE(Float128,NumberType)
+    TYPE_RANGE(Number, Int, Float128)
+    TYPE(Bool, BuiltinType)
+    TYPE(Char, BuiltinType)
+    TYPE(Null, BuiltinType)
+    TYPE(String, BuiltinType)
+  TYPE_RANGE(Builtin, Int, String)
+// === Magic Types (syntactic sugar, non-canonical) ===
+ABSTRACT_TYPE(Magic, Type)
+  TYPE(Alias, MagicType)
+  TYPE(Auto,  MagicType)
+TYPE_RANGE(Magic, Alias, Auto)
+// === Access Types (non-boxable, modifiers) ===
 ABSTRACT_TYPE(Access, Type)
-  ABSTRACT_TYPE(Pointer, AccessType)
-    TYPE(Ptr, PointerType)
-    TYPE(Move, PointerType)
-    TYPE(Own, PointerType)
-    TYPE(Safe, PointerType)
-    TYPE_RANGE(Pointer, Ptr, Safe)
-  ABSTRACT_TYPE(Reference, AccessType)
-    TYPE(Ref, ReferenceType)
-    TYPE_RANGE(Reference, Ref, Ref)
+  TYPE(Ptr, AccessType)
+  TYPE(Ref, AccessType)
 TYPE_RANGE(Access, Ptr, Ref)
-
-// === Nominal Types (User-defined, Boxable) ===
-ABSTRACT_TYPE(Nominal, ObjectType)
-  TYPE(Enum, NominalType)
-  TYPE(Struct, NominalType)
-  TYPE(Interface, NominalType)
-TYPE_RANGE(Nominal, Enum, Interface)
-LAST_TYPE(Interface)
+// === Aggregate Types (compound layout) ===
+ABSTRACT_TYPE(Aggregate, ObjectType)
+  TYPE(ArrayType,    AggregateType)
+  TYPE(TupleType,    AggregateType)
+  TYPE(VariadicType, AggregateType)
+TYPE_RANGE(Aggregate, ArrayType, VariadicType)
+// === Final Tag ===
+LAST_TYPE(VariadicType)
 
 
 // === Cleanup ===
 #undef TYPE
-#undef SUG_TYPE
-#undef BUILTIN_TYPE
 #undef ABSTRACT_TYPE
-#undef ABSTRACT_SUG_TYPE
 #undef TYPE_RANGE
 #undef LAST_TYPE

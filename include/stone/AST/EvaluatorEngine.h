@@ -18,6 +18,7 @@ namespace stone {
 // };
 
 enum class EvaluatorKind : uint8_t {
+
   Syntax = 0,
 
   // Scaffolding
@@ -25,8 +26,8 @@ enum class EvaluatorKind : uint8_t {
   FullScaffolding,
 
   // Type Checking
-  ShallowTypeCheck,
-  FullTypeCheck,
+  ShallowLogic,
+  FullLogic,
 
   // Validation
   ShallowValidation,
@@ -43,7 +44,7 @@ enum class EvaluatorKind : uint8_t {
   Elaboration
 };
 
-class alignas(1 << DeclAlignInBits) Evaluator : Artifact {
+class alignas(1 << DeclAlignInBits) Evaluator : public Artifact {
   EvaluatorKind kind;
 
 public:
@@ -74,15 +75,15 @@ public:
   void Evaluate(Decl *decl) override;
 };
 
-class ShallowTypeCheckEvaluator : public Evaluator {
+class ShallowLogicEvaluator : public Evaluator {
 public:
-  ShallowTypeCheckEvaluator() : Evaluator(EvaluatorKind::ShallowTypeCheck) {}
+  ShallowLogicEvaluator() : Evaluator(EvaluatorKind::ShallowLogic) {}
   void Evaluate(Decl *decl) override;
 };
 
-class FullTypeCheckEvaluator : public Evaluator {
+class FullLogicEvaluator : public Evaluator {
 public:
-  FullTypeCheckEvaluator() : Evaluator(EvaluatorKind::FullTypeCheck) {}
+  FullLogicEvaluator() : Evaluator(EvaluatorKind::FullLogic) {}
   void Evaluate(Decl *decl) override;
 };
 
@@ -105,6 +106,48 @@ public:
 
 public:
   virtual void Evaluate(Decl *decl) = 0;
+};
+
+// struct EvaluatorRequest {
+//   Tree *decl = nullptr;
+//   EvaluatorKind kind;
+
+//   EvaluatorRequest(Decl *decl, EvaluatorKind kind)
+//       : decl(decl), kind(kind) {}
+// };
+
+template <typename T> class EvaluatorRequest final {
+public:
+  EvaluatorKind kind;
+  T *val;
+  EvaluatorRequest(EvaluatorKind k, T *v) : kind(k), val(v) {}
+
+  bool cacheable() const { return true; }
+};
+class EvaluatorEngine final {
+
+public:
+  EvaluatorEngine();
+
+  // llvm::DenseMap<std::pair<DeclOrFile *, EvaluatorKind>, EvalResult> results;
+
+  // llvm::DenseMap<EvaluatorKind, std::vector<EvaluatorKind>> pipeline = {
+  //   {EvaluatorKind::CodeGen, {
+  //       EvaluatorKind::ShallowScaffolding,
+  //       EvaluatorKind::FullLogic,
+  //       EvaluatorKind::Elaboration,
+  //       EvaluatorKind::CodeGen
+  //   }},
+  //   {EvaluatorKind::FullLogic, {
+  //       EvaluatorKind::ShallowScaffolding,
+  //       EvaluatorKind::FullLogic
+  //   }},
+  //   {EvaluatorKind::Syntax, {EvaluatorKind::Syntax}},
+  //   // more as needed...
+  // };
+
+  // std::vector<std::unique_ptr<Evaluator>> evaluators;
+  // EvaluatorObserver *observer = nullptr;
 };
 
 } // namespace stone

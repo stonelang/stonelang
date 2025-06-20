@@ -1,0 +1,6 @@
+space Core;
+
+public struct String {
+}
+join String public fun Length() {
+}

@@ -157,27 +157,20 @@ public:
 };
 
 class TypeInfluencerList final : public AbstractTypeInfluencerList {
-  MemoryManager &mem;
+public:
+  explicit TypeInfluencerList() {}
 
 public:
-  explicit TypeInfluencerList(MemoryManager &mem) : mem(mem) {}
-
-public:
-  MemoryManager &GetMemory() { return mem; }
-
-public:
-  void AddStone(SrcLoc loc) { Add(mem.Create<StoneModifier>(loc)); }
-  void AddOwn(SrcLoc loc) { Add(mem.Create<OwnModifier>(loc)); }
-  void AddSafe(SrcLoc loc) { Add(mem.Create<SafeModifier>(loc)); }
-  void AddNot(SrcLoc loc) { Add(mem.Create<NotModifier>(loc)); }
+  void AddStone(StoneModifier *modifier) { Add(modifier); }
+  void AddOwn(OwnModifier *modifier) { Add(modifier); }
+  void AddSafe(SafeModifier *modifier) { Add(modifier); }
+  void AddNot(NotModifier *modifier) { Add(modifier); }
 
 public:
   bool HasStone() const { return Has(TypeInfluencerKind::Stone); }
   bool HasOwn() const { return Has(TypeInfluencerKind::Own); }
   bool HasSafe() const { return Has(TypeInfluencerKind::Safe); }
   bool HasNot() const { return Has(TypeInfluencerKind::Not); }
-
-public:
 };
 
 } // namespace stone

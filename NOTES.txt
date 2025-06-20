@@ -457,3 +457,475 @@ public:
     return result;
   }
 };
+
+
+------------------
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <memory>
+
+// --- 1. EvaluatorRequestKind enum ---
+enum class EvaluatorRequestKind {
+    SyntaxParseDecl,
+    TypeCheckDecl,
+};
+
+// --- 2. Base EvaluatorRequest ---
+class EvaluatorRequest {
+public:
+    EvaluatorRequestKind kind;
+    void* payload;
+
+    EvaluatorRequest(EvaluatorRequestKind k, void* p) : kind(k), payload(p) {}
+    virtual ~EvaluatorRequest() = default;
+
+    virtual bool cacheable() const { return true; }
+
+    virtual size_t hashKey() const {
+        return std::hash<void*>{}(payload) ^ std::hash<int>{}(static_cast<int>(kind));
+    }
+
+    // Dependency declarations, override if needed
+    virtual std::vector<EvaluatorRequest> dependencies() const {
+        return {};
+    }
+
+    // Equality operator for using in maps (simplified)
+    bool operator==(const EvaluatorRequest& other) const {
+        return kind == other.kind && payload == other.payload;
+    }
+};
+
+// Needed to use EvaluatorRequest as a key in unordered_map/set
+namespace std {
+    template <>
+    struct hash<EvaluatorRequest> {
+        size_t operator()(const EvaluatorRequest& req) const {
+            return req.hashKey();
+        }
+    };
+}
+
+// --- 3. ResultValue ---
+class ResultValue {
+    bool success;
+    std::string value;
+    std::string error;
+
+public:
+    static ResultValue successResult(const std::string& val) {
+        return ResultValue(true, val, "");
+    }
+
+    static ResultValue errorResult(const std::string& err) {
+        return ResultValue(false, "", err);
+    }
+
+    bool isSuccess() const { return success; }
+    const std::string& getValue() const { return value; }
+    const std::string& getError() const { return error; }
+
+private:
+    ResultValue(bool ok, std::string val, std::string err)
+        : success(ok), value(std::move(val)), error(std::move(err)) {}
+};
+
+// --- 4. Dummy Parser, Decl, Logic ---
+class Parser {
+public:
+    std::string parse(const std::string& source) {
+        return "ParsedDecl(" + source + ")";
+    }
+};
+
+class Decl {
+public:
+    std::string name;
+    std::string source;
+
+    Decl(std::string n, std::string s) : name(std::move(n)), source(std::move(s)) {}
+};
+
+class Logic {
+public:
+    std::string typeCheck(Decl* decl) {
+        if (decl->name == "x") {
+            return "Int";
+        } else {
+            return "UnknownType";
+        }
+    }
+};
+
+// --- 5. DependencyGraph ---
+class DependencyGraph {
+    // Map from a request's hashKey to its dependencies' hashKeys
+    std::unordered_map<size_t, std::unordered_set<size_t>> graph;
+
+public:
+    void addDependency(const EvaluatorRequest& req, const EvaluatorRequest& dep) {
+        graph[req.hashKey()].insert(dep.hashKey());
+    }
+
+    std::unordered_set<size_t> getDependents(size_t reqKey) const {
+        std::unordered_set<size_t> dependents;
+        for (auto& [key, deps] : graph) {
+            if (deps.find(reqKey) != deps.end()) {
+                dependents.insert(key);
+            }
+        }
+        return dependents;
+    }
+
+    void removeDependencies(size_t reqKey) {
+        graph.erase(reqKey);
+        for (auto& [key, deps] : graph) {
+            deps.erase(reqKey);
+        }
+    }
+};
+
+// --- 6. RequestCache ---
+class RequestCache {
+    std::unordered_map<size_t, ResultValue> cache;
+
+public:
+    bool has(size_t key) const {
+        return cache.find(key) != cache.end();
+    }
+
+    ResultValue get(size_t key) const {
+        return cache.at(key);
+    }
+
+    void store(size_t key, const ResultValue& val) {
+        cache[key] = val;
+    }
+
+    void invalidate(size_t key) {
+        cache.erase(key);
+    }
+};
+
+// --- 7. AbstractEvaluator and concrete evaluators ---
+class EvaluatorEngine; // Forward declaration
+
+class AbstractEvaluator {
+public:
+    virtual ~AbstractEvaluator() = default;
+    virtual bool canHandle(const EvaluatorRequest& req) const = 0;
+    virtual ResultValue evaluate(const EvaluatorRequest& req, EvaluatorEngine& engine) = 0;
+};
+
+class SyntaxEvaluator : public AbstractEvaluator {
+    Parser parser;
+
+public:
+    bool canHandle(const EvaluatorRequest& req) const override {
+        return req.kind == EvaluatorRequestKind::SyntaxParseDecl;
+    }
+
+    ResultValue evaluate(const EvaluatorRequest& req, EvaluatorEngine&) override {
+        auto source = static_cast<std::string*>(req.payload);
+        std::string parsed = parser.parse(*source);
+        return ResultValue::successResult(parsed);
+    }
+};
+
+class TypeCheckEvaluator : public AbstractEvaluator {
+    Logic checker;
+
+public:
+    bool canHandle(const EvaluatorRequest& req) const override {
+        return req.kind == EvaluatorRequestKind::TypeCheckDecl;
+    }
+
+    ResultValue evaluate(const EvaluatorRequest& req, EvaluatorEngine&) override {
+        auto decl = static_cast<Decl*>(req.payload);
+        std::string ty = checker.typeCheck(decl);
+        return ResultValue::successResult(ty);
+    }
+};
+
+// --- 8. Specialized Request with dependencies ---
+
+class TypeCheckDeclRequest : public EvaluatorRequest {
+public:
+    Decl* decl;
+
+    TypeCheckDeclRequest(Decl* d)
+        : EvaluatorRequest(EvaluatorRequestKind::TypeCheckDecl, d), decl(d) {}
+
+    std::vector<EvaluatorRequest> dependencies() const override {
+        // Depends on syntax parse of the decl's source text
+        return { EvaluatorRequest(EvaluatorRequestKind::SyntaxParseDecl, (void*)&decl->source) };
+    }
+
+    size_t hashKey() const override {
+        // You can customize hashKey to include decl pointer, or just use base:
+        return EvaluatorRequest::hashKey();
+    }
+};
+
+// --- 9. EvaluatorEngine implementation ---
+
+class EvaluatorEngine {
+    RequestCache cache;
+    DependencyGraph depGraph;
+    std::vector<std::unique_ptr<AbstractEvaluator>> evaluators;
+
+    // For demonstration, keep a map of requests by key to enable invalidation recursion
+    std::unordered_map<size_t, EvaluatorRequest> requestMap;
+
+public:
+    void registerEvaluator(std::unique_ptr<AbstractEvaluator> eval) {
+        evaluators.emplace_back(std::move(eval));
+    }
+
+    ResultValue evaluate(const EvaluatorRequest& req) {
+        size_t key = req.hashKey();
+
+        // Store the request for invalidation tracking
+        requestMap[key] = req;
+
+        if (req.cacheable() && cache.has(key)) {
+            return cache.get(key);
+        }
+
+        for (auto& evaluator : evaluators) {
+            if (evaluator->canHandle(req)) {
+                ResultValue result = evaluator->evaluate(req, *this);
+
+                if (req.cacheable() && result.isSuccess()) {
+                    cache.store(key, result);
+                }
+
+                // Record dependencies
+                for (auto& dep : req.dependencies()) {
+                    depGraph.addDependency(req, dep);
+                }
+
+                return result;
+            }
+        }
+
+        return ResultValue::errorResult("No evaluator found for request");
+    }
+
+    // Invalidate a request and its dependents recursively
+    void invalidate(const EvaluatorRequest& req) {
+        size_t key = req.hashKey();
+        cache.invalidate(key);
+        depGraph.removeDependencies(key);
+
+        auto dependents = depGraph.getDependents(key);
+        for (auto depKey : dependents) {
+            if (requestMap.find(depKey) != requestMap.end()) {
+                invalidate(requestMap[depKey]);
+            }
+        }
+    }
+};
+
+// --- 10. Main test ---
+
+int main() {
+    EvaluatorEngine engine;
+
+    engine.registerEvaluator(std::make_unique<SyntaxEvaluator>());
+    engine.registerEvaluator(std::make_unique<TypeCheckEvaluator>());
+
+    std::string sourceCode = "var x = 42;";
+    Decl declX("x", sourceCode);
+
+    // Create specialized request for type checking decl
+    TypeCheckDeclRequest typeCheckReq(&declX);
+
+    // Evaluate type check (which depends on syntax parse)
+    ResultValue typeCheckResult = engine.evaluate(typeCheckReq);
+    std::cout << "TypeCheck result: " << (typeCheckResult.isSuccess() ? typeCheckResult.getValue() : typeCheckResult.getError()) << "\n";
+
+    // Evaluate syntax parse directly
+    EvaluatorRequest parseReq(EvaluatorRequestKind::SyntaxParseDecl, &sourceCode);
+    ResultValue parseResult = engine.evaluate(parseReq);
+    std::cout << "Syntax parse result: " << (parseResult.isSuccess() ? parseResult.getValue() : parseResult.getError()) << "\n";
+
+    // Cached calls
+    std::cout << "Cached TypeCheck result: " << engine.evaluate(typeCheckReq).getValue() << "\n";
+    std::cout << "Cached Syntax parse result: " << engine.evaluate(parseReq).getValue() << "\n";
+
+    // Now invalidate the syntax parse (simulate source change)
+    std::cout << "Invalidating syntax parse due to source change...\n";
+    engine.invalidate(parseReq);
+
+    // Re-evaluate after invalidation, should recompute both
+    ResultValue typeCheckResult2 = engine.evaluate(typeCheckReq);
+    std::cout << "Recomputed TypeCheck result: " << (typeCheckResult2.isSuccess() ? typeCheckResult2.getValue() : typeCheckResult2.getError()) << "\n";
+
+    return 0;
+}
+
+
+-----------------------
+// 1. RequestKind (strongly typed or enum class)
+enum class RequestKind {
+    // Frontend examples:
+    SyntaxParse,
+    TypeCheck,
+
+    // Driver examples:
+    CompileJob,
+    LinkJob,
+    PreprocessJob,
+
+    // Extendable...
+};
+
+// 2. Abstract base Request
+class AbstractRequest {
+public:
+    virtual ~AbstractRequest() = default;
+    virtual RequestKind kind() const = 0;
+
+    // Unique key for caching and dependency tracking
+    virtual size_t key() const = 0;
+
+    // Whether the result should be cached
+    virtual bool cacheable() const { return true; }
+
+    // Declares dependencies of this request
+    virtual std::vector<std::shared_ptr<AbstractRequest>> dependencies() const {
+        return {};
+    }
+};
+
+// 3. Result wrapper
+class ResultValue {
+    // Success flag, error info, and arbitrary payload (string here for simplicity)
+    bool success_;
+    std::string payload_;
+    std::string error_;
+
+public:
+    static ResultValue success(std::string val) { return ResultValue(true, std::move(val), ""); }
+    static ResultValue error(std::string err) { return ResultValue(false, "", std::move(err)); }
+
+    bool isSuccess() const { return success_; }
+    const std::string& payload() const { return payload_; }
+    const std::string& error() const { return error_; }
+
+private:
+    ResultValue(bool s, std::string p, std::string e) : success_(s), payload_(p), error_(e) {}
+};
+
+// 4. AbstractEvaluator interface
+class AbstractEvaluator {
+public:
+    virtual ~AbstractEvaluator() = default;
+
+    // Checks if this evaluator can handle the request
+    virtual bool canEvaluate(const AbstractRequest& request) const = 0;
+
+    // Evaluates the request, possibly using the engine to evaluate dependencies
+    virtual ResultValue evaluate(const AbstractRequest& request,
+                                 class EvaluatorEngine& engine) = 0;
+};
+
+// 5. DependencyGraph (basic)
+class DependencyGraph {
+    std::unordered_map<size_t, std::unordered_set<size_t>> edges_;
+
+public:
+    void addDependency(size_t requestKey, size_t dependencyKey) {
+        edges_[requestKey].insert(dependencyKey);
+    }
+
+    std::unordered_set<size_t> getDependents(size_t requestKey) const {
+        std::unordered_set<size_t> dependents;
+        for (const auto& [key, deps] : edges_) {
+            if (deps.find(requestKey) != deps.end()) {
+                dependents.insert(key);
+            }
+        }
+        return dependents;
+    }
+
+    void removeDependencies(size_t requestKey) {
+        edges_.erase(requestKey);
+        for (auto& [key, deps] : edges_) {
+            deps.erase(requestKey);
+        }
+    }
+};
+
+// 6. RequestCache (basic)
+class RequestCache {
+    std::unordered_map<size_t, ResultValue> cache_;
+
+public:
+    bool has(size_t key) const { return cache_.find(key) != cache_.end(); }
+    ResultValue get(size_t key) const { return cache_.at(key); }
+    void store(size_t key, ResultValue result) { cache_[key] = std::move(result); }
+    void invalidate(size_t key) { cache_.erase(key); }
+};
+
+// 7. EvaluatorEngine - core engine to evaluate requests, cache results, track dependencies
+class EvaluatorEngine {
+    RequestCache cache_;
+    DependencyGraph depGraph_;
+    std::vector<std::unique_ptr<AbstractEvaluator>> evaluators_;
+
+    // For invalidation recursion, store shared_ptr<AbstractRequest> keyed by key
+    std::unordered_map<size_t, std::shared_ptr<AbstractRequest>> requests_;
+
+public:
+    void registerEvaluator(std::unique_ptr<AbstractEvaluator> evaluator) {
+        evaluators_.push_back(std::move(evaluator));
+    }
+
+    ResultValue evaluate(std::shared_ptr<AbstractRequest> request) {
+        size_t key = request->key();
+        requests_[key] = request;
+
+        if (request->cacheable() && cache_.has(key)) {
+            return cache_.get(key);
+        }
+
+        for (auto& eval : evaluators_) {
+            if (eval->canEvaluate(*request)) {
+                ResultValue result = eval->evaluate(*request, *this);
+
+                if (request->cacheable() && result.isSuccess()) {
+                    cache_.store(key, result);
+                }
+
+                for (auto& dep : request->dependencies()) {
+                    depGraph_.addDependency(key, dep->key());
+                }
+
+                return result;
+            }
+        }
+
+        return ResultValue::error("No evaluator found");
+    }
+
+    void invalidate(std::shared_ptr<AbstractRequest> request) {
+        size_t key = request->key();
+        cache_.invalidate(key);
+        depGraph_.removeDependencies(key);
+
+        auto dependents = depGraph_.getDependents(key);
+        for (auto depKey : dependents) {
+            if (requests_.count(depKey)) {
+                invalidate(requests_[depKey]);
+            }
+        }
+    }
+};
+
+

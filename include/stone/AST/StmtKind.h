@@ -25,7 +25,7 @@ enum class StmtKind : uint8_t {
   Match,
 
   // Exception handling
-  Throw,
+  Raise,
   Catch,
   Next,
 

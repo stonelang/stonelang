@@ -6,8 +6,8 @@
 #define TELL_ARTIFACT(M) 
 #endif
 
-#ifndef CHECK_ARTIFACT
-#define CHECK_ARTIFACT(M)
+#ifndef LOGIC_ARTIFACT
+#define LOGIC_ARTIFACT(M)
 #endif
 
 #ifndef EMIT_ARTIFACT
@@ -21,9 +21,9 @@ TELL_ARTIFACT(Version)
 TELL_ARTIFACT(Options) // --tell options --driver or --frontend --stats
 
  
-CHECK_ARTIFACT(Syntax)
-CHECK_ARTIFACT(Types)
-CHECK_ARTIFACT(Module)
+LOGIC_ARTIFACT(Syntax)
+LOGIC_ARTIFACT(Logic)
+LOGIC_ARTIFACT(Module)
  
  
 EMIT_ARTIFACT(AST)

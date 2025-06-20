@@ -4,7 +4,7 @@
 namespace stone {
 
 enum class NumberBitWidth : uint8_t {
-  Platform = 0,
+  Local = 0,
   Size8,
   Size16,
   Size32,

@@ -1,7 +1,6 @@
 #ifndef STONE_AST_DIAGNOSTICS_H
 #define STONE_AST_DIAGNOSTICS_H
 
-#include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Type.h"
 #include "stone/Support/DiagnosticOptions.h"
@@ -1746,7 +1745,7 @@ public:
 
 /// Retrieve the macro name for a generated source info that represents
 /// a macro expansion.
-DeclName getGeneratedSourceInfoMacroName(const GeneratedSourceInfo &info);
+Identifier GetGeneratedSourceInfoMacroName(const GeneratedSourceInfo &info);
 
 /// RAII class that suppresses diagnostics by temporarily disabling all of
 /// the diagnostic consumers.
@@ -1844,20 +1843,20 @@ protected:
                                               const DiagnosticInfo &Info);
 };
 
-inline InFlightDiagnostic Error(SrcLoc loc, DiagID id, auto &&...args) {
-  return diagnose(loc, Diagnostic(id, std::forward<decltype(args)>(args)...))
-      .limitBehavior(DiagnosticBehavior::Error);
-}
+// inline InFlightDiagnostic Error(SrcLoc loc, DiagID id, auto &&...args) {
+//   return diagnose(loc, Diagnostic(id, std::forward<decltype(args)>(args)...))
+//       .limitBehavior(DiagnosticBehavior::Error);
+// }
 
-inline InFlightDiagnostic Warn(SrcLoc loc, DiagID id, auto &&...args) {
-  return diagnose(loc, Diagnostic(id, std::forward<decltype(args)>(args)...))
-      .limitBehavior(DiagnosticBehavior::Warning);
-}
+// inline InFlightDiagnostic Warn(SrcLoc loc, DiagID id, auto &&...args) {
+//   return diagnose(loc, Diagnostic(id, std::forward<decltype(args)>(args)...))
+//       .limitBehavior(DiagnosticBehavior::Warning);
+// }
 
-inline InFlightDiagnostic Note(SrcLoc loc, DiagID id, auto &&...args) {
-  return diagnose(loc, Diagnostic(id, std::forward<decltype(args)>(args)...))
-      .limitBehavior(DiagnosticBehavior::Note);
-}
+// inline InFlightDiagnostic Note(SrcLoc loc, DiagID id, auto &&...args) {
+//   return diagnose(loc, Diagnostic(id, std::forward<decltype(args)>(args)...))
+//       .limitBehavior(DiagnosticBehavior::Note);
+// }
 
 } // namespace stone
 

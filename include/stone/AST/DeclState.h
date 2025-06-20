@@ -4,7 +4,8 @@
 #include "stone/AST/Artifact.h"
 #include "stone/AST/DeclInfluencer.h"
 #include "stone/AST/DeclKind.h"
-#include "stone/AST/DeclName.h"
+#include "stone/AST/Identifier.h"
+#include "stone/AST/ParamList.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeInfluencer.h"
 #include "stone/AST/TypeState.h"
@@ -24,7 +25,7 @@ class ParamList;
 
 // enum class DeclStateKind : uint8_t {
 //   Parametric,
-//   Template,
+//   Mutation,
 //   Using,
 //   Join,
 //   Builtin,
@@ -37,8 +38,9 @@ enum class DeclStateKind : uint8_t {
   Function,
 };
 
-class alignas(1 << DeclAlignInBits) DeclState final : public Artifact {
+class alignas(1 << DeclAlignInBits) DeclState : public Artifact {
   // friend Decl;
+  MemoryManager &mem;
 
   // The declaration kind
   DeclKind kind = DeclKind::None;
@@ -47,10 +49,10 @@ class alignas(1 << DeclAlignInBits) DeclState final : public Artifact {
   SrcLoc kindLoc;
 
   // The declaration name
-  DeclName declName;
+  Identifier name;
 
   // Source location for the decl name.
-  SrcLoc declNameLoc;
+  SrcLoc nameLoc;
 
   // The Decl associated with this DeclState
   Decl *owner = nullptr;
@@ -72,20 +74,20 @@ public:
   void operator!=(DeclState D) const = delete;
 
   // Every DeclState must have a context
-  explicit DeclState(DeclState *parent = nullptr);
+  explicit DeclState(MemoryManager &mem, DeclState *parent = nullptr);
 
 public:
   void SetKind(DeclKind K) { kind = K; }
-  DeclKind GetKind() { return kind; }
+  DeclKind GetKind() const { return kind; }
 
-  SrcLoc GetKindLoc() { return declNameLoc; }
-  void SetKindLoc(SrcLoc currentLoc) { declNameLoc = currentLoc; }
+  SrcLoc GetKindLoc() { return nameLoc; }
+  void SetKindLoc(SrcLoc currentLoc) { nameLoc = currentLoc; }
 
-  void SetName(DeclName name) { declName = name; }
-  DeclName GetName() { return declName; }
+  void SetName(Identifier name) { name = name; }
+  Identifier GetName() { return name; }
 
-  SrcLoc GetNameLoc() { return declNameLoc; }
-  void SetNameLoc(SrcLoc currentLoc) { declNameLoc = currentLoc; }
+  SrcLoc GetNameLoc() const { return nameLoc; }
+  void SetNameLoc(SrcLoc currentLoc) { nameLoc = currentLoc; }
 
   void SetOwner(Decl *D) { owner = D; }
   Decl *GetOwner() { return owner; }
@@ -99,7 +101,9 @@ public:
   DeclInfluencerList &GetDeclInfluencerList() { return declInfluencerList; }
 
   void SetParamList(ParamList *PL) { paramList = PL; }
-  ParamList GetParamList() { return paramList; }
+  ParamList *GetParamList() { return paramList; }
+
+  MemoryManager &GetMemory() { return mem; }
 
   // template <typename T>
   // T *GetParamListAs() const {
@@ -109,7 +113,7 @@ public:
   //   oid SetParamList(std::unique_ptr<ParamList> p) {
   //   switch (p->GetKind()) {
   //     case ParamListKind::Any:
-  //       assert(isa<TemplateDecl>(thisDecl) && "Only TemplateDecl can have
+  //       assert(isa<MutationDecl>(thisDecl) && "Only MutationDecl can have
   //       AnyParamList"); break;
   //     case ParamListKind::Using:
   //       assert(isa<UsingDecl>(thisDecl) && "Only UsingDecl can have
@@ -133,31 +137,77 @@ public:
   bool IsUsing() { return GetKind() == DeclKind::Using; }
 };
 
-//   class DeclState {
-//   TemplateParameterList *templateParams;
+enum class JoinDeclKind : uint8_t {
+  None = 0,
+  Struct,
+  Interface,
+  Enum,
+};
+
+class JoinDeclState : public DeclState {
+  JoinDeclKind joinKind;
+};
+
+class ParametricDeclState : public DeclState {
+public:
+};
+
+class SpaceDeclState : public ParametricDeclState {
+public:
+};
+
+enum class UsingDeclKind : uint8_t {
+  None = 0,
+  Module,
+  Struct,
+  Interface,
+  Enum,
+  Fun,
+  Macro,
+};
+
+class UsingDeclState : public ParametricDeclState {
+  UsingDeclKind kind;
+};
+
+// class ScopeDeclState : public DeclState {
 // public:
-//   void SetTemplateParameterList(TemplateParameterList *params);
-//   TemplateParameterList *GetTemplateParameterList() const;
+//   explicit ScopeDeclState(DeclState *parent) : DeclState(parent) {}
 // };
 
-// class TemplateDeclState : public DeclState {
+class SomeDeclState : public ParametricDeclState {
+public:
+};
+
+class JustDeclState : public ParametricDeclState {
+public:
+};
+
+//   class DeclState {
+//   MutationParameterList *templateParams;
+// public:
+//   void SetMutationParameterList(MutationParameterList *params);
+//   MutationParameterList *GetMutationParameterList() const;
+// };
+
+// class MutationDeclState : public DeclState {
 // public:
 //   // Every DeclState must have a context
-//   explicit TemplateDeclState(ASTSession &session);
+//   explicit MutationDeclState(ASTSession &session);
 // };
 
-// class ScopeDeclState : public TemplateDeclState {
+// class ScopeDeclState : public MutationDeclState {
 // public:
 //   // Every DeclState must have a context
 //   explicit ScopeDeclState(ASTSession &session);
 // };
-};
+//};
 
-// class TemplateState final : public DeclState {
+// class MutationDeclState final : public DeclState {
 //   llvm::SmallVector<ParamDecl*, 4> params;
 
 // public:
-//   TemplateState(DeclState *parent = nullptr) : DeclState(parent) {}
+//   MutationDeclState(DeclState *parent = nullptr) : DeclState(parent) {}
 
 //   void AddParam(ParamDecl *param) { params.push_back(param); }
 //   llvm::ArrayRef<ParamDecl*> GetParams() const { return params; }
@@ -181,12 +231,12 @@ public:
 //   bool IsMacroGenerated() const { return !macroSource.empty(); }
 // };
 
-// class TemplateState final : public DeclState {
+// class MutationDeclState final : public DeclState {
 //   llvm::SmallVector<ParamDecl *, 4> params;
 //   llvm::SmallVector<Type *, 4> genericArgs;
 
 // public:
-//   TemplateState(DeclState *parent = nullptr) : DeclState(parent) {}
+//   MutationDeclState(DeclState *parent = nullptr) : DeclState(parent) {}
 
 //   // -- Parameter handling
 //   void AddParam(ParamDecl *param) { params.push_back(param); }
@@ -199,17 +249,7 @@ public:
 //   bool IsInstantiated() const { return !genericArgs.empty(); }
 
 //   // -- Overall utility
-//   bool IsTemplate() const { return HasParams() || IsInstantiated(); }
-// };
-
-// enum class UsingDeclKind : uint8_t {
-//   None = 0,
-//   Module,
-//   Struct,
-//   Interface,
-//   Enum,
-//   Fun,
-//   Macro,
+//   bool IsMutation() const { return HasParams() || IsInstantiated(); }
 // };
 
 // class DotPath {
@@ -227,7 +267,7 @@ public:
 //   void Print(llvm::raw_ostream &os) const;
 // };
 
-// class ParametricDeclState : public TemplateDeclState {
+// class ParametricDeclState : public MutationDeclState {
 //   DotPath dotPath;
 
 // public:
@@ -239,7 +279,7 @@ public:
 //   dotPath.GetSegments(); }
 // };
 
-// class ParametricDeclState : public TemplateDeclState {
+// class ParametricDeclState : public MutationDeclState {
 //   UsingDeclKind usingKind;
 //   DotPath targetPath;                      // optional: the target being
 //   aliased llvm::SmallVector<Decl *, 4> typeParams; // optional: for generics
@@ -256,18 +296,6 @@ public:
 
 //   void AddTypeParam(Decl *param) { typeParams.push_back(param); }
 //   llvm::ArrayRef<Decl *> GetTypeParams() const { return typeParams; }
-// };
-
-// enum class JoinDeclKind : uint8_t {
-//   None = 0,
-//   Struct,
-//   Interface,
-//   Enum,
-// };
-
-// class JoinDeclState : public ParametricDeclState {
-//   JoinDeclKind joinKind;
-//   // ...
 // };
 
 // void SetJoinKind(JoinDeclKind kind) { joinKind = kind; }

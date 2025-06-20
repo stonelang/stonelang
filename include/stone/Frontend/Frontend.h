@@ -2,7 +2,7 @@
 #define STONE_FRONTEND_FRONTEND_H
 
 #include "stone/AST/ASTSession.h"
-#include "stone/AST/TypeCheckerOptions.h"
+#include "stone/AST/LogicOptions.h"
 #include "stone/Frontend/FrontendMemoryBuffers.h"
 #include "stone/Frontend/FrontendObserver.h"
 #include "stone/Frontend/FrontendOptions.h"
@@ -25,7 +25,7 @@ class Frontend final {
 
   FrontendOptions frontendOpts;
   CodeGenOptions codeGenOpts;
-  TypeCheckerOptions typeCheckerOpts;
+  LogicOptions typeCheckerOpts;
   DiagnosticOptions diagOpts;
   clang::FileSystemOptions clangFileSystemOpts;
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;

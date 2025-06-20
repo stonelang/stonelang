@@ -1,120 +1,112 @@
 #ifndef STONE_AST_IDENTIFIER_H
 #define STONE_AST_IDENTIFIER_H
 
-#include "stone/Support/EditorPlaceholder.h"
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/DenseMapInfo.h"
+#include "llvm/ADT/Hashing.h"
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/StringSet.h"
 #include "llvm/Support/Allocator.h"
 
-#include "llvm/ADT/StringMap.h"
-#include "llvm/ADT/StringRef.h"
-
-#include <stdint.h>
-
 namespace stone {
-class Identifier {
-  friend class DeclName;
-  friend class DeclNameBase;
-  friend class ASTSession;
-  const char *dataPointer = nullptr;
-  explicit Identifier(const char *dataPtr) : dataPointer(dataPtr) {}
+
+using IdentifierTable = llvm::StringSet<llvm::BumpPtrAllocator &>;
+
+class Identifier final {
+  const char *ptr;
 
 public:
-  Identifier() : Identifier(nullptr) {}
+  Identifier() : ptr(nullptr) {}
+  explicit Identifier(const char *str) : ptr(str) {}
   explicit operator bool() const { return !IsEmpty(); }
+  bool operator==(Identifier other) const { return ptr == other.ptr; }
+  bool operator!=(Identifier other) const { return ptr != other.ptr; }
 
 public:
-  const char *GetPointer() const { return dataPointer; }
-  llvm::StringRef GetString() const { return dataPointer; }
-  explicit operator std::string() const { return std::string(dataPointer); }
-
-  unsigned GetLength() const {
-    assert(dataPointer != nullptr &&
-           "Tried getting length of empty identifier");
-    return ::strlen(dataPointer);
+  const char *GetPtr() const { return ptr; }
+  llvm::StringRef GetString() const {
+    return !IsEmpty() ? llvm::StringRef(ptr) : llvm::StringRef();
   }
-  bool IsEmpty() const { return dataPointer == nullptr; }
-  bool IsEqual(llvm::StringRef other) const {
-    return GetString().equals(other);
-  }
+  bool IsEmpty() const { return ptr == nullptr; }
+  bool HasTildaPrefix() const { return GetString().starts_with("~"); }
+  bool IsArithmeticOperator() const;
+  bool IsSTDComparisonOperator() const;
 
 public:
-  bool IsArithmeticOperator() const {
-    return IsEqual("+") || IsEqual("-") || IsEqual("*") || IsEqual("/") ||
-           IsEqual("%");
-  }
-  // Returns whether this is a standard comparison operator,
-  // such as '==', '>=' or '!=='.
-  bool IsSTDComparisonOperator() const {
-    return IsEqual("==") || IsEqual("!=") || IsEqual("<") || IsEqual(">") ||
-           IsEqual("<=") || IsEqual(">=");
-  }
-
-public:
-  /// isOperatorStartCodePoint - Return true if the specified code point is a
-  /// valid start of an operator.
-  static bool IsOperatorStartCodePoint(uint32_t C) {
-    // ASCII operator chars.
-    static const char OpChars[] = "/=-+*%<>!&|^~.?";
-    if (C < 0x80) {
-      return memchr(OpChars, C, sizeof(OpChars) - 1) != 0;
-    }
-
-    // Unicode math, symbol, arrow, dingbat, and line/box drawing chars.
-    return (C >= 0x00A1 && C <= 0x00A7) || C == 0x00A9 || C == 0x00AB ||
-           C == 0x00AC || C == 0x00AE || C == 0x00B0 || C == 0x00B1 ||
-           C == 0x00B6 || C == 0x00BB || C == 0x00BF || C == 0x00D7 ||
-           C == 0x00F7 || C == 0x2016 || C == 0x2017 ||
-           (C >= 0x2020 && C <= 0x2027) || (C >= 0x2030 && C <= 0x203E) ||
-           (C >= 0x2041 && C <= 0x2053) || (C >= 0x2055 && C <= 0x205E) ||
-           (C >= 0x2190 && C <= 0x23FF) || (C >= 0x2500 && C <= 0x2775) ||
-           (C >= 0x2794 && C <= 0x2BFF) || (C >= 0x2E00 && C <= 0x2E7F) ||
-           (C >= 0x3001 && C <= 0x3003) || (C >= 0x3008 && C <= 0x3030);
-  }
-  /// isOperatorContinuationCodePoint - Return true if the specified code point
-  /// is a valid operator code point.
-  static bool IsOperatorContinuationCodePoint(uint32_t C) {
-    if (IsOperatorStartCodePoint(C)) {
-      return true;
-    }
-    // Unicode combining characters and variation selectors.
-    return (C >= 0x0300 && C <= 0x036F) || (C >= 0x1DC0 && C <= 0x1DFF) ||
-           (C >= 0x20D0 && C <= 0x20FF) || (C >= 0xFE00 && C <= 0xFE0F) ||
-           (C >= 0xFE20 && C <= 0xFE2F) || (C >= 0xE0100 && C <= 0xE01EF);
-  }
-
-  static bool IsEditorPlaceholder(llvm::StringRef name) {
-    return stone::isEditorPlaceholder(name);
-  }
-
-  bool IsEditorPlaceholder() const {
-    return !IsEmpty() && isEditorPlaceholder(GetString());
-  }
-
-  const void *GetAsOpaquePointer() const {
-    return static_cast<const void *>(dataPointer);
-  }
-
-  static Identifier GetFromOpaquePointer(void *Ptr) {
-    return Identifier((const char *)Ptr);
-  }
-
-  /// Compare two identifiers, producing -1 if \c *this comes before \c other,
-  /// 1 if \c *this comes after \c other, and 0 if they are equal.
-  ///
-  /// Null identifiers come after all other identifiers.
-  // int Compare(Identifier other) const;
-
-  // friend llvm::hash_code hash_value(Identifier identifier) {
-  //   return llvm::hash_value(identifier.GetAsOpaquePointer());
-  // }
-
-  bool operator==(Identifier RHS) const {
-    return dataPointer == RHS.dataPointer;
-  }
-  bool operator!=(Identifier RHS) const { return !(*this == RHS); }
-  bool operator<(Identifier RHS) const { return dataPointer < RHS.dataPointer; }
+  static bool IsOperatorStartCodePoint(uint32_t C);
+  static bool IsOperatorContinuationCodePoint(uint32_t C);
+  static Identifier FromString(llvm::StringRef str, IdentifierTable &table);
 };
 
-using IdentifierTable = llvm::StringMap<char, llvm::BumpPtrAllocator &>;
+class DotName {
+  llvm::SmallVector<Identifier, 4> segments;
+
+public:
+  DotName() = default;
+  explicit DotName(llvm::ArrayRef<Identifier> segs)
+      : segments(segs.begin(), segs.end()) {}
+
+  void Add(Identifier id) { segments.push_back(id); }
+  bool Empty() const { return segments.empty(); }
+  size_t Size() const { return segments.size(); }
+
+  Identifier GetFront() const { return segments.front(); }
+  Identifier GetBack() const { return segments.back(); }
+  llvm::ArrayRef<Identifier> GetSegments() const { return segments; }
+
+  bool operator==(const DotName &other) const {
+    return segments == other.segments;
+  }
+  bool operator!=(const DotName &other) const { return !(*this == other); }
+};
+
 } // namespace stone
 
+namespace llvm {
+
+template <> struct DenseMapInfo<stone::Identifier> {
+  static stone::Identifier getEmptyKey() {
+    return stone::Identifier(
+        reinterpret_cast<const char *>(~static_cast<uintptr_t>(0)));
+  }
+
+  static stone::Identifier getTombstoneKey() {
+    return stone::Identifier(
+        reinterpret_cast<const char *>(~static_cast<uintptr_t>(1)));
+  }
+
+  static unsigned getHashValue(stone::Identifier Val) {
+    return DenseMapInfo<const char *>::getHashValue(Val.GetPtr());
+  }
+
+  static bool isEqual(stone::Identifier LHS, stone::Identifier RHS) {
+    return LHS == RHS;
+  }
+};
+
+template <> struct DenseMapInfo<stone::DotName> {
+  static stone::DotName getEmptyKey() {
+    return stone::DotName({DenseMapInfo<stone::Identifier>::getEmptyKey()});
+  }
+
+  static stone::DotName getTombstoneKey() {
+    return stone::DotName({DenseMapInfo<stone::Identifier>::getTombstoneKey()});
+  }
+
+  static unsigned getHashValue(const stone::DotName &dn) {
+    unsigned hash = 0;
+    for (auto id : dn.GetSegments()) {
+      hash = llvm::hash_combine(
+          hash, DenseMapInfo<stone::Identifier>::getHashValue(id));
+    }
+    return hash;
+  }
+
+  static bool isEqual(const stone::DotName &LHS, const stone::DotName &RHS) {
+    return LHS == RHS;
+  }
+};
+
+} // namespace llvm
 #endif

@@ -6,6 +6,7 @@
 #include "stone/AST/Number.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeInfluencer.h"
+#include "stone/AST/TypeKind.h"
 
 namespace stone {
 
@@ -17,10 +18,6 @@ enum class TypeStateKind {
 };
 
 class alignas(1 << TypeAlignInBits) TypeState : public Artifact {
-
-  // The type that we are dealing with
-  TypeKind kind = TypeKind::None;
-
   // The type that owns this TypeState
   ///\ If the owner type is null
   Type *owner = nullptr;
@@ -35,13 +32,16 @@ class alignas(1 << TypeAlignInBits) TypeState : public Artifact {
   // The DeclState that owns this TypeState
   DeclState *declState = nullptr;
 
-public:
-  explicit TypeState(TypeKind kind) : kind(kind) {}
-  virtual ArtifactKind GetTypeStateKind() const = 0;
+protected:
+  // The type that we are dealing with
+  TypeKind typeKind = TypeKind::None;
 
 public:
-  void SetKind(TypeKind K) { kind = K; }
-  TypeKind GetKind() { return kind; }
+  explicit TypeState(TypeKind typeKind) : typeKind(typeKind) {}
+
+public:
+  void SetTypeKind(TypeKind K) { typeKind = K; }
+  TypeKind GetTypeKind() { return typeKind; }
 
   void SetCanType(Type *T) {
     assert(T && "TypeState cannot be assigned a null Type!");
@@ -62,6 +62,8 @@ public:
   ArtifactKind GetArtifactKind() const override {
     return ArtifactKind::TypeState;
   }
+
+  virtual TypeStateKind GetTypeStateKind() const = 0;
 };
 
 // May have to pass the Module
@@ -69,49 +71,93 @@ public:
 /// Represents state for built-in types like int, float, char, bool, etc.
 class BuiltinTypeState : public TypeState {
 public:
-  BuiltinTypeState(TypeKind kind) : TypeState(kind) {}
+  BuiltinTypeState(TypeKind typeKind) : TypeState(typeKind) {}
 
 public:
-  bool IsNumberType() const;
-  NumberBitWidth GetNumberBitWidth() const;
-
-  bool IsInt() const {
-    return kind >= TypeKind::Int && kind <= TypeKind::UInt128;
-  }
-  bool IsSInt() const {
-    return kind >= TypeKind::Int && kind <= TypeKind::Int128;
-  }
-  bool IsUInt() const {
-    return kind >= TypeKind::UInt && kind <= TypeKind::UInt128;
-  }
-  bool IsFloat() const {
-    return kind >= TypeKind::Float && kind <= TypeKind::Float128;
-  }
-  bool IsChar() const { return kind == TypeKind::Char; }
-  bool IsBool() const { return kind == TypeKind::Bool; }
+  // bool IsNumberType() const;
+  // NumberBitWidth GetNumberBitWidth();
 
 public:
-  DeclStateKind GetDeclStateKind() const override {
-    return DeclStateKind::Builtin;
+  TypeStateKind GetTypeStateKind() const override {
+    return TypeStateKind::Builtin;
   }
 
 public:
-  static bool IsNumberType(TypeKind kind) const;
-  static NumberBitWidth GetNumberBitWidth(TypeKind kind) const;
+  // static bool IsNumberType(TypeKind kind);
+  // static NumberBitWidth GetNumberBitWidth(TypeKind kind);
 };
 
-class FunctionTypeState final : public TypeState {
-public:
-  FunctionTypeState(TypeKind kind);
+enum class FunTypeStateKind : uint8_t {
+  Normal = 0,  // top-level or modular fun Main()
+  Method,      // join A fun Do()
+  Constructor, // join A fun A()
+  Destructor,  // join A fun ~A()
+  Defer,       // ~fun() {}
+  Anonymous    // fun() {} — unbound
+};
+
+//===----------------------------------------------------------------------===//
+// Base: FunTypeState
+//===----------------------------------------------------------------------===//
+class FunTypeState : public TypeState {
+  FunTypeStateKind funTypeStateKind;
 
 public:
-  DeclStateKind GetDeclStateKind() const override {
-    return DeclStateKind::Function;
+  FunTypeState(FunTypeStateKind funTypeStateKind)
+      : TypeState(TypeKind::Fun), funTypeStateKind(funTypeStateKind) {}
+
+public:
+  TypeStateKind GetTypeStateKind() const override {
+    return TypeStateKind::Function;
   }
 
+  FunTypeStateKind GetFunTypeStateKind() const { return funTypeStateKind; }
+  bool IsMethod() const { return funTypeStateKind == FunTypeStateKind::Method; }
+  bool IsConstructor() const {
+    return funTypeStateKind == FunTypeStateKind::Constructor;
+  }
+  bool IsDestructor() const {
+    return funTypeStateKind == FunTypeStateKind::Destructor;
+  }
+  bool IsDefer() const { return funTypeStateKind == FunTypeStateKind::Defer; }
+  bool IsAnonymous() const {
+    return funTypeStateKind == FunTypeStateKind::Anonymous;
+  }
+  bool IsNormal() const { return funTypeStateKind == FunTypeStateKind::Normal; }
+};
+
+//===----------------------------------------------------------------------===//
+// Specializations (optional, for static type dispatch)
+//===----------------------------------------------------------------------===//
+
+class NormalFunTypeState : public FunTypeState {
 public:
-  static bool IsNumberType(TypeKind kind) const;
-  static NumberBitWidth GetNumberBitWidth(TypeKind kind) const;
+  NormalFunTypeState() : FunTypeState(FunTypeStateKind::Normal) {}
+};
+
+class MethodFunTypeState : public FunTypeState {
+public:
+  MethodFunTypeState() : FunTypeState(FunTypeStateKind::Method) {}
+};
+
+class ConstructorFunTypeState : public FunTypeState {
+public:
+  ConstructorFunTypeState() : FunTypeState(FunTypeStateKind::Constructor) {}
+};
+
+class DestructorFunTypeState : public FunTypeState {
+public:
+  DestructorFunTypeState() : FunTypeState(FunTypeStateKind::Destructor) {}
+};
+
+class DeferFunTypeState : public FunTypeState {
+public:
+  DeferFunTypeState() : FunTypeState(FunTypeStateKind::Defer) {}
+};
+
+class AnonymousFunTypeState : public FunTypeState {
+public:
+  AnonymousFunTypeState() : FunTypeState(FunTypeStateKind::Anonymous) {}
 };
 
 // TypeState
@@ -120,7 +166,8 @@ public:
 //  ├── SugTypeState
 //  ├── AccessTypeState
 //  ├── DeducedTypeState
-//  └── FunctionTypeState
+//  └── FunTypeState
+///     UniqueTypeState
 
 } // namespace stone
 

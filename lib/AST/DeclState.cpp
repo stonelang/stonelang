@@ -1,11 +1,11 @@
 #include "stone/AST/DeclState.h"
 #include "stone/AST/Decl.h"
+#include "stone/AST/MemoryManager.h"
 
 using namespace stone;
 
-DeclState::DeclState(DeclState *parent) : parent(parent) {}
-
-// DeclState *Decl::GetDeclState() { return DS; }
+DeclState::DeclState(MemoryManager &mem, DeclState *parent)
+    : mem(mem), parent(parent) {}
 
 // // void Decl::Evaluate(DeclActionKind kind) {
 // //   GetDeclState()->GetASTSession().GetDeclEvaluator().Evaluate(this, kind);

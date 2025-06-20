@@ -19,6 +19,7 @@ class SrcLoc {
   friend class SrcMgr;
   friend class SrcRange;
   friend class CharSrcRange;
+  friend class DiagnosticConsumer;
   llvm::SMLoc Value;
 
 public:

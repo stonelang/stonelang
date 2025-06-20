@@ -1,4 +1,6 @@
 #include "stone/AST/Module.h"
+#include "stone/AST/ModuleContext.h"
+#include "stone/AST/ModuleFile.h"
 #include "stone/AST/Type.h"
 #include "stone/AST/TypeState.h"
 

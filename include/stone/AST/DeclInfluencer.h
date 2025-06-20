@@ -4,9 +4,9 @@
 #include "stone/AST/Artifact.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/MemoryManager.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/Visibility.h"
+#include "stone/Support/SrcLoc.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"
@@ -70,8 +70,6 @@ public:
     return ArtifactKind::DeclInfluencer;
   }
 
-  virtual DeclInfluencerClass GetClass() const = 0;
-
   bool IsTrust() const { return kind == DeclInfluencerKind::Trust; }
   bool IsOpen() const { return kind == DeclInfluencerKind::Open; }
   bool IsVirtual() const { return kind == DeclInfluencerKind::Virtual; }
@@ -88,10 +86,6 @@ class DeclModifier : public DeclInfluencer {
 public:
   DeclModifier(DeclInfluencerKind kind, SrcLoc loc)
       : DeclInfluencer(kind, loc) {}
-
-  DeclInfluencerClass GetClass() const override {
-    return DeclInfluencerClass::Modifier;
-  }
 };
 
 class TrustModifier : public DeclModifier {
@@ -116,7 +110,7 @@ public:
       : DeclModifier(DeclInfluencerKind::Personal, loc) {}
 };
 
-class OpenModifier : public DeclModifier {
+class OpenModifier final : public DeclModifier {
 public:
   OpenModifier(SrcLoc loc) : DeclModifier(DeclInfluencerKind::Open, loc) {}
 };
@@ -133,24 +127,24 @@ public:
       : DeclModifier(DeclInfluencerKind::Exclusive, loc) {}
 };
 
-class VisibilityModifier : public DeclModifier {
+class VisibilityModifier final : public DeclModifier {
   VisibilityLevel level;
 
 public:
   VisibilityModifier(VisibilityLevel level, SrcLoc loc)
       : DeclModifier(DeclInfluencerKind::Visibility, loc), level(level) {}
 
+public:
   VisibilityLevel GetLevel() const { return level; }
   void SetLevel(VisibilityLevel lvl) { level = lvl; }
+  void MakePublic() { SetLevel(VisibilityLevel::Public); }
+  void MakeLocal() { SetLevel(VisibilityLevel::Local); }
 };
 
 class DeclAttribute : public DeclInfluencer, public Attribute {
 public:
   DeclAttribute(DeclInfluencerKind kind, SrcLoc loc, SrcRange range)
       : DeclInfluencer(kind, loc), Attribute(loc, range) {}
-  DeclInfluencerClass GetClass() const override {
-    return DeclInfluencerClass::Attribute;
-  }
 };
 
 class DeprecatedAttribute : public DeclAttribute {
@@ -245,27 +239,14 @@ public:
 };
 
 class DeclInfluencerList final : public AbstractDeclInfluencerList {
-  MemoryManager &mem;
+public:
+  explicit DeclInfluencerList() {}
 
 public:
-  explicit DeclInfluencerList(MemoryManager &mem) : mem(mem) {}
-
-  MemoryManager &GetMemory() { return mem; }
-
-  void AddTrust(SrcLoc loc) { Add(mem.Create<TrustModifier>(loc)); }
-  void AddPure(SrcLoc loc) { Add(mem.Create<PureModifier>(loc)); }
-  void AddVirtual(SrcLoc loc) { Add(mem.Create<VirtualModifier>(loc)); }
-  void AddPersonal(SrcLoc loc) { Add(mem.Create<PersonalModifier>(loc)); }
-  void AddPublic(SrcLoc loc) {
-    Add(mem.Create<VisibilityModifier>(VisibilityLevel::Public, loc));
-  }
-  void AddPrivate(SrcLoc loc) {
-    Add(mem.Create<VisibilityModifier>(VisibilityLevel::Private, loc));
-  }
-  void AddInternal(SrcLoc loc) {
-    Add(mem.Create<VisibilityModifier>(VisibilityLevel::Internal, loc));
-  }
-
+  void AddTrust(TrustModifier *modifier) { Add(modifier); }
+  void AddPure(PureModifier *modifier) { Add(modifier); }
+  void AddVirtual(VirtualModifier *modifier) { Add(modifier); }
+  void AddPersonal(PersonalModifier *modifier) { Add(modifier); }
   bool HasTrust() { return Has(DeclInfluencerKind::Trust); }
   bool HasPure() { return Has(DeclInfluencerKind::Pure); }
   bool HasVirtual() { return Has(DeclInfluencerKind::Virtual); }
@@ -274,12 +255,8 @@ public:
   bool HasHardware() const { return Has(DeclInfluencerKind::Hardware); }
   bool HasExclusive() const { return Has(DeclInfluencerKind::Exclusive); }
 
-  void AddIntrinsic(IntrinsicKind kind, SrcLoc loc, SrcRange srcRange) {
-    Add(mem.Create<IntrinsicAttribute>(kind, loc, srcRange));
-  }
-  void AddExtern(SrcLoc loc, SrcRange srcRange) {
-    Add(mem.Create<ExternAttribute>(loc, srcRange));
-  }
+  void AddIntrinsic(IntrinsicAttribute *attribute) { Add(attribute); }
+  void AddExtern(ExternAttribute *attribute) { Add(attribute); }
 
   bool HasIntrinsic() { return Has(DeclInfluencerKind::Intrinsic); }
   bool HasExtern() { return Has(DeclInfluencerKind::Extern); }

@@ -1,4 +1,8 @@
-join Core;
+space Core;
 
-type[T] public struct Array using type[T] Collection {
+some[T] public 
+struct Array with some[T] Collection {
+}
+
+join Array public fun Array() {
 }

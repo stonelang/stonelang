@@ -278,6 +278,9 @@ public:
   bool IsFloat64() const { return kind == tok::kw_float64; }
   bool IsFloat128() const { return kind == tok::kw_float128; }
 
+  bool IsSome() const { return kind == tok::kw_some; }
+  bool IsJust() const { return kind == tok::kw_just; }
+
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }
 

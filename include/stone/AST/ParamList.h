@@ -1,35 +1,38 @@
 #ifndef STONE_AST_PARAM_LIST_H
 #define STONE_AST_PARAM_LIST_H
 
+#include "stone/AST/Artifact.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
 
-enum class ParamListKind : uint8_t {
-  Template = 0,
-  Using,
-  Space,
-};
+enum class ParamListKind : uint8_t { None = 0, Space, Using, Some, Just };
 
-class ParamList {
+class ParamList : public Artifact {
   ParamListKind kind;
 
 public:
   ParamList(ParamListKind kind) : kind(kind) {}
 };
 
-class TemplateParamList : public ParamList {
+class SpaceParamList : public ParamList {
 public:
-  TemplateParamList() : ParamList(ParamListKind::Any) {}
+  SpaceParamList() : ParamList(ParamListKind::Space) {}
 };
+
 class UsingParamList : public ParamList {
 public:
   UsingParamList() : ParamList(ParamListKind::Using) {}
 };
 
-class SpaceParamList : public ParamList {
+class SomeParamList : public ParamList {
 public:
-  SpaceParamList() : ParamList(ParamListKind::Space) {}
+  SomeParamList() : ParamList(ParamListKind::Some) {}
+};
+
+class JustParamList : public ParamList {
+public:
+  JustParamList() : ParamList(ParamListKind::Just) {}
 };
 
 } // namespace stone
