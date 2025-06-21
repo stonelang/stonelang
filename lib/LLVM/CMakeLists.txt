@@ -9,15 +9,14 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_codegen_sources
-		CodeGeneration.cpp 
-		CodeGenModule.cpp  
-		CodeGenPasses.cpp
+		LLVMCodeGenModule.cpp 
+		LLVMPasses.cpp
 		 
 		LINK_LIBS
 		StoneAST
 		clangCodeGen;
 )
-add_stone_library(StoneCodeGen
+add_stone_library(StoneLLVM
 	${stone_codegen_sources}
 )
 

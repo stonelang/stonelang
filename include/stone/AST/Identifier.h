@@ -1,6 +1,9 @@
 #ifndef STONE_AST_IDENTIFIER_H
 #define STONE_AST_IDENTIFIER_H
 
+#include "stone/Support/EditorPlaceholder.h"
+
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/Hashing.h"
@@ -12,7 +15,6 @@
 namespace stone {
 
 using IdentifierTable = llvm::StringSet<llvm::BumpPtrAllocator &>;
-
 class Identifier final {
   const char *ptr;
 
@@ -28,15 +30,28 @@ public:
   llvm::StringRef GetString() const {
     return !IsEmpty() ? llvm::StringRef(ptr) : llvm::StringRef();
   }
+  bool IsEqual(llvm::StringRef other) const {
+    if (IsEmpty()) {
+      return false;
+    }
+    return GetString().equals(other);
+  }
   bool IsEmpty() const { return ptr == nullptr; }
   bool HasTildaPrefix() const { return GetString().starts_with("~"); }
   bool IsArithmeticOperator() const;
   bool IsSTDComparisonOperator() const;
+  bool IsEditorPlaceholder() const {
+    return !IsEmpty() && isEditorPlaceholder(GetString());
+  }
 
 public:
   static bool IsOperatorStartCodePoint(uint32_t C);
   static bool IsOperatorContinuationCodePoint(uint32_t C);
   static Identifier FromString(llvm::StringRef str, IdentifierTable &table);
+
+  static bool IsEditorPlaceholder(llvm::StringRef name) {
+    return stone::isEditorPlaceholder(name);
+  }
 };
 
 class DotName {

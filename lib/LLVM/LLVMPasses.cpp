@@ -1,4 +1,4 @@
-#include "stone/CodeGen/CodeGenPasses.h"
+#include "stone/LLVM/LLVMPasses.h"
 
 using namespace stone;
 

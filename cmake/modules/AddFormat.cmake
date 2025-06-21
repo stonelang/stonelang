@@ -1,7 +1,7 @@
 set(stone_include_files
 	${STONE_SOURCE_DIR}/include/stone/*.h
 	${STONE_SOURCE_DIR}/include/stone/AST/*.h
-	${STONE_SOURCE_DIR}/include/stone/CodeGen/*.h
+	${STONE_SOURCE_DIR}/include/stone/LLVM/*.h
 	${STONE_SOURCE_DIR}/include/stone/Compile/*.h
 	${STONE_SOURCE_DIR}/include/stone/Driver/*.h
 	${STONE_SOURCE_DIR}/include/stone/Frontend/*.h
@@ -11,7 +11,7 @@ set(stone_include_files
 )
 set(stone_lib_files
 	${STONE_SOURCE_DIR}/lib/AST/*.cpp
-	${STONE_SOURCE_DIR}/lib/CodeGen/*.cpp
+	${STONE_SOURCE_DIR}/lib/LLVM/*.cpp
 	${STONE_SOURCE_DIR}/lib/Compile/*.cpp
 	${STONE_SOURCE_DIR}/lib/Driver/*.cpp
 	${STONE_SOURCE_DIR}/lib/Frontend/*.cpp
@@ -27,7 +27,7 @@ set(stone_tools_files
 set(stone_tests_files
 	#${STONE_SOURCE_DIR}/tests/units/AST/*.cpp 
 	#${STONE_SOURCE_DIR}/tests/units/Basic/*.cpp 
-	#${STONE_SOURCE_DIR}/tests/units/CodeGen/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/LLVM/*.cpp 
 	#${STONE_SOURCE_DIR}/tests/units/Compile/*.cpp 
 	#${STONE_SOURCE_DIR}/tests/units/Driver/*.cpp 
 	#${STONE_SOURCE_DIR}/tests/units/Parse/*.cpp 

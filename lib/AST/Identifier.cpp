@@ -2,9 +2,7 @@
 
 using namespace stone;
 
-static Identifier
-Identifier::FromString(llvm::StringRef identifierText,
-                       llvm::StringSet<llvm::BumpPtrAllocator> &table) {
+Identifier Identifier::FromString(llvm::StringRef identifierText, IdentifierTable &table) {
   auto result = table.insert(identifierText);
   return Identifier(result.first->getKeyData());
 }

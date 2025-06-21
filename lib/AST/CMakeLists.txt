@@ -7,6 +7,7 @@ set(LLVM_LINK_COMPONENTS
 set(stone_ast_sources
 	Artifact.cpp
 	Decl.cpp
+	Identifier.cpp
 	Module.cpp
 	ModuleContext.cpp
 	ModuleFile.cpp
