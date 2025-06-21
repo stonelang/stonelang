@@ -3,7 +3,6 @@
 
 #include "stone/Support/EditorPlaceholder.h"
 
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/Hashing.h"

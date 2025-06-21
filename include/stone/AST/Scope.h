@@ -13,6 +13,9 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
+class Scope;
+
+using ScopeList = llvm::SmallVector<Scope *, 16>;
 
 /// Handled in scaffolding
 // class Scope : public Artifact {

@@ -14,43 +14,30 @@ enum class TypeKind : uint8_t {
 #include "stone/AST/TypeNode.def"
 };
 
-// === Range Markers ===
+enum class IntKind : uint8_t {
+  I8,
+  I16,
+  I32,
+  I64,
+  I128,
+  ISize,
+};
 
-// constexpr TypeKind FirstType = TypeKind::Object;
+enum class UintKind : uint8_t {
+  U8,
+  U16,
+  U32,
+  U64,
+  U128,
+  USize,
+};
 
-// // Builtin
-// constexpr TypeKind FirstBuiltin = TypeKind::Int;
-// constexpr TypeKind LastBuiltin = TypeKind::Null;
-
-// // Sugared
-// constexpr TypeKind FirstSug = TypeKind::Alias;
-// constexpr TypeKind LastSug = TypeKind::Alias;
-
-// // Deduced
-// constexpr TypeKind FirstDeduced = TypeKind::Auto;
-// constexpr TypeKind LastDeduced = TypeKind::Auto;
-
-// // Function
-// constexpr TypeKind FirstFunction = TypeKind::Fun;
-// constexpr TypeKind LastFunction = TypeKind::Fun;
-
-// // Access: Pointer
-// constexpr TypeKind FirstPointer = TypeKind::Ptr;
-// constexpr TypeKind LastPointer = TypeKind::Safe;
-
-// // Access: Reference
-// constexpr TypeKind FirstReference = TypeKind::Ref;
-// constexpr TypeKind LastReference = TypeKind::Ref;
-
-// // Access (Pointer + Reference)
-// constexpr TypeKind FirstAccess = FirstPointer;
-// constexpr TypeKind LastAccess = LastReference;
-
-// // Nominal
-// constexpr TypeKind FirstNominal = TypeKind::Enum;
-// constexpr TypeKind LastNominal = TypeKind::Interface;
-
-// constexpr TypeKind LastType = TypeKind::Interface;
+enum class FloatKind : uint8_t {
+  F16,
+  F32,
+  F64,
+  F128,
+};
 
 } // namespace stone
 

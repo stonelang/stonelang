@@ -43,7 +43,7 @@ public:
   void AddDep(const Module *S) { deps.push_back(S); }
 
   Identifier GetIdentifier(llvm::StringRef text) const;
-  ModuleContext &GetMemory() { return context; }
+  ModuleContext &GetContext() { return context; }
 };
 
 } // namespace stone

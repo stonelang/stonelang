@@ -15,6 +15,8 @@ class DeclState;
 enum class TypeStateKind {
   Builtin,
   Function,
+  Pointer,
+  Reference,
 };
 
 class alignas(1 << TypeAlignInBits) TypeState : public Artifact {
@@ -66,26 +68,71 @@ public:
   virtual TypeStateKind GetTypeStateKind() const = 0;
 };
 
-// May have to pass the Module
+enum class BuiltinTypeTag : uint8_t {
+  None = 0,
+// Core declaration macros
+#define BUILTIN_TYPE_TAG(T) T,
+// Ranges
+#define LAST_TAG(T) Count = ID,
+#include "stone/AST/BuiltinTypeTag.def"
+};
 
-/// Represents state for built-in types like int, float, char, bool, etc.
-class BuiltinTypeState : public TypeState {
+template <typename TagT, TagT TagValue> class TagTypeState : public TypeState {
 public:
-  BuiltinTypeState(TypeKind typeKind) : TypeState(typeKind) {}
+  using TagType = TagT;
+  static constexpr TagT tag = TagValue;
+
+  TagTypeState(TypeKind kind) : TypeState(kind) {}
+  TagT GetTag() const { return tag; }
+  virtual TypeStateKind GetTypeStateKind() const = 0;
+};
+
+template <TypeKind Tag>
+class SimpleTaggedTypeState : public TagTypeState<TypeKind, Tag> {
+public:
+  using Base = TagTypeState<TypeKind, Tag>;
+
+  SimpleTaggedTypeState() : Base(Tag) {}
 
 public:
-  // bool IsNumberType() const;
-  // NumberBitWidth GetNumberBitWidth();
+};
+
+template <BuiltinTypeTag TagValue>
+class BuiltinTypeState : public TagTypeState<BuiltinTypeTag, TagValue> {
+public:
+  using Base = TagTypeState<BuiltinTypeTag, TagValue>;
+  static constexpr BuiltinTypeTag tag = TagValue;
+
+  BuiltinTypeState(TypeKind kind) : Base(kind) {}
 
 public:
   TypeStateKind GetTypeStateKind() const override {
     return TypeStateKind::Builtin;
   }
-
-public:
-  // static bool IsNumberType(TypeKind kind);
-  // static NumberBitWidth GetNumberBitWidth(TypeKind kind);
 };
+
+// TypeState *T = new BuiltinTypeState<BuiltinTypeTag::Int32>();
+// if (T->GetKind() == TypeKind::Builtin) {
+//   auto *BT = static_cast<BuiltinTypeState<BuiltinTypeTag::Int32> *>(T);
+//   if (BT->GetBuiltinTag() == BuiltinTypeTag::Int32) {
+//     // ...
+//   }
+// }
+// template <typename T>
+// concept IsBuiltinIntType = requires(T t) {
+//   { T::GetTag() } -> std::same_as<BuiltinTypeTag>;
+//   requires T::GetTag() == BuiltinTypeTag::Int32;
+// };
+
+// Factory example
+// std::unique_ptr<Type> BuildInt32Type() {
+//   auto state = new BuiltinTypeState<BuiltinTypeTag::Int32>(TypeKind::Int);
+//   return std::make_unique<IntType>(state);
+// }
+// if (auto kind = T->GetState()->GetKind(); kind == TypeKind::Int) {
+//   auto tag = cast<BuiltinTypeStateBase>(T->GetState())->GetTag();
+//   if (tag == BuiltinTypeTag::Int32) ...
+// }
 
 enum class FunTypeStateKind : uint8_t {
   Normal = 0,  // top-level or modular fun Main()
@@ -105,13 +152,12 @@ class FunTypeState : public TypeState {
 public:
   FunTypeState(FunTypeStateKind funTypeStateKind)
       : TypeState(TypeKind::Fun), funTypeStateKind(funTypeStateKind) {}
+  FunTypeStateKind GetFunTypeStateKind() const { return funTypeStateKind; }
 
 public:
   TypeStateKind GetTypeStateKind() const override {
     return TypeStateKind::Function;
   }
-
-  FunTypeStateKind GetFunTypeStateKind() const { return funTypeStateKind; }
   bool IsMethod() const { return funTypeStateKind == FunTypeStateKind::Method; }
   bool IsConstructor() const {
     return funTypeStateKind == FunTypeStateKind::Constructor;
@@ -130,35 +176,35 @@ public:
 // Specializations (optional, for static type dispatch)
 //===----------------------------------------------------------------------===//
 
-class NormalFunTypeState : public FunTypeState {
-public:
-  NormalFunTypeState() : FunTypeState(FunTypeStateKind::Normal) {}
-};
+// class NormalFunTypeState : public FunTypeState {
+// public:
+//   NormalFunTypeState() : FunTypeState(FunTypeStateKind::Normal) {}
+// };
 
-class MethodFunTypeState : public FunTypeState {
-public:
-  MethodFunTypeState() : FunTypeState(FunTypeStateKind::Method) {}
-};
+// class MethodFunTypeState : public FunTypeState {
+// public:
+//   MethodFunTypeState() : FunTypeState(FunTypeStateKind::Method) {}
+// };
 
-class ConstructorFunTypeState : public FunTypeState {
-public:
-  ConstructorFunTypeState() : FunTypeState(FunTypeStateKind::Constructor) {}
-};
+// class ConstructorFunTypeState : public FunTypeState {
+// public:
+//   ConstructorFunTypeState() : FunTypeState(FunTypeStateKind::Constructor) {}
+// };
 
-class DestructorFunTypeState : public FunTypeState {
-public:
-  DestructorFunTypeState() : FunTypeState(FunTypeStateKind::Destructor) {}
-};
+// class DestructorFunTypeState : public FunTypeState {
+// public:
+//   DestructorFunTypeState() : FunTypeState(FunTypeStateKind::Destructor) {}
+// };
 
-class DeferFunTypeState : public FunTypeState {
-public:
-  DeferFunTypeState() : FunTypeState(FunTypeStateKind::Defer) {}
-};
+// class DeferFunTypeState : public FunTypeState {
+// public:
+//   DeferFunTypeState() : FunTypeState(FunTypeStateKind::Defer) {}
+// };
 
-class AnonymousFunTypeState : public FunTypeState {
-public:
-  AnonymousFunTypeState() : FunTypeState(FunTypeStateKind::Anonymous) {}
-};
+// class AnonymousFunTypeState : public FunTypeState {
+// public:
+//   AnonymousFunTypeState() : FunTypeState(FunTypeStateKind::Anonymous) {}
+// };
 
 // TypeState
 //  ├── BuiltinTypeState
@@ -168,6 +214,16 @@ public:
 //  ├── DeducedTypeState
 //  └── FunTypeState
 ///     UniqueTypeState
+
+class PtrTypeState : public TypeState {
+public:
+  PtrTypeState() : TypeState(TypeKind::Ptr) {}
+
+public:
+  TypeStateKind GetTypeStateKind() const override {
+    return TypeStateKind::Pointer;
+  }
+};
 
 } // namespace stone
 

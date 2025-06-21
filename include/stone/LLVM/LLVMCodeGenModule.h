@@ -39,7 +39,7 @@ public:
   LLVMCodeGenModule();
 
 public:
-  void EmitModule(stone::Module* mod);
+  void EmitModule(stone::Module *mod);
 };
 
 } // namespace stone

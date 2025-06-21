@@ -102,7 +102,6 @@ public:
 
   void SetParamList(ParamList *PL) { paramList = PL; }
   ParamList *GetParamList() { return paramList; }
-
   MemoryManager &GetMemory() { return mem; }
 
   // template <typename T>
@@ -137,23 +136,13 @@ public:
   bool IsUsing() { return GetKind() == DeclKind::Using; }
 };
 
-enum class JoinDeclKind : uint8_t {
-  None = 0,
-  Struct,
-  Interface,
-  Enum,
-};
-
-class JoinDeclState : public DeclState {
-  JoinDeclKind joinKind;
-};
-
 class ParametricDeclState : public DeclState {
 public:
 };
 
 class SpaceDeclState : public ParametricDeclState {
 public:
+  SpaceDeclState();
 };
 
 enum class UsingDeclKind : uint8_t {
@@ -168,6 +157,20 @@ enum class UsingDeclKind : uint8_t {
 
 class UsingDeclState : public ParametricDeclState {
   UsingDeclKind kind;
+
+public:
+  UsingDeclState();
+};
+
+enum class JoinDeclKind : uint8_t {
+  None = 0,
+  Struct,
+  Interface,
+  Enum,
+};
+
+class JoinDeclState : public DeclState {
+  JoinDeclKind joinKind;
 };
 
 // class ScopeDeclState : public DeclState {

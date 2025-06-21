@@ -37,200 +37,129 @@ public:
 };
 
 // === Function Type ===
-// class FunType final : public Type {
-// public:
-//   explicit FunType(TypeState *TS) : Type(TS) {}
-// };
-
-// // === Object Types (boxable, runtime types) ===
-class ObjectType : public Type {
+class FunType final : public Type {
 public:
-  explicit ObjectType(TypeState *TS) : Type(TS) {}
+  explicit FunType(TypeState *TS) : Type(TS) {}
+};
+
+class VoidType : public Type {
+public:
+  explicit VoidType(TypeState *TS) : Type(TS) {}
 };
 
 // // === Nominal Types ===
-// class NominalType : public ObjectType {
-// public:
-//   explicit NominalType(TypeState *TS) : ObjectType(TS) {}
-// };
-
-// class EnumType final : public NominalType {
-// public:
-//   explicit EnumType(TypeState *TS) : NominalType(TS) {}
-// };
-
-// class StructType final : public NominalType {
-// public:
-//   explicit StructType(TypeState *TS) : NominalType(TS) {}
-
-// public:
-// };
-
-// class InterfaceType final : public NominalType {
-// public:
-//   explicit InterfaceType(TypeState *TS) : NominalType(TS) {}
-
-// public:
-// };
-
-// // === Builtin Types ===
-class BuiltinType : public ObjectType {
+class NominalType : public Type {
 public:
-  explicit BuiltinType(TypeState *TS);
+  explicit NominalType(TypeState *TS) : Type(TS) {}
 };
 
-// class NumberType : public BuiltinType {
-// public:
-//   explicit NumberType(TypeState *TS) : BuiltinType(TS) {}
-// };
+class EnumType final : public NominalType {
+public:
+  explicit EnumType(TypeState *TS) : NominalType(TS) {}
+};
 
-// // Integers
-// class IntType final : public NumberType {
-// public:
-//   explicit IntType(TypeState *TS) : NumberType(TS) {}
-// };
-// class Int8Type final : public NumberType {
-// public:
-//   explicit Int8Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class Int16Type final : public NumberType {
-// public:
-//   explicit Int16Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class Int32Type final : public NumberType {
-// public:
-//   explicit Int32Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class Int64Type final : public NumberType {
-// public:
-//   explicit Int64Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class Int128Type final : public NumberType {
-// public:
-//   explicit Int128Type(TypeState *TS) : NumberType(TS) {}
-// };
+class StructType final : public NominalType {
+public:
+  explicit StructType(TypeState *TS) : NominalType(TS) {}
 
-// // Unsigned integers
-// class UIntType final : public NumberType {
-// public:
-//   explicit UIntType(TypeState *TS) : NumberType(TS) {}
-// };
-// class UInt8Type final : public NumberType {
-// public:
-//   explicit UInt8Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class UInt16Type final : public NumberType {
-// public:
-//   explicit UInt16Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class UInt32Type final : public NumberType {
-// public:
-//   explicit UInt32Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class UInt64Type final : public NumberType {
-// public:
-//   explicit UInt64Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class UInt128Type final : public NumberType {
-// public:
-//   explicit UInt128Type(TypeState *TS) : NumberType(TS) {}
-// };
+public:
+};
 
-// // Floating point
-// class FloatType final : public NumberType {
-// public:
-//   explicit FloatType(TypeState *TS) : NumberType(TS) {}
-// };
-// class Float16Type final : public NumberType {
-// public:
-//   explicit Float16Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class Float32Type final : public NumberType {
-// public:
-//   explicit Float32Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class Float64Type final : public NumberType {
-// public:
-//   explicit Float64Type(TypeState *TS) : NumberType(TS) {}
-// };
-// class Float128Type final : public NumberType {
-// public:
-//   explicit Float128Type(TypeState *TS) : NumberType(TS) {}
-// };
+class InterfaceType final : public NominalType {
+public:
+  explicit InterfaceType(TypeState *TS) : NominalType(TS) {}
 
-// // Other builtins
-// class BoolType final : public BuiltinType {
-// public:
-//   explicit BoolType(TypeState *TS) : BuiltinType(TS) {}
-// };
+public:
+};
 
-// class CharType final : public BuiltinType {
-// public:
-//   explicit CharType(TypeState *TS) : BuiltinType(TS) {}
-// };
+class IntType final : public Type {
+public:
+  explicit IntType(TypeState *TS) : Type(TS) {}
+};
 
-// class NullType final : public BuiltinType {
-// public:
-//   explicit NullType(TypeState *TS) : BuiltinType(TS) {}
-// };
+class UIntType final : public Type {
+public:
+  explicit UIntType(TypeState *TS) : Type(TS) {}
+};
 
-// class StringType final : public BuiltinType {
-// public:
-//   explicit StringType(TypeState *TS) : BuiltinType(TS) {}
-// };
+class FloatType final : public Type {
+public:
+  explicit FloatType(TypeState *TS) : Type(TS) {}
+};
 
-// // === Magic (non-canonical) Types ===
-// class MagicType : public Type {
-// public:
-//   explicit MagicType(TypeState *TS) : Type(TS) {}
-// };
+// Other builtins
+class BoolType final : public Type {
+public:
+  explicit BoolType(TypeState *TS) : Type(TS) {}
+};
 
-// class AliasType final : public MagicType {
-// public:
-//   explicit AliasType(TypeState *TS) : MagicType(TS) {}
-// };
+class CharType final : public Type {
+public:
+  explicit CharType(TypeState *TS) : Type(TS) {}
+};
 
-// class AutoType final : public MagicType {
-// public:
-//   explicit AutoType(TypeState *TS) : MagicType(TS) {}
-// };
+class NullType final : public Type {
+public:
+  explicit NullType(TypeState *TS) : Type(TS) {}
+};
 
-// // === Access Types (non-boxable) ===
-// class AccessType : public Type {
-// public:
-//   explicit AccessType(TypeState *TS) : Type(TS) {}
-// };
+class StringType final : public Type {
+public:
+  explicit StringType(TypeState *TS) : Type(TS) {}
+};
 
-// class PtrType final : public AccessType {
-// public:
-//   explicit PtrType(TypeState *TS) : AccessType(TS) {}
-// };
+// === Magic (non-canonical) Types ===
+class MagicType : public Type {
+public:
+  explicit MagicType(TypeState *TS) : Type(TS) {}
+};
 
-// class RefType final : public AccessType {
-// public:
-//   explicit RefType(TypeState *TS) : AccessType(TS) {}
-// };
+class AliasType final : public MagicType {
+public:
+  explicit AliasType(TypeState *TS) : MagicType(TS) {}
+};
 
-// // === Aggregate Types (structural composites) ===
-// class AggregateType : public ObjectType {
-// public:
-//   explicit AggregateType(TypeState *TS) : ObjectType(TS) {}
-// };
+class AutoType final : public MagicType {
+public:
+  explicit AutoType(TypeState *TS) : MagicType(TS) {}
+};
 
-// class ArrayType final : public AggregateType {
-// public:
-//   explicit ArrayType(TypeState *TS) : AggregateType(TS) {}
-// };
+// === Access Types (non-boxable) ===
+class AccessType : public Type {
+public:
+  explicit AccessType(TypeState *TS) : Type(TS) {}
+};
 
-// class TupleType final : public AggregateType {
-// public:
-//   explicit TupleType(TypeState *TS) : AggregateType(TS) {}
-// };
+class PtrType final : public AccessType {
+public:
+  explicit PtrType(TypeState *TS) : AccessType(TS) {}
+};
 
-// class VariadicType final : public AggregateType {
-// public:
-//   explicit VariadicType(TypeState *TS) : AggregateType(TS) {}
-// };
+class RefType final : public AccessType {
+public:
+  explicit RefType(TypeState *TS) : AccessType(TS) {}
+};
+
+// === Aggregate Types (structural composites) ===
+class AggregateType : public Type {
+public:
+  explicit AggregateType(TypeState *TS) : Type(TS) {}
+};
+
+class ArrayType final : public AggregateType {
+public:
+  explicit ArrayType(TypeState *TS) : AggregateType(TS) {}
+};
+
+class TupleType final : public AggregateType {
+public:
+  explicit TupleType(TypeState *TS) : AggregateType(TS) {}
+};
+
+class VariadicType final : public AggregateType {
+public:
+  explicit VariadicType(TypeState *TS) : AggregateType(TS) {}
+};
 
 } // namespace stone
 

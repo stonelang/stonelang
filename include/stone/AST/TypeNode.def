@@ -14,61 +14,45 @@
 #define LAST_TYPE(ID)
 #endif
 
-// === Root Function Type ===
-TYPE(Fun, Type)
-// === Object Types (boxable, runtime types) ===
-ABSTRACT_TYPE(Object, Type)
-  // === Nominal Types (user-defined) ===
-  ABSTRACT_TYPE(Nominal, ObjectType)
-    TYPE(Enum, NominalType)
-    TYPE(Struct, NominalType)
-    TYPE(Interface, NominalType)
+// === Root Types ===
+TYPE(Fun,   Type)
+TYPE(Void,  Type)
+TYPE(Int,   Type)
+TYPE(UInt,  Type)
+TYPE(Float, Type)
+TYPE(Bool,  Type)
+TYPE(Char,  Type)
+TYPE(Null,  Type)
+TYPE(String,Type)
+
+// === Nominal Types (user-defined) ===
+ABSTRACT_TYPE(Nominal, Type)
+  TYPE(Enum,     NominalType)
+  TYPE(Struct,   NominalType)
+  TYPE(Interface, NominalType)
   TYPE_RANGE(Nominal, Enum, Interface)
-  // === Builtin Types (primitive and runtime-backed) ===
-  ABSTRACT_TYPE(Builtin, ObjectType)
-    ABSTRACT_TYPE(Number, BuiltinType)
-      TYPE(Int,     NumberType)
-      TYPE(Int8,    NumberType)
-      TYPE(Int16,   NumberType)
-      TYPE(Int32,   NumberType)
-      TYPE(Int64,   NumberType)
-      TYPE(Int128,  NumberType)
-      TYPE(UInt,    NumberType)
-      TYPE(UInt8,   NumberType)
-      TYPE(UInt16,  NumberType)
-      TYPE(UInt32,  NumberType)
-      TYPE(UInt64,  NumberType)
-      TYPE(UInt128, NumberType)
-      TYPE(Float,   NumberType)
-      TYPE(Float16, NumberType)
-      TYPE(Float32, NumberType)
-      TYPE(Float64, NumberType)
-      TYPE(Float128,NumberType)
-    TYPE_RANGE(Number, Int, Float128)
-    TYPE(Bool, BuiltinType)
-    TYPE(Char, BuiltinType)
-    TYPE(Null, BuiltinType)
-    TYPE(String, BuiltinType)
-  TYPE_RANGE(Builtin, Int, String)
+
 // === Magic Types (syntactic sugar, non-canonical) ===
 ABSTRACT_TYPE(Magic, Type)
   TYPE(Alias, MagicType)
   TYPE(Auto,  MagicType)
-TYPE_RANGE(Magic, Alias, Auto)
+  TYPE_RANGE(Magic, Alias, Auto)
+
 // === Access Types (non-boxable, modifiers) ===
 ABSTRACT_TYPE(Access, Type)
   TYPE(Ptr, AccessType)
   TYPE(Ref, AccessType)
-TYPE_RANGE(Access, Ptr, Ref)
+  TYPE_RANGE(Access, Ptr, Ref)
+
 // === Aggregate Types (compound layout) ===
-ABSTRACT_TYPE(Aggregate, ObjectType)
-  TYPE(ArrayType,    AggregateType)
-  TYPE(TupleType,    AggregateType)
-  TYPE(VariadicType, AggregateType)
+ABSTRACT_TYPE(Aggregate, Type)
+TYPE(ArrayType,    AggregateType)
+TYPE(TupleType,    AggregateType)
+TYPE(VariadicType, AggregateType)
 TYPE_RANGE(Aggregate, ArrayType, VariadicType)
+
 // === Final Tag ===
 LAST_TYPE(VariadicType)
-
 
 // === Cleanup ===
 #undef TYPE

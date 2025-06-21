@@ -2,7 +2,8 @@
 
 using namespace stone;
 
-Identifier Identifier::FromString(llvm::StringRef identifierText, IdentifierTable &table) {
+Identifier Identifier::FromString(llvm::StringRef identifierText,
+                                  IdentifierTable &table) {
   auto result = table.insert(identifierText);
   return Identifier(result.first->getKeyData());
 }

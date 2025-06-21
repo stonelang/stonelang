@@ -72,10 +72,6 @@ class Lexer final : public Lexing {
   StatsReporter *se;
   LexerState state;
 
-  /// A queue of diagnostics to emit when a token is consumed. We want to queue
-  /// them, as the parser may backtrack and re-lex a token.
-  std::optional<DiagnosticQueue> DiagQueue;
-
   /// Pointer to the first character of the buffer, even in a lexer that
   /// scans a subrange of the buffer.
   const char *BufferStart;
@@ -129,24 +125,11 @@ class Lexer final : public Lexing {
   /// Don't use this constructor for other purposes, it does not initialize
   /// everything.
   Lexer(const PrincipalLexer &, unsigned BufferID, const SrcMgr &sm,
-        DiagnosticEngine *de, StatsReporter *SE, LexerMode LexMode,
-        HashbangMode HashbangAllowed, CommentRetentionMode RetainComments);
+        LexerMode LexMode, HashbangMode HashbangAllowed,
+        CommentRetentionMode RetainComments);
 
   void LexImpl();
   void Initialize(unsigned Offset, unsigned EndOffset);
-
-  /// Retrieve the diagnostic engine for emitting diagnostics for the current
-  /// token.
-  DiagnosticEngine *getTokenDiags() {
-    return DiagQueue ? &DiagQueue->getDiags() : nullptr;
-  }
-
-  /// Retrieve the underlying diagnostic engine we emit diagnostics to. Note
-  /// this should only be used for diagnostics not concerned with the current
-  /// token.
-  DiagnosticEngine *getUnderlyingDiags() const {
-    return DiagQueue ? &DiagQueue->getUnderlyingDiags() : nullptr;
-  }
 
 public:
   //=Lexer options goes here=/
@@ -168,19 +151,16 @@ public:
   ///   means that APIs like GetLocForEndOfToken really ought to take
   ///   this flag; it's just that we don't care that much about fidelity
   ///   when parsing SIL files.
-  Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
-        StatsReporter *se, LexerMode LexMode,
+  Lexer(unsigned BufferID, const SrcMgr &sm, LexerMode LexMode,
         HashbangMode HashbangAllowed = HashbangMode::Disallowed,
         CommentRetentionMode RetainComments = CommentRetentionMode::None);
 
-  Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
-        StatsReporter *se);
+  Lexer(unsigned BufferID, const SrcMgr &sm);
 
   /// Create a lexer that scans a subrange of the source buffer.
-  Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
-        StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
-        CommentRetentionMode RetainComments, unsigned Offset,
-        unsigned EndOffset);
+  Lexer(unsigned BufferID, const SrcMgr &sm, LexerMode LexMode,
+        HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
+        unsigned Offset, unsigned EndOffset);
 
   /// Create a sub-lexer that lexes from the same buffer, but scans
   /// a subrange of the buffer.
@@ -189,6 +169,10 @@ public:
   /// \param BeginState start of the subrange
   /// \param EndState end of the subrange
   Lexer(Lexer &Parent, LexerState BeginState, LexerState EndState);
+
+  void SetDiags(DiagnosticEngine *D) { de = D; }
+
+  void SetStats(StatsReporter *S) { se = S; }
 
   /// Returns true if this lexer will produce a code completion token.
   bool isCodeCompletion() const { return CodeCompletionPtr != nullptr; }
@@ -200,10 +184,6 @@ public:
   /// to trivias are populated.
   void Lex(Token &Result) {
     Result = NextToken;
-    // if (DiagQueue){
-    //   DiagQueue->emit();
-    // }
-
     if (Result.IsNot(tok::eof)) {
       LexImpl();
     }
@@ -282,11 +262,6 @@ public:
     assert(S.IsValid());
     CurPtr = getBufferPtrForSrcLoc(S.loc);
     LexImpl();
-
-    // TODO: Don't re-emit diagnostics from readvancing the lexer.
-    if (DiagQueue && !enableDiagnostics) {
-      /// DiagQueue->clear();
-    }
   }
 
   /// Restore the lexer state to a given state that is located before

@@ -1,0 +1,58 @@
+
+
+ptr(uint in 0 to 4) int i;
+ptr(0...4) int i;
+
+alias Vec5 ptr(0...4) float;
+alias Matrix2x3  ptr(0...1) ptr(0...2) float;
+
+
+ptr(0...1) ptr(0...2) float matrix2x3; // crystal clear
+
+ptr(0...1) ptr(0...2) ptr(0...2) float tensor2x3x3;
+
+alias Tensor2x3x3 ptr(0...1) ptr(0...2) ptr(0...2) float;
+
+alias Tensor2x3x3 ptr(0...1) ptr(0...2) ptr(0...2) float;
+Tensor2x3x3 T;
+T[0][1][2] = 3.14;
+
+
+fun Process(ptr(10...20) byte buffer) { }
+
+struct Image {
+  ptr(0...255) byte red;
+  ptr(0...255) byte green;
+  ptr(0...255) byte blue;
+
+}
+
+
+ptr(0...N)+ptr(N...M)=ptr(0...M)
+
+ptr(0...3) int a;
+ptr(3...6) int b;
+
+auto c = a + b; // type is ptr(0...6) int
+
+ptr(0...M) - ptr(0...N) = ptr(N...M)
+
+fun Concat(ptr(0...N) byte a, ptr(N...M) byte b) -> ptr(0...M) byte;
+
+
+fun SliceRow(ptr(0...2) ptr(0...3) float matrix, uint row) -> ptr(0...3) float {
+    return matrix[row]; // Safe because row ∈ [0,2]
+}
+
+ptr(0...2) ptr(0...3) float m;
+auto row1 = m[1]; // type: ptr(0...3) float
+
+
+ptr(0...2) ptr(0...3) float matrix;
+ptr(0...3) float row = matrix[i]; // Safe if i ∈ 0...2
+
+
+
+
+
+

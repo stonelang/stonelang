@@ -15,11 +15,12 @@ class Artifact;
 class DeclState;
 
 class alignas(1 << DeclAlignInBits) Decl : public Node {
-  DeclState *DS = nullptr;
+  DeclState *state = nullptr;
 
 public:
-  explicit Decl(DeclState *DS);
-  DeclState *GetDeclState();
+  explicit Decl(DeclState *state);
+  DeclState *GetState();
+  template <typename T> T *GetStateAs() { return llvm::cast<T>(state); }
 
 public:
   DeclKind GetKind() const;
@@ -34,130 +35,130 @@ public:
 };
 
 // === Top-Level Declarations ===
-// class JoinDecl final : public Decl {
-// public:
-//   explicit JoinDecl(DeclState *DS) : Decl(DS) {}
-// };
+class JoinDecl final : public Decl {
+public:
+  explicit JoinDecl(DeclState *state) : Decl(state) {}
+};
 
 class SpaceDecl final : public Decl {
 public:
-  explicit SpaceDecl(DeclState *DS) : Decl(DS) {}
+  explicit SpaceDecl(DeclState *state) : Decl(state) {}
 };
 
-// class FunDecl final : public Decl {
-// public:
-//   explicit FunDecl(DeclState *DS) : Decl(DS) {}
-// };
+class FunDecl final : public Decl {
+public:
+  explicit FunDecl(DeclState *state) : Decl(state) {}
+};
 
 // DeclState(DeclState(DeclKind::Some))
 // class SomeDecl final : public Decl {
 // public:
-//   explicit SomeDecl(DeclState *DS) : Decl(DS) {}
+//   explicit SomeDecl(DeclState *state) : Decl(state) {}
 // };
 
 // class JustDecl final : public Decl {
 // public:
-//   explicit JustDecl(DeclState *DS) : Decl(DS) {}
+//   explicit JustDecl(DeclState *state) : Decl(state) {}
 // };
 
 // class IfConfigDecl final : public Decl {
 // public:
-//   explicit IfConfigDecl(DeclState *DS) : Decl(DS) {}
+//   explicit IfConfigDecl(DeclState *state) : Decl(state) {}
 // };
 
 // class MacroDecl final : public Decl {
 // public:
-//   explicit MacroDecl(DeclState *DS) : Decl(DS) {}
+//   explicit MacroDecl(DeclState *state) : Decl(state) {}
 // };
 
 // // === Type Declarations ===
 // class TypeDecl : public Decl {
 // public:
-//   explicit TypeDecl(DeclState *DS) : Decl(DS) {}
+//   explicit TypeDecl(DeclState *state) : Decl(state) {}
 // };
 
 // class AliasDecl final : public TypeDecl {
 // public:
-//   explicit AliasDecl(DeclState *DS) : TypeDecl(DS) {}
+//   explicit AliasDecl(DeclState *state) : TypeDecl(state) {}
 // };
 
 // class StructDecl final : public TypeDecl {
 // public:
-//   explicit StructDecl(DeclState *DS) : TypeDecl(DS) {}
+//   explicit StructDecl(DeclState *state) : TypeDecl(state) {}
 // };
 
 // class InterfaceDecl final : public TypeDecl {
 // public:
-//   explicit InterfaceDecl(DeclState *DS) : TypeDecl(DS) {}
+//   explicit InterfaceDecl(DeclState *state) : TypeDecl(state) {}
 // };
 
 // class EnumDecl final : public TypeDecl {
 // public:
-//   explicit EnumDecl(DeclState *DS) : TypeDecl(DS) {}
+//   explicit EnumDecl(DeclState *state) : TypeDecl(state) {}
 // };
 
 // class UsingDecl final : public TypeDecl {
 // public:
-//   explicit UsingDecl(DeclState *DS) : TypeDecl(DS) {}
+//   explicit UsingDecl(DeclState *state) : TypeDecl(state) {}
 // };
 
 // // === Operator Declarations ===
 // class OperatorDecl : public Decl {
 // public:
-//   explicit OperatorDecl(DeclState *DS) : Decl(DS) {}
+//   explicit OperatorDecl(DeclState *state) : Decl(state) {}
 // };
 
 // class NewOperatorDecl final : public OperatorDecl {
 // public:
-//   explicit NewOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+//   explicit NewOperatorDecl(DeclState *state) : OperatorDecl(state) {}
 // };
 
 // class FreeOperatorDecl final : public OperatorDecl {
 // public:
-//   explicit FreeOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+//   explicit FreeOperatorDecl(DeclState *state) : OperatorDecl(state) {}
 // };
 
 // class InfixOperatorDecl final : public OperatorDecl {
 // public:
-//   explicit InfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+//   explicit InfixOperatorDecl(DeclState *state) : OperatorDecl(state) {}
 // };
 
 // class PrefixOperatorDecl final : public OperatorDecl {
 // public:
-//   explicit PrefixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+//   explicit PrefixOperatorDecl(DeclState *state) : OperatorDecl(state) {}
 // };
 
 // class PostfixOperatorDecl final : public OperatorDecl {
 // public:
-//   explicit PostfixOperatorDecl(DeclState *DS) : OperatorDecl(DS) {}
+//   explicit PostfixOperatorDecl(DeclState *state) : OperatorDecl(state) {}
 // };
 
 // // === Binding Declarations ===
 // class BindingDecl : public Decl {
 // public:
-//   explicit BindingDecl(DeclState *DS) : Decl(DS) {}
+//   explicit BindingDecl(DeclState *state) : Decl(state) {}
 // };
 
 // class VarDecl : public BindingDecl {
 // public:
-//   explicit VarDecl(DeclState *DS) : BindingDecl(DS) {}
+//   explicit VarDecl(DeclState *state) : BindingDecl(state) {}
 // };
 
 // class ParamDecl final : public VarDecl {
 // public:
-//   explicit ParamDecl(DeclState *DS) : VarDecl(DS) {}
+//   explicit ParamDecl(DeclState *state) : VarDecl(state) {}
 // };
 
 // #define DECL(ID, Parent)                     \
 // class ID##Decl : public Parent {             \
 // public:                                      \
-//   ID##Decl(DeclState* DS) : Parent(DS) {}    \
+//   ID##Decl(DeclState* state) : Parent(state) {}    \
 // };
 
 // #define ABSTRACT_DECL(ID, Parent) \
 // class ID##Decl : public Parent {  \
 // public:                           \
-//   ID##Decl(DeclState* DS) : Parent(DS) {} \
+//   ID##Decl(DeclState* state) : Parent(state) {} \
 // };
 
 } // namespace stone

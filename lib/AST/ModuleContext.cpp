@@ -5,8 +5,9 @@
 using namespace stone;
 
 ModuleContext::ModuleContext(MemoryManager &memory,
-                             IdentifierTable &identifiers)
-    : memory(memory), identifiers(identifiers) {
+                             IdentifierTable &identifiers,
+                             DiagnosticEngine &diags)
+    : memory(memory), identifiers(identifiers), diags(diags) {
 
 #define BUILTIN_TYPE(ID, Parent)                                               \
   Builtin##ID##Type = new (memory) ID##Type(new (memory) BuiltinTypeState());

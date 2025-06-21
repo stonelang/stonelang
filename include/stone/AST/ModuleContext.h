@@ -1,9 +1,8 @@
 #ifndef STONE_AST_MODULECONEXT_H
 #define STONE_AST_MODULECONEXT_H
-
+#include "stone/AST/Diagnostics.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/MemoryManager.h"
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/SmallVector.h"
@@ -17,6 +16,7 @@ namespace stone {
 class ModuleContext final {
   MemoryManager &memory;
   IdentifierTable &identifiers;
+  DiagnosticEngine &diags;
 
 public:
   // Declare the set of builtin identifiers.
@@ -30,11 +30,13 @@ public:
   Identifier GetIdentifier(llvm::StringRef text) const;
 
 public:
-  ModuleContext(MemoryManager &memory, IdentifierTable &identifiers);
+  ModuleContext(MemoryManager &memory, IdentifierTable &identifiers,
+                DiagnosticEngine &diags);
 
 public:
   MemoryManager &GetMemory() { return memory; }
   Identifier GetIdentifier(llvm::StringRef name);
+  DiagnosticEngine &GetDiags() { return diags; }
 };
 
 } // namespace stone

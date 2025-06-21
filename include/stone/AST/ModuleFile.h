@@ -4,6 +4,7 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/Node.h"
 // #include "stone/AST/FileArtifact.h"
+#include "stone/AST/Diagnostics.h"
 #include "stone/AST/Scope.h"
 
 #include "llvm/ADT/SmallVector.h"
@@ -13,10 +14,10 @@ class Module;
 class SpaceDecl;
 enum class ModuleFileStage : uint8_t {
   None = 1 << 0,
-  CompletedParsing = 1 << 1,      ///< Syntax analysis
-  CompletedScaffolding = 1 << 2,  ///< Semantic analysis
-  CompletedTypeChecking = 1 << 3, ///< Semantic analysis
-  CompletedCodeGen = 1 << 4,      ///< Generate IR
+  CompletedParsing = 1 << 1,     ///< Syntax analysis
+  CompletedScaffolding = 1 << 2, ///< Semantic analysis
+  CompletedLogic = 1 << 3,       ///< Semantic analysis
+  CompletedCodeGen = 1 << 4,     ///< Generate IR
 };
 
 inline bool HasStage(ModuleFileStage current, ModuleFileStage check) {
@@ -26,19 +27,20 @@ inline bool HasStage(ModuleFileStage current, ModuleFileStage check) {
 class ModuleFile final : public Node {
   unsigned bufferID;
   llvm::StringRef input;
+  DiagnosticEngine &DE;
   Scope *scope = nullptr;
   std::vector<Decl *> topLevelDecls;
   ModuleFileStage stage = ModuleFileStage::None;
 
 public:
-  ModuleFile(unsigned bufferID, llvm::StringRef input, Module *parent);
+  ModuleFile(unsigned bufferID, llvm::StringRef input, Module &parent);
 
   explicit operator bool() const {
     return HasFirstDecl() && llvm::cast<SpaceDecl>(GetFirstDecl());
   }
 
 public:
-  unsigned GetSrcBufferID() { return bufferID; }
+  unsigned GetBufferID() { return bufferID; }
   llvm::StringRef GetInput() const { return input; }
 
   Scope *GetScope() const { return scope; }
@@ -53,12 +55,10 @@ public:
   ArtifactKind GetArtifactKind() const override {
     return ArtifactKind::ModuleFile;
   }
-  // void Flush() override;
 
   llvm::StringRef GetInputName() { return input; }
-  // llvm::StringRef ModuleFile::GetDisplayName() const {
-  //   return input ? input->GetName() : "<builtin>";
-  // }
+  DiagnosticEngine &GetDiags() { return DE; }
+
   void Dump(llvm::raw_ostream &os) const;
 
 public:

@@ -1,9 +1,8 @@
 #ifndef STONE_PARSE_PARSER_H
 #define STONE_PARSE_PARSER_H
 
-#include "stone/AST/ASTFile.h"
-#include "stone/AST/ASTSession.h"
 #include "stone/AST/DeclState.h"
+#include "stone/AST/ModuleFile.h"
 #include "stone/AST/Scope.h"
 #include "stone/AST/TypeState.h"
 #include "stone/Parse/Lexer.h"
@@ -25,48 +24,14 @@ public:
   void print(llvm::raw_ostream &out) const override;
 };
 
-class ParsingDeclOptions final {
-  unsigned storage;
-
-public:
-  /// Flags that control the parsing of declarations.
-  enum Flags {
-    None = 0,
-    AllowTopLevel = 1 << 1,
-    InTopLevel = 1 << 2,
-    HasContainerType = 1 << 3,
-    AllowDestructor = 1 << 4,
-    AllowEnumElement = 1 << 5,
-    InInterface = 1 << 6,
-    InStruct = 1 << 7,
-    InEnum = 1 << 8,
-  };
-
-public:
-  ParsingDeclOptions() {}
-
-public:
-  void AddAllowTopLevel() { storage |= Flags::AllowTopLevel; }
-  bool HasAllowTopLevel() const { return storage & Flags::AllowTopLevel; }
-  ///\Has only AllowTopLevel
-  bool IsAllowTopLevelOnly() const { return storage == Flags::AllowTopLevel; }
-  ///\Clear AllowTopLevel
-  void ClearAllowTopLevel() { storage &= ~Flags::AllowTopLevel; }
-
-public:
-};
-
 class ParsingDeclState final {
   Parser &parser;
 
   /// The DeclState passed to the Decl
   DeclState *declState;
 
-  /// The parsing decl options
-  ParsingDeclOptions parsingDeclOpts;
-
   // The identifier we are parsing.
-  Identifier declIdentifier;
+  Identifier identifier;
 
   // Direct comparison is disabled for states
   void operator==(ParsingDeclState PDS) const = delete;
@@ -76,10 +41,9 @@ public:
   explicit ParsingDeclState(Parser &parser);
 
 public:
-  ParsingDeclOptions &GetParsingDeclOptions() { return parsingDeclOpts; }
   DeclState *GetDeclState() { return declState; }
-  void SetDeclIdentifier(Identifier identifier) { declIdentifier = identifier; }
-  Identifier GetDeclIdentifier() { return declIdentifier; }
+  void SetIdentifier(Identifier identifier) { identifier = identifier; }
+  Identifier GetDeclIdentifier() { return identifier; }
   Parser &GetParser() { return parser; }
 
   TypeInfluencerList &GetTypeInfluencerList() {
@@ -89,18 +53,18 @@ public:
     return declState->GetDeclInfluencerList();
   }
 };
-// Evaluator
 class Parser final {
 
-  ASTFile &file;
-  Parser(ASTFile &file, ASTSession &session, std::unique_ptr<Lexer> lexer);
+  ModuleFile &file;
+  std::unique_ptr<Lexer> lexer;
 
 public:
-  Parser(ASTFile &file, ASTSession &session);
+  Parser(ModuleFile &file);
   ~Parser();
 
 public:
-  ASTFile &GetASTFile() { return file; }
+  ModuleFile &GetFile() { return file; }
+  DiagnosticEngine &GetDiags() { return file.GetDiags(); }
 };
 
 } // namespace stone

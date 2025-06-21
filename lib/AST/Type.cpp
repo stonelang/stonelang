@@ -12,9 +12,4 @@ Type::Type(TypeState *TS) : Node(nullptr), TS(TS) {
 bool Type::IsCanType() const {
   return (TS->HasCanType() && TS->GetCanType() == this);
 }
-
 TypeKind Type::GetKind() const { return TS->GetTypeKind(); }
-
-BuiltinType::BuiltinType(TypeState *TS) : ObjectType(TS) {
-  // TS->SetCanType(this);
-}
