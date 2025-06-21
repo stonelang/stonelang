@@ -81,7 +81,6 @@ template <typename TagT, TagT TagValue> class TagTypeState : public TypeState {
 public:
   using TagType = TagT;
   static constexpr TagT tag = TagValue;
-
   TagTypeState(TypeKind kind) : TypeState(kind) {}
   TagT GetTag() const { return tag; }
   virtual TypeStateKind GetTypeStateKind() const = 0;
@@ -91,7 +90,6 @@ template <TypeKind Tag>
 class SimpleTaggedTypeState : public TagTypeState<TypeKind, Tag> {
 public:
   using Base = TagTypeState<TypeKind, Tag>;
-
   SimpleTaggedTypeState() : Base(Tag) {}
 
 public:
