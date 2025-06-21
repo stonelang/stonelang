@@ -2,10 +2,6 @@
 #define DECL(ID, Parent)
 #endif
 
-#ifndef ABSTRACT_DECL
-#define ABSTRACT_DECL(ID, Parent)
-#endif
-
 #ifndef DECL_RANGE
 #define DECL_RANGE(ID, First, Last)
 #endif
@@ -24,31 +20,26 @@ DECL(IfConfig, Decl)
 DECL(Macro,    Decl)
 
 // === Type Declarations ===
-ABSTRACT_DECL(Type, Decl)
-  DECL(Alias,     TypeDecl)
-  DECL(Struct,    TypeDecl)
-  DECL(Interface, TypeDecl)
-  DECL(Enum,      TypeDecl)
-  DECL(Using,     TypeDecl)
+DECL(Alias,     Decl)
+DECL(Struct,    Decl)
+DECL(Interface, Decl)
+DECL(Enum,      Decl)
+DECL(Using,     Decl)
 DECL_RANGE(TypeDecl, Alias, Using)
 
 // === Operator Declarations ===
-ABSTRACT_DECL(Operator, Decl)
-  DECL(NewOperator,     OperatorDecl)
-  DECL(FreeOperator,    OperatorDecl)
-  DECL(InfixOperator,   OperatorDecl)
-  DECL(PrefixOperator,  OperatorDecl)
-  DECL(PostfixOperator, OperatorDecl)
+
+DECL(NewOperator,     Decl)
+DECL(FreeOperator,    Decl)
+DECL(InfixOperator,   Decl)
+DECL(PrefixOperator,  Decl)
+DECL(PostfixOperator, Decl)
 DECL_RANGE(Operator, NewOperator, PostfixOperator)
 
 // === Binding Declarations ===
-ABSTRACT_DECL(Binding, Decl)
-  DECL(Var,   BindingDecl)
-    DECL(Param, VarDecl)
+DECL(Var,   Decl)
+DECL(Param, Decl)
 DECL_RANGE(Binding, Var, Param)
-
-
-
 
 // === Final Tag ===
 LAST_DECL(Macro)

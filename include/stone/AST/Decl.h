@@ -34,21 +34,21 @@ public:
   static bool classof(const Artifact *artifact);
 };
 
-// === Top-Level Declarations ===
-class JoinDecl final : public Decl {
-public:
-  explicit JoinDecl(DeclState *state) : Decl(state) {}
-};
+// // === Top-Level Declarations ===
+// class JoinDecl final : public Decl {
+// public:
+//   explicit JoinDecl(DeclState *state) : Decl(state) {}
+// };
 
-class SpaceDecl final : public Decl {
-public:
-  explicit SpaceDecl(DeclState *state) : Decl(state) {}
-};
+// class SpaceDecl final : public Decl {
+// public:
+//   explicit SpaceDecl(DeclState *state) : Decl(state) {}
+// };
 
-class FunDecl final : public Decl {
-public:
-  explicit FunDecl(DeclState *state) : Decl(state) {}
-};
+// class FunDecl final : public Decl {
+// public:
+//   explicit FunDecl(DeclState *state) : Decl(state) {}
+// };
 
 // DeclState(DeclState(DeclKind::Some))
 // class SomeDecl final : public Decl {
@@ -147,12 +147,6 @@ public:
 // class ParamDecl final : public VarDecl {
 // public:
 //   explicit ParamDecl(DeclState *state) : VarDecl(state) {}
-// };
-
-// #define DECL(ID, Parent)                     \
-// class ID##Decl : public Parent {             \
-// public:                                      \
-//   ID##Decl(DeclState* state) : Parent(state) {}    \
 // };
 
 // #define ABSTRACT_DECL(ID, Parent) \

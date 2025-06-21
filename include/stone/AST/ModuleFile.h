@@ -36,7 +36,8 @@ public:
   ModuleFile(unsigned bufferID, llvm::StringRef input, Module &parent);
 
   explicit operator bool() const {
-    return HasFirstDecl() && llvm::cast<SpaceDecl>(GetFirstDecl());
+    // return HasFirstDecl() && llvm::cast<SpaceDecl>(GetFirstDecl());
+    return true;
   }
 
 public:
