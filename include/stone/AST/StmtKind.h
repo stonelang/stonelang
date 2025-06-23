@@ -5,14 +5,15 @@
 
 namespace stone {
 
+// DeclKind enum class definition
 enum class StmtKind : uint8_t {
   None = 0,
-#define EXPR(ID, Parent) ID,
-#define LAST_EXPR(ID) Count = ID,
-#define EXPR_RANGE(ID, FirstID, LastID)                                        \
-  First##ID##Stmt = FirstID, Last##ID##Stmt = LastID,
+// Core declaration macros
+#define STMT(ID, Parent) ID,
+// Ranges
+#define LAST_STMT(ID) Count = ID,
+#define STMT_RANGE(ID, FirstId, LastId) First##ID = FirstId, Last##ID = LastId,
 #include "stone/AST/StmtNode.def"
-
 };
 
 } // namespace stone

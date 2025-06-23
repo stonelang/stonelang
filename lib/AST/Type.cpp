@@ -5,7 +5,7 @@
 
 using namespace stone;
 
-Type::Type(TypeFlight *flight) : Base(nullptr), flight(flight) {
+Type::Type(TypeFlight *flight) : flight(flight) {
   assert(flight && "Expected TypeFlight for a Type!");
   flight->SetOwner(this);
 }

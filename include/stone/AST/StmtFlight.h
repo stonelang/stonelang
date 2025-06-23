@@ -1,5 +1,5 @@
-#ifndef STONE_AST_STMTSTATE_H
-#define STONE_AST_STMTSTATE_H
+#ifndef STONE_AST_STMTFLIGHT_H
+#define STONE_AST_STMTFLIGHT_H
 
 #include "stone/AST/Alignments.h"
 #include "stone/AST/Allocation.h"

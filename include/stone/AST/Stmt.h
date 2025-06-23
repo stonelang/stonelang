@@ -2,6 +2,7 @@
 #define STONE_AST_STMT_H
 
 #include "stone/AST/Node.h"
+#include "stone/AST/NodeKind.h"
 #include "stone/AST/StmtKind.h"
 
 namespace stone {
@@ -15,13 +16,11 @@ class StmtFlight;
 ///
 /// This design allows each statement to be tagged with a `StmtKind` and
 /// extended using flight metadata (`StmtFlight*`) if desired.
-class alignas(8) Stmt : public Node<NodeKind::Stmt, Stmt> {
-  using Base = Node<NodeKind::Stmt, Stmt>;
+class alignas(8) Stmt : public Node {
+
   StmtFlight *flight = nullptr;
 
 public:
-  using Base::Base;
-
   /// \brief Constructs a Stmt with a specific kind.
   explicit Stmt(StmtFlight *flight);
 
@@ -30,7 +29,8 @@ public:
 
   /// \brief LLVM-style RTTI: Returns true if this is a Stmt.
   static bool classof(const Stmt *stmt) {
-    return stmt->GetKind() >= LastStmt && stmt->GetKind() <= FirstStmt;
+    // return stmt->GetKind() >= LastStmt && stmt->GetKind() <= FirstStmt;
+    return true;
   }
 
   /// \brief LLVM-style RTTI: Returns true if the node is a Stmt.
@@ -57,7 +57,7 @@ public:
 #define STMT(ID, Parent)                                                       \
   class ID##Stmt final : public Parent {                                       \
   public:                                                                      \
-    explicit ID##Stmt(StmtFlight *flight) : Parent(flight->GetKind()) {}       \
+    explicit ID##Stmt(StmtFlight *flight) : Parent(flight) {}                  \
     static bool classof(const Stmt *S);                                        \
   };
 

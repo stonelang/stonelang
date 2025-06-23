@@ -28,12 +28,11 @@ class TypeFlight;
 ///
 /// All `Type` subclasses are created through macros in `TypeNode.def`, and are
 /// aligned to `TypeAlignInBits` to support efficient allocation and casting.
-class alignas(1 << TypeAlignInBits) Type : public Node<NodeKind::Type, Type> {
-  using Base = Node<NodeKind::Type, Type>;
+class alignas(1 << TypeAlignInBits) Type : public Node {
+
   TypeFlight *flight = nullptr;
 
 public:
-  using Base::Base;
   /// \brief Constructs a type node with the associated metadata wrapper.
   explicit Type(TypeFlight *flight);
 

@@ -10,7 +10,6 @@
 #define LAST_STMT(ID)
 #endif
 
-
 //= STMT(s) =//
 STMT(Brace,       Stmt)
 STMT(Return,      Stmt)
@@ -23,7 +22,7 @@ STMT(Continue,    Stmt)
 
 STMT(For,   Stmt)
 STMT(Match, Stmt)
-STMT_RANGE(LabeledStmt, If, Match)
+STMT_RANGE(LabeledStmt, For, Match)
 
 STMT(If,    Stmt)
 STMT(Else,  Stmt)

@@ -1,5 +1,6 @@
 #include "stone/AST/Expr.h"
+#include "stone/AST/ExprFlight.h"
 
 using namespace stone;
 
-Expr::Expr(DeclFlight *flight) : Base(nullptr), flight(flight) {}
+Expr::Expr(ExprFlight *flight) : flight(flight) {}

@@ -17,7 +17,7 @@ class ModuleContext;
 /// A `Module` manages one or more `File` units and maintains their
 /// shared context, scope, and dependency graph. It is the top-level container
 /// for semantic and code generation phases.
-class Module final : public Node<NodeKind::Module, Module> {
+class Module final : public Node {
   ModuleContext
       &context; ///< Owning context for identifier memory, global types, etc.
   Scope *scope =

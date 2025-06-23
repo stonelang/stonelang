@@ -7,6 +7,13 @@
 /// categories.
 
 namespace stone {
+class Module;
+class File;
+class Decl;
+class Expr;
+class Stmt;
+class Type;
+
 /// \brief Represents the broad classification of AST nodes.
 ///
 /// `NodeKind` is used to categorize node entities (modules, declarations,
@@ -38,6 +45,9 @@ enum class NodeKind : uint8_t {
   Last =
       Stmt ///< Highest valid tag value (used for bounds checking or iteration)
 };
+
+
+using NodeUnion = llvm::PointerUnion<Module*, File*, Decl*, Type*, Expr*, Stmt*>;
 
 } // namespace stone
 

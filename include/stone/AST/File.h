@@ -30,7 +30,8 @@ inline bool HasStage(FileStage current, FileStage check) {
 ///
 /// Each `File` is tied to a specific buffer, owns a list of top-level
 /// declarations, and tracks the semantic/codegen analysis stages.
-class File final : public Node<NodeKind::File, File> {
+class File final : public Node {
+
   SrcUnit unit;
   Module &parent;
   Scope *scope = nullptr; ///< Top-level lexical scope (may be null early on)
@@ -38,6 +39,7 @@ class File final : public Node<NodeKind::File, File> {
   FileStage stage = FileStage::None; ///< Processing stage flags
 
 public:
+
   /// \brief Constructs a File with a buffer and parent module.
   File(SrcUnit unit, Module &parent);
 
@@ -47,11 +49,8 @@ public:
     return HasFirstDecl() && llvm::cast<SpaceDecl>(GetFirstDecl());
   }
 
-  /// \returns The unique buffer ID associated with this file.
-  unsigned GetBufferID() { return bufferID; }
-
   /// \returns The SrcUnit that initiated this File
-  SrcUnit GetSrcUnit() const { return srcUnit; }
+  SrcUnit GetSrcUnit() const { return unit; }
 
   /// \returns the parent of this file which is the module
   Module &GetParent() { return parent; }

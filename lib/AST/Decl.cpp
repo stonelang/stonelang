@@ -2,7 +2,7 @@
 #include "stone/AST/DeclFlight.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Node.h"
-#include "stone/AST/UnderlyingNode.h"
+
 using namespace stone;
 
 // TODO: Passing null parent for now
@@ -12,7 +12,7 @@ using namespace stone;
 //   flight->SetOwner(this);
 // }
 
-Decl::Decl(DeclFlight *parent) : Base(nullptr), flight(flight) {
+Decl::Decl(DeclFlight *parent) : flight(flight) {
 
   assert(flight && "DeclFlight is required for Decl");
   flight->SetOwner(this);

@@ -8,7 +8,7 @@
 
 using namespace stone;
 
-Node::Node(CurrentNode *parent) : parent(parent) {}
+Node::Node() {}
 
 void Node::AddChild(Node *child) {
   child->SetParent(this); // Ensure bidirectional connection

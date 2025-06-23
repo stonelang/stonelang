@@ -43,13 +43,8 @@ add_stone_library(StoneAST
     clangBasic
 )
 
-#===----------------------------------------------------------------------===#
-# Target Configuration
-#===----------------------------------------------------------------------===#
 target_include_directories(StoneAST
   PRIVATE
-    ${LLVM_INCLUDE_DIRS}
+    ${LLVM_BINARY_DIR}/tools/clang/include
+    ${LLVM_SOURCE_DIR}/tools/clang/include
 )
-
-# Optional: if you really need ClangConfig.cmake and are outside monorepo
-# find_package(Clang REQUIRED CONFIG)

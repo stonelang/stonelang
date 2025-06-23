@@ -13,13 +13,11 @@ class ExprFlight;
 /// Each expression node is tagged with an `ExprKind` and participates in
 /// the node hierarchy using `NodeKind::Expr`. Subclasses are defined via
 /// macro expansion using `ExprNode.def`.
-class alignas(8) Expr : public Node<NodeKind::Expr, Expr> {
-  using Base = Node<NodeKind::Expr, Expr>;
+class alignas(8) Expr : public Node {
 
   ExprFlight *flight = nullptr;
 
 public:
-  using Base::Base;
   /// \brief Constructs an expression node of a given kind.
   explicit Expr(ExprFlight *flight);
 
@@ -28,7 +26,8 @@ public:
 
   /// \brief LLVM-style RTTI: Returns true if the node is an expression.
   static bool classof(const Expr *expr) {
-    return expr->GetKind() >= FirstExpr && expr->GetKind() <= LastExpr;
+    // return expr->GetKind() >= FirstExpr && expr->GetKind() <= LastExpr;
+    return true;
   }
 
   /// \brief LLVM-style RTTI: Returns true if the node is an Expr.

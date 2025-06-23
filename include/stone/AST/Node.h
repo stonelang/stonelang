@@ -25,11 +25,10 @@ class Stmt;
 /// units
 ///        such as modules, declarations, expressions, statements, and types.
 
-template <NodeKind Kind, typename Derived>
-class Node : public Allocation<Derived> {
+class Node : public Allocation<Node> {
 protected:
   ///< Enumerated type for fast runtime classification
-  NodeKind kind = Kind;
+  NodeKind kind = NodeKind::None;
   ///< Pointer to this node's parent in the AST hierarchy
   Node *parent = nullptr;
 
@@ -37,9 +36,7 @@ protected:
   llvm::SmallVector<Node *, 16> children;
 
 public:
-  using CurrentNode = Node<Kind, Derived>;
-
-  explicit Node(CurrentNode *parent = nullptr);
+  explicit Node();
 
 public:
   /// \returns The `NodeKind` tag indicating what kind of node this is
