@@ -1,12 +1,17 @@
 #ifndef STONE_AST_TYPEINFLUENCER_H
 #define STONE_AST_TYPEINFLUENCER_H
 
+//===----------------------------------------------------------------------===//
+// Includes
+//===----------------------------------------------------------------------===//
+
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/MemoryManager.h"
-#include "stone/AST/TypeAlignment.h"
+#include "stone/AST/Allocation.h"
+#include "stone/AST/Memory.h"
+#include "stone/AST/Alignments.h"
 #include "stone/AST/Visibility.h"
-#include "stone/Support/SrcLoc.h"
+#include "stone/Core/SrcLoc.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"
@@ -25,6 +30,11 @@
 
 namespace stone {
 
+//===----------------------------------------------------------------------===//
+// TypeInfluencerKind
+// Enumerates all modifier/attribute kinds that can influence a type's behavior.
+//===----------------------------------------------------------------------===//
+
 enum class TypeInfluencerKind : uint8_t {
   None = 0,
 #define TYPE_INFLUENCER(ID, Parent) ID,
@@ -36,10 +46,13 @@ enum class TypeInfluencerKind : uint8_t {
 
 } // namespace stone
 
+//===----------------------------------------------------------------------===//
+// DenseMapInfo specialization for TypeInfluencerKind
+// Allows use of TypeInfluencerKind as DenseMap keys.
+//===----------------------------------------------------------------------===//
+
 namespace llvm {
-
 template <> struct DenseMapInfo<stone::TypeInfluencerKind> {
-
   static inline stone::TypeInfluencerKind getEmptyKey() {
     return stone::TypeInfluencerKind::None;
   }
@@ -55,34 +68,39 @@ template <> struct DenseMapInfo<stone::TypeInfluencerKind> {
     return lhs == rhs;
   }
 };
-
 } // namespace llvm
 
 namespace stone {
-class alignas(1 << TypeAlignInBits) TypeInfluencer : public Artifact {
+
+//===----------------------------------------------------------------------===//
+// TypeInfluencer
+// Base class representing a modifier or attribute that influences a type.
+//===----------------------------------------------------------------------===//
+
+class alignas(1 << TypeAlignInBits) TypeInfluencer
+    : public Allocation<TypeInfluencer> {
   TypeInfluencerKind kind;
   SrcLoc loc;
 
 public:
   TypeInfluencer(TypeInfluencerKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
 
-public:
   TypeInfluencerKind GetKind() { return kind; }
   SrcLoc GetLoc() { return loc; }
 
-  ArtifactKind GetArtifactKind() const override {
-    return ArtifactKind::TypeInfluencer;
-  }
-
-public:
-  bool IsStone() { return GetKind() == TypeInfluencerKind::Stone; }
-  bool IsAlign() { return GetKind() == TypeInfluencerKind::Align; }
-  bool IsNullable() { return GetKind() == TypeInfluencerKind::Nullable; }
-  bool IsNotNullable() { return GetKind() == TypeInfluencerKind::NotNullable; }
-  bool IsOwn() { return GetKind() == TypeInfluencerKind::Own; }
-  bool IsSafe() { return GetKind() == TypeInfluencerKind::Safe; }
-  bool IsNot() { return GetKind() == TypeInfluencerKind::Not; }
+  // Query helpers
+  bool IsStone() const { return kind == TypeInfluencerKind::Stone; }
+  bool IsAlign() const { return kind == TypeInfluencerKind::Align; }
+  bool IsNullable() const { return kind == TypeInfluencerKind::Nullable; }
+  bool IsNotNullable() const { return kind == TypeInfluencerKind::NotNullable; }
+  bool IsOwn() const { return kind == TypeInfluencerKind::Own; }
+  bool IsSafe() const { return kind == TypeInfluencerKind::Safe; }
+  bool IsNot() const { return kind == TypeInfluencerKind::Not; }
 };
+
+//===----------------------------------------------------------------------===//
+// Modifiers (syntax like: `own ptr int`)
+//===----------------------------------------------------------------------===//
 
 class TypeModifier : public TypeInfluencer {
 public:
@@ -99,14 +117,20 @@ class OwnModifier : public TypeModifier {
 public:
   OwnModifier(SrcLoc loc) : TypeModifier(TypeInfluencerKind::Own, loc) {}
 };
+
 class SafeModifier : public TypeModifier {
 public:
   SafeModifier(SrcLoc loc) : TypeModifier(TypeInfluencerKind::Safe, loc) {}
 };
+
 class NotModifier : public TypeModifier {
 public:
   NotModifier(SrcLoc loc) : TypeModifier(TypeInfluencerKind::Not, loc) {}
 };
+
+//===----------------------------------------------------------------------===//
+// Attributes (syntax like: `[nullable]`, `[align]`)
+//===----------------------------------------------------------------------===//
 
 class TypeAttribute : public TypeInfluencer, public Attribute {
 public:
@@ -126,6 +150,11 @@ public:
       : TypeAttribute(TypeInfluencerKind::Align, lBracketLoc, range) {}
 };
 
+//===----------------------------------------------------------------------===//
+// AbstractTypeInfluencerList
+// Stores a mask and mapping of all present influencers.
+//===----------------------------------------------------------------------===//
+
 class AbstractTypeInfluencerList {
   llvm::BitVector mask;
   llvm::DenseMap<TypeInfluencerKind, TypeInfluencer *> influencers;
@@ -136,14 +165,15 @@ public:
 
   explicit operator bool() const { return !influencers.empty(); }
 
-public:
   void Add(TypeInfluencer *influencer) {
     influencers[influencer->GetKind()] = influencer;
     mask.set(static_cast<unsigned>(influencer->GetKind()));
   }
+
   bool Has(TypeInfluencerKind kind) const {
     return mask.test(static_cast<unsigned>(kind));
   }
+
   bool Has(TypeInfluencer *influencer) const {
     assert(influencer && "Cannot add null type-influencer!");
     return Has(influencer->GetKind());
@@ -153,20 +183,24 @@ public:
     auto it = influencers.find(kind);
     return it != influencers.end() ? it->second : nullptr;
   }
-  bool IsEmpty() const { return influencers.size() == 0; }
+
+  bool IsEmpty() const { return influencers.empty(); }
 };
+
+//===----------------------------------------------------------------------===//
+// TypeInfluencerList
+// Concrete collection interface for managing type modifiers/attributes.
+//===----------------------------------------------------------------------===//
 
 class TypeInfluencerList final : public AbstractTypeInfluencerList {
 public:
-  explicit TypeInfluencerList() {}
+  TypeInfluencerList() = default;
 
-public:
   void AddStone(StoneModifier *modifier) { Add(modifier); }
   void AddOwn(OwnModifier *modifier) { Add(modifier); }
   void AddSafe(SafeModifier *modifier) { Add(modifier); }
   void AddNot(NotModifier *modifier) { Add(modifier); }
 
-public:
   bool HasStone() const { return Has(TypeInfluencerKind::Stone); }
   bool HasOwn() const { return Has(TypeInfluencerKind::Own); }
   bool HasSafe() const { return Has(TypeInfluencerKind::Safe); }
@@ -174,4 +208,5 @@ public:
 };
 
 } // namespace stone
-#endif
+
+#endif // STONE_AST_TYPEINFLUENCER_H

@@ -2,10 +2,10 @@
 #define STONE_PARSE_LEXER_H
 
 #include "stone/AST/Diagnostics.h"
-#include "stone/Support/Lexing.h"
-#include "stone/Support/SrcMgr.h"
-#include "stone/Support/Statistics.h"
-#include "stone/Support/Token.h"
+#include "stone/Core/Lexing.h"
+#include "stone/Core/SrcMgr.h"
+#include "stone/Core/Statistics.h"
+#include "stone/Core/Token.h"
 
 // TODO: Move to support
 namespace stone {

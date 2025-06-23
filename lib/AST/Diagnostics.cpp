@@ -2,8 +2,8 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/DiagnosticsCore.h"
 #include "stone/AST/Stmt.h"
-#include "stone/Support/Range.h"
-#include "stone/Support/SrcMgr.h"
+#include "stone/Core/Range.h"
+#include "stone/Core/SrcMgr.h"
 
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
@@ -73,7 +73,7 @@ struct StoredDiagnosticInfo {
 // themselves.
 enum LocalDiagID : uint32_t {
 #define DIAG(KIND, ID, Options, Text, Signature) ID,
-#include "stone/Support/Diagnostics.def"
+#include "stone/Core/Diagnostics.def"
   NumDiags
 };
 
@@ -90,7 +90,7 @@ static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
   StoredDiagnosticInfo(DiagnosticKind::Note, LocalDiagnosticOptions::Options),
 #define REMARK(ID, Options, Text, Signature)                                   \
   StoredDiagnosticInfo(DiagnosticKind::Remark, LocalDiagnosticOptions::Options),
-#include "stone/Support/Diagnostics.def"
+#include "stone/Core/Diagnostics.def"
 };
 static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==
                   LocalDiagID::NumDiags,
@@ -98,26 +98,26 @@ static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==
 
 static constexpr const char *const diagnosticStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) Text,
-#include "stone/Support/Diagnostics.def"
+#include "stone/Core/Diagnostics.def"
     "<not a diagnostic>",
 };
 
 static constexpr const char *const debugDiagnosticStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) Text " [" #ID "]",
-#include "stone/Support/Diagnostics.def"
+#include "stone/Core/Diagnostics.def"
     "<not a diagnostic>",
 };
 
 static constexpr const char *const diagnosticIDStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) #ID,
-#include "stone/Support/Diagnostics.def"
+#include "stone/Core/Diagnostics.def"
     "<not a diagnostic>",
 };
 
 static constexpr const char *const fixItStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature)
 #define FIXIT(ID, Text, Signature) Text,
-#include "stone/Support/Diagnostics.def"
+#include "stone/Core/Diagnostics.def"
     "<not a fix-it>",
 };
 
@@ -384,7 +384,7 @@ InFlightDiagnostic::limitBehavior(DiagnosticBehavior limit) {
 // InFlightDiagnostic &
 // InFlightDiagnostic::warnInStoneInterface(const DeclContext *context) {
 //   auto sourceFile = context->getParentSourceFile();
-//   if (sourceFile && sourceFile->Kind == SourceFileKind::Interface) {
+//   if (sourceFile && sourceFile->Kind == SourceFileType::Interface) {
 //     return limitBehavior(DiagnosticBehavior::Warning);
 //   }
 
@@ -986,7 +986,7 @@ CreateDiagnosticInfoForDecl(const Diagnostic &diagnostic) {
     // TODO:
     //  If a declaration was provided instead of a location, and that
     //  declaration has a location we can point to, use that location.
-    loc = decl->GetNameLoc();
+    loc = decl->GetLoc();
     if (loc.isInvalid()) {
       // SrcLoc ppLoc = PrettyPrintedDeclarations[decl];
       // if (ppLoc.isInvalid()) {
@@ -1010,7 +1010,7 @@ DiagnosticEngine::diagnosticInfoForDiagnostic(const Diagnostic &diagnostic) {
     const stone::Decl *decl = diagnostic.getDecl();
     // If a declaration was provided instead of a location, and that declaration
     // has a location we can point to, use that location.
-    loc = decl->GetNameLoc();
+    loc = decl->GetLoc();
   }
 
   if (loc.isInvalid()) {

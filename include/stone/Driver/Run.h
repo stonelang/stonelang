@@ -1,7 +1,7 @@
 #ifndef STONE_DRIVER_RUN_H
 #define STONE_DRIVER_RUN_H
 
-#include "stone/Support/Status.h"
+#include "stone/Core/Status.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

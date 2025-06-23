@@ -3,13 +3,13 @@
 
 #include "stone/AST/ModuleDecl.h"
 #include "stone/Frontend/Frontend.h"
-#include "stone/Support/Status.h"
+#include "stone/Core/Status.h"
 
 namespace stone {
 
 // class ModuleManager {
 //   llvm::StringMap<std::unique_ptr<FrontendModule>> modules;
-//   MemoryManager sharedMemory;
+//   Memory sharedMemory;
 
 //   ModuleContext makeContext() {
 //     return {
@@ -25,7 +25,7 @@ class FrontendModule final {
   const Frontend &frontend;
 
   Module *underlyingModule;
-  std::unique_ptr<MemoryManager> memoryManager;
+  std::unique_ptr<Memory> memoryManager;
 
 public:
   FrontendModule(const FrontendModule &) = delete;

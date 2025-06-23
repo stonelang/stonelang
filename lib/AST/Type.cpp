@@ -1,15 +1,18 @@
 #include "stone/AST/Type.h"
-#include "stone/AST/DeclState.h"
-#include "stone/AST/TypeState.h"
+#include "stone/AST/DeclFlight.h"
+#include "stone/AST/Node.h"
+#include "stone/AST/TypeFlight.h"
 
 using namespace stone;
 
-Type::Type(TypeState *TS) : Node(nullptr), TS(TS) {
-  assert(TS && "Expected TypeState for a Type!");
-  TS->SetOwner(this);
+Type::Type(TypeFlight *flight) : Base(nullptr), flight(flight) {
+  assert(flight && "Expected TypeFlight for a Type!");
+  flight->SetOwner(this);
 }
 
 bool Type::IsCanType() const {
-  return (TS->HasCanType() && TS->GetCanType() == this);
+  return (flight->HasCanType() && flight->GetCanType() == this);
 }
-TypeKind Type::GetKind() const { return TS->GetTypeKind(); }
+TypeKind Type::GetKind() const { return flight->GetTypeKind(); }
+
+bool FunType::classof(const Type *T) {}

@@ -1,54 +1,45 @@
+#ifndef STMT
+#define STMT(ID, Parent)
+#endif
+
 #ifndef ABSTRACT_STMT
-#define ABSTRACT_STMT(Id, Parent)
+#define ABSTRACT_STMT(ID, Parent)
 #endif
 
-/// A subclass of LabeledStmt.  Forwards to STMT by default.
-#ifndef LABEL_STMT
-#define LABEL_STMT(Id, Parent) STMT(Id, Parent)
-#endif
-
-/// A convenience for determining the range of statements.  These will always
-/// appear immediately after the last member.
 #ifndef STMT_RANGE
-#define STMT_RANGE(Id, First, Last)
+#define STMT_RANGE(ID, First, Last)
 #endif
 
 #ifndef LAST_STMT
-#define LAST_STMT(Id)
+#define LAST_STMT(ID)
 #endif
 
-#ifndef EXPR_STMT
-#define EXPR_STMT(Id, Parent) STMT(Id, Parent)
-#endif
 
-#ifndef ABSTRACT_EXPR_STMT
-#define ABSTRACT_EXPR_STMT(Id, Parent) ABSTRACT_STMT
-#endif
+//= STMT(s) =//
+STMT(Brace,       Stmt)
+STMT(Return,      Stmt)
+STMT(Defer,       Stmt)
+STMT(Case,        Stmt)
+STMT(Break,       Stmt)
+STMT(Free,        Stmt)
+STMT(Continue,    Stmt)
 
-//= STMT(s) =/
-STMT(Brace,  Stmt)
-STMT(Return, Stmt)
-STMT(Defer,  Stmt)
-STMT(Case,   Stmt)
-STMT(Break,  Stmt)
-STMT(Free,  Stmt)
-STMT(Continue, Stmt)
-ABSTRACT_STMT(Labeled, Stmt)
-	ABSTRACT_STMT(LabeledConditional, LabeledStmt)
-	LABEL_STMT(If, LabeledConditionalStmt)
-	LABEL_STMT(Else, LabeledConditionalStmt)
-	STMT_RANGE(LabeledConditional, If, Else)
-LABEL_STMT(For, LabeledStmt)
-LABEL_STMT(Match, LabeledStmt)
-STMT_RANGE(Labeled, If, Match)
 
-STMT(Throw, Stmt)
-STMT(Catch, Stmt)
-STMT(Next, Stmt)
+STMT(If,    Stmt)
+STMT(Else,  Stmt)
+STMT_RANGE(LabeledConditionalStmt, If, Else)
+
+STMT(For,   LabeledStmt)
+STMT(Match, LabeledStmt)
+STMT_RANGE(LabeledStmt, If, Match)
+
+STMT(Throw,       Stmt)
+STMT(Catch,       Stmt)
+STMT(Next,        Stmt)
 LAST_STMT(Next)
 
-#undef STMT_RANGE
-#undef LABEL_STMT
-#undef ABSTRACT_STMT
+// Undef macros to avoid leakage
 #undef STMT
+#undef STMT_RANGE
+#undef ABSTRACT_STMT
 #undef LAST_STMT

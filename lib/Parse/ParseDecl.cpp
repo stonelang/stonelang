@@ -2,4 +2,4 @@
 
 using namespace stone;
 
-ParsingDeclState::ParsingDeclState(Parser &parser) : parser(parser) {}
+ParsingDeclFlight::ParsingDeclFlight(Parser &parser) : parser(parser) {}

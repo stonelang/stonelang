@@ -1,9 +1,9 @@
 #ifndef STONE_AST_VSIBILITY_H
 #define STONE_AST_VSIBILITY_H
 
-#include "stone/AST/TypeAlignment.h"
-#include "stone/Support/LLVM.h"
-#include "stone/Support/SrcLoc.h"
+#include "stone/AST/Alignments.h"
+#include "stone/Core/LLVM.h"
+#include "stone/Core/SrcLoc.h"
 
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallVector.h"

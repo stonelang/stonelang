@@ -54,9 +54,9 @@ public:
     virtual bool perform(Decl* decl, DeclActionKind kind) = 0;
 };
 
-// === DeclState holds info and delegates validation/action ===
+// === DeclFlight holds info and delegates validation/action ===
 
-class DeclState {
+class DeclFlight {
     DeclKind kind;
     // Other fields...
 
@@ -68,13 +68,13 @@ public:
     // Implement these to return registered handlers for kind
 };
 
-// === Decl wraps DeclState and offers API ===
+// === Decl wraps DeclFlight and offers API ===
 
 class Decl {
-    DeclState* state;
+    DeclFlight* state;
 
 public:
-    Decl(DeclState* s) : state(s) {}
+    Decl(DeclFlight* s) : state(s) {}
 
     bool validate(DeclValidationKind kind) const {
         if (auto validator = state->getValidator())
@@ -115,15 +115,15 @@ public:
     }
 };
 
-// === Usage: in DeclState **getValidator** and **getAction**
+// === Usage: in DeclFlight **getValidator** and **getAction**
 
 // Example implementations
 
-DeclValidator* DeclState::getValidator() const {
+DeclValidator* DeclFlight::getValidator() const {
     return GetASTSession().getValidator(kind);
 }
 
-DeclAction* DeclState::getAction() const {
+DeclAction* DeclFlight::getAction() const {
     return GetASTSession().getAction(kind);
 }
 
@@ -217,7 +217,7 @@ virtual void Evaluate(Decl* decl, DeclEvaluatorContext& ctx) = 0;
 
 
 class DeclEvaluatorContext {
-  DeclState* state;
+  DeclFlight* state;
   DiagnosticEngine* diags;
   SourceLoc sourceLoc;
   bool isIDEContext = false;
@@ -225,17 +225,17 @@ class DeclEvaluatorContext {
   // etc.
 
 public:
-  explicit DeclEvaluatorContext(DeclState* state) : state(state) {}
+  explicit DeclEvaluatorContext(DeclFlight* state) : state(state) {}
 
-  DeclState* GetState() const { return state; }
+  DeclFlight* GetFlight() const { return state; }
   DiagnosticEngine* GetDiags() const { return diags; }
   // More accessors...
 };
 
 
 void Evaluate(Decl* decl, DeclEvaluatorContext& ctx) override {
-  auto* state = ctx.GetState();
-  auto* type = state->GetTypeState();
+  auto* state = ctx.GetFlight();
+  auto* type = state->GetTypeFlight();
   // Use diagnostics engine, source location, phase flags, etc.
 }
 
@@ -275,7 +275,7 @@ public:
 bool Decl::Evaluate(DeclEvaluatorKind kind) {
   if (auto* session = GetASTSession()) {
     if (auto* eval = session->GetEvaluator(kind)) {
-      DeclEvaluatorContext ctx(GetDeclState());
+      DeclEvaluatorContext ctx(GetDeclFlight());
       eval->Evaluate(this, ctx);
       return true;
     }

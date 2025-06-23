@@ -1,13 +1,13 @@
 #ifndef STONE_PARSE_PARSER_H
 #define STONE_PARSE_PARSER_H
 
-#include "stone/AST/DeclState.h"
-#include "stone/AST/ModuleFile.h"
+#include "stone/AST/DeclFlight.h"
+#include "stone/AST/File.h"
 #include "stone/AST/Scope.h"
-#include "stone/AST/TypeState.h"
+#include "stone/AST/TypeFlight.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"
-#include "stone/Support/Token.h"
+#include "stone/Core/Token.h"
 
 #include "llvm/Support/PrettyStackTrace.h"
 
@@ -24,24 +24,24 @@ public:
   void print(llvm::raw_ostream &out) const override;
 };
 
-class ParsingDeclState final {
+class ParsingDeclFlight final {
   Parser &parser;
 
-  /// The DeclState passed to the Decl
-  DeclState *declState;
+  /// The DeclFlight passed to the Decl
+  DeclFlight *declState;
 
   // The identifier we are parsing.
   Identifier identifier;
 
   // Direct comparison is disabled for states
-  void operator==(ParsingDeclState PDS) const = delete;
-  void operator!=(ParsingDeclState PDS) const = delete;
+  void operator==(ParsingDeclFlight PDS) const = delete;
+  void operator!=(ParsingDeclFlight PDS) const = delete;
 
 public:
-  explicit ParsingDeclState(Parser &parser);
+  explicit ParsingDeclFlight(Parser &parser);
 
 public:
-  DeclState *GetDeclState() { return declState; }
+  DeclFlight *GetDeclFlight() { return declState; }
   void SetIdentifier(Identifier identifier) { identifier = identifier; }
   Identifier GetDeclIdentifier() { return identifier; }
   Parser &GetParser() { return parser; }
@@ -55,15 +55,15 @@ public:
 };
 class Parser final {
 
-  ModuleFile &file;
+  File &file;
   std::unique_ptr<Lexer> lexer;
 
 public:
-  Parser(ModuleFile &file);
+  Parser(File &file);
   ~Parser();
 
 public:
-  ModuleFile &GetFile() { return file; }
+  File &GetFile() { return file; }
   DiagnosticEngine &GetDiags() { return file.GetDiags(); }
 };
 

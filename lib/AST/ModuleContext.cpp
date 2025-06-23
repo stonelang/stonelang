@@ -1,16 +1,16 @@
 #include "stone/AST/ModuleContext.h"
 #include "stone/AST/Type.h"
-#include "stone/AST/TypeState.h"
+#include "stone/AST/TypeFlight.h"
 
 using namespace stone;
 
-ModuleContext::ModuleContext(MemoryManager &memory,
+ModuleContext::ModuleContext(Memory &memory,
                              IdentifierTable &identifiers,
                              DiagnosticEngine &diags)
     : memory(memory), identifiers(identifiers), diags(diags) {
 
 #define BUILTIN_TYPE(ID, Parent)                                               \
-  Builtin##ID##Type = new (memory) ID##Type(new (memory) BuiltinTypeState());
+  Builtin##ID##Type = new (memory) ID##Type(new (memory) BuiltinTypeFlight());
 #include "stone/AST/TypeNode.def"
 
   // Initialize all of the known identifiers.

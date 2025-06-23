@@ -2,4 +2,4 @@
 
 using namespace stone;
 
-Expr::Expr(ExprKind kind) : kind(kind) {}
+Expr::Expr(DeclFlight *flight) : Base(nullptr), flight(flight) {}

@@ -1,12 +1,12 @@
 #ifndef STONE_AST_DECLINFLUENCER_H
 #define STONE_AST_DECLINFLUENCER_H
 
-#include "stone/AST/Artifact.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/TypeAlignment.h"
+#include "stone/AST/Allocation.h"
+#include "stone/AST/Alignments.h"
 #include "stone/AST/Visibility.h"
-#include "stone/Support/SrcLoc.h"
+#include "stone/Core/SrcLoc.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"
@@ -20,6 +20,9 @@
 
 namespace stone {
 
+/// \brief Enumerates all possible kinds of declaration influencers (modifiers
+/// or attributes). These may affect code generation, access control, linkage,
+/// behavior, etc.
 enum class DeclInfluencerKind : uint8_t {
   None = 0,
 #define DECL_INFLUENCER(ID, Parent) ID,
@@ -29,12 +32,11 @@ enum class DeclInfluencerKind : uint8_t {
 #include "stone/AST/DeclInfluencerNode.def"
 };
 
-enum class DeclInfluencerClass { Modifier, Attribute };
-
 } // namespace stone
 
+/// \brief Hashing and equality utilities for using DeclInfluencerKind in
+/// DenseMap.
 namespace llvm {
-
 template <> struct DenseMapInfo<stone::DeclInfluencerKind> {
   static inline stone::DeclInfluencerKind getEmptyKey() {
     return stone::DeclInfluencerKind::None;
@@ -51,12 +53,14 @@ template <> struct DenseMapInfo<stone::DeclInfluencerKind> {
     return lhs == rhs;
   }
 };
-
 } // namespace llvm
 
 namespace stone {
 
-class alignas(1 << DeclAlignInBits) DeclInfluencer : public Artifact {
+/// \brief Base class for any AST construct that modifies a declaration’s
+/// behavior or semantics.
+class alignas(1 << DeclAlignInBits) DeclInfluencer
+    : public Allocation<DeclInfluencer> {
   DeclInfluencerKind kind;
   SrcLoc loc;
 
@@ -66,10 +70,7 @@ public:
   DeclInfluencerKind GetKind() const { return kind; }
   SrcLoc GetLoc() const { return loc; }
 
-  ArtifactKind GetArtifactKind() const override {
-    return ArtifactKind::DeclInfluencer;
-  }
-
+  /// Convenience checkers for common modifiers/attributes
   bool IsTrust() const { return kind == DeclInfluencerKind::Trust; }
   bool IsOpen() const { return kind == DeclInfluencerKind::Open; }
   bool IsVirtual() const { return kind == DeclInfluencerKind::Virtual; }
@@ -82,6 +83,11 @@ public:
   bool IsExclusive() const { return kind == DeclInfluencerKind::Exclusive; }
 };
 
+//===----------------------------------------------------------------------===//
+// Modifier subclasses
+//===----------------------------------------------------------------------===//
+
+/// Base class for user-declared modifiers.
 class DeclModifier : public DeclInfluencer {
 public:
   DeclModifier(DeclInfluencerKind kind, SrcLoc loc)
@@ -127,6 +133,7 @@ public:
       : DeclModifier(DeclInfluencerKind::Exclusive, loc) {}
 };
 
+/// \brief Modifier to control declaration visibility (public/local).
 class VisibilityModifier final : public DeclModifier {
   VisibilityLevel level;
 
@@ -134,13 +141,20 @@ public:
   VisibilityModifier(VisibilityLevel level, SrcLoc loc)
       : DeclModifier(DeclInfluencerKind::Visibility, loc), level(level) {}
 
-public:
   VisibilityLevel GetLevel() const { return level; }
   void SetLevel(VisibilityLevel lvl) { level = lvl; }
+
   void MakePublic() { SetLevel(VisibilityLevel::Public); }
   void MakeLocal() { SetLevel(VisibilityLevel::Local); }
 };
 
+//===----------------------------------------------------------------------===//
+// Attribute subclasses
+//===----------------------------------------------------------------------===//
+
+/// \brief A DeclAttribute is a source-attached property that modifies semantic
+/// meaning. Unlike modifiers, attributes can carry additional data (like source
+/// ranges).
 class DeclAttribute : public DeclInfluencer, public Attribute {
 public:
   DeclAttribute(DeclInfluencerKind kind, SrcLoc loc, SrcRange range)
@@ -165,6 +179,7 @@ public:
       : DeclAttribute(DeclInfluencerKind::Extern, loc, range) {}
 };
 
+/// \brief Enumerates all supported compiler intrinsics.
 enum class IntrinsicKind : uint8_t {
   None = 0,
   PopCount,
@@ -204,6 +219,12 @@ public:
   void SetIntrinsicKind(IntrinsicKind kind) { intrinsicKind = kind; }
 };
 
+//===----------------------------------------------------------------------===//
+// DeclInfluencerList Infrastructure
+//===----------------------------------------------------------------------===//
+
+/// \brief Abstract base class to track a set of declaration influencers.
+/// Influencers are stored in a map with a fast bitvector for presence checking.
 class AbstractDeclInfluencerList {
   llvm::BitVector mask;
   llvm::DenseMap<DeclInfluencerKind, DeclInfluencer *> influencers;
@@ -238,15 +259,17 @@ public:
   bool IsEmpty() const { return influencers.empty(); }
 };
 
+/// \brief Concrete influencer list for declarations.
+/// Provides typed add/has methods for each known influencer kind.
 class DeclInfluencerList final : public AbstractDeclInfluencerList {
 public:
   explicit DeclInfluencerList() {}
 
-public:
   void AddTrust(TrustModifier *modifier) { Add(modifier); }
   void AddPure(PureModifier *modifier) { Add(modifier); }
   void AddVirtual(VirtualModifier *modifier) { Add(modifier); }
   void AddPersonal(PersonalModifier *modifier) { Add(modifier); }
+
   bool HasTrust() { return Has(DeclInfluencerKind::Trust); }
   bool HasPure() { return Has(DeclInfluencerKind::Pure); }
   bool HasVirtual() { return Has(DeclInfluencerKind::Virtual); }
@@ -264,4 +287,4 @@ public:
 
 } // namespace stone
 
-#endif
+#endif // STONE_AST_DECLINFLUENCER_H

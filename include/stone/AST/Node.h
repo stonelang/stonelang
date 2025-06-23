@@ -1,8 +1,12 @@
-#ifndef STONE_AST_TREE_H
-#define STONE_AST_TREE_H
+#ifndef STONE_AST_NODE_H
+#define STONE_AST_NODE_H
 
-#include "stone/AST/Artifact.h"
 
+#include "stone/AST/NodeKind.h"
+#include "stone/AST/Allocation.h"
+
+
+#include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -11,31 +15,60 @@ namespace stone {
 // void Walk(ArtifactWalker &&walker) { Walk(walker); }
 // void Visit(ASTVisitor& visitor);
 /// NodeConext { Node* scope ... }
+class Module;
+class File;
+class Decl;
+class Type;
+class Expr;
+class Stmt;
 
-class Node : public Artifact {
+/// \file Node.h
+/// \brief Defines the base `Node` structure for representing AST and semantic
+/// units
+///        such as modules, declarations, expressions, statements, and types.
+
+template <NodeKind Kind, typename Derived>
+class Node : public Allocation<Derived> {
+protected:
+  ///< Enumerated type for fast runtime classification
+  NodeKind kind = Kind;
+  ///< Pointer to this node's parent in the AST hierarchy
   Node *parent = nullptr;
+
+  /// \brief The list of child nodes in this subtree
   llvm::SmallVector<Node *, 16> children;
 
 public:
-  Node(Node *parent = nullptr) : parent(parent) {}
+  using CurrentNode = Node<Kind, Derived>;
+
+  explicit Node(CurrentNode *parent = nullptr);
 
 public:
-  bool HasParent() const { return parent != nullptr; }
-  Node *GetParent() { return parent; }
-  void SetParent(Node *node) { parent = node; }
-  void AddChild(Node *node);
+  /// \returns The `NodeKind` tag indicating what kind of node this is
+  NodeKind GetKind() const { return kind; }
 
+  /// \returns The parent node in the AST, if any
+  Node *GetParent() const { return parent; }
+
+  /// \brief Sets the parent of this node
+  void SetParent(Node *p) { parent = p; }
+
+  /// \returns A read-only view of the children of this node
   llvm::ArrayRef<Node *> GetChildren() const { return children; }
-  llvm::SmallVectorImpl<Node *> &GetChildrenMutable() { return children; }
-  bool HasChildren() const { return !children.empty(); }
-  size_t GetNumChildren() const { return children.size(); }
 
-  // Optional: For range-based for-loops
-  auto begin() const { return children.begin(); }
-  auto end() const { return children.end(); }
+  /// \brief Adds a non-null child node to this node's children list
+  /// \param child The child node to add
+  void AddChild(Node *child);
 
-public:
-  virtual ArtifactKind GetArtifactKind() const = 0;
+  /// \brief Type check against the underlying pointer
+  /// \tparam T The desired type (e.g., `Decl`, `Expr`)
+  /// \returns `true` if the stored value is of type `T*`
+  // template <typename T> bool is() const { return underlying.is<T *>(); }
+
+  // /// \brief Retrieves the stored pointer if it matches type `T*`
+  // /// \tparam T The expected type (e.g., `Decl`, `Expr`)
+  // /// \returns Pointer to type `T`, or undefined behavior if type mismatch
+  // template <typename T> T *get() const { return underlying.get<T *>(); }
 };
 
 class Walker {
@@ -56,7 +89,7 @@ public:
   // virtual bool WalkStmt(Stmt *S) { return true; }
 
   // virtual bool WalkModule(Module *M) { return true; }
-  // virtual bool WalkModuleFile(ModuleFile *MF) { return true; }
+  // virtual bool WalkFile(File *MF) { return true; }
 
   // virtual void Walk(Node *node) = 0;
 };
@@ -81,8 +114,8 @@ public:
   //   return VisitStmt(static_cast<Stmt *>(A));
   // case ArtifactKind::Module:
   //   return VisitModule(static_cast<Module *>(A));
-  // case ArtifactKind::ModuleFile:
-  //   return VisitModuleFile(static_cast<ModuleFile *>(A));
+  // case ArtifactKind::File:
+  //   return VisitFile(static_cast<File *>(A));
   // default:
   //   return;
   // }
@@ -104,7 +137,7 @@ public:
   // virtual void VisitStmt(Stmt *S) {}
 
   // virtual void VisitModule(Module *M) {}
-  // virtual void VisitModuleFile(ModuleFile *MF) {}
+  // virtual void VisitFile(File *MF) {}
 };
 } // namespace stone
 

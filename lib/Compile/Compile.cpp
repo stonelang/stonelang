@@ -1,6 +1,6 @@
 #include "stone/Compile/Compile.h"
 #include "stone/Frontend/FrontendModule.h"
-#include "stone/Support/LLVMInit.h"
+#include "stone/Core/LLVMInit.h"
 
 using namespace stone;
 

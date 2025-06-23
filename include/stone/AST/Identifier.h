@@ -1,7 +1,7 @@
 #ifndef STONE_AST_IDENTIFIER_H
 #define STONE_AST_IDENTIFIER_H
 
-#include "stone/Support/EditorPlaceholder.h"
+#include "stone/Core/EditorPlaceholder.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMapInfo.h"

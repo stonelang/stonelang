@@ -1,5 +1,5 @@
 #include "stone/Frontend/FrontendModule.h"
-#include "stone/AST/DeclState.h"
+#include "stone/AST/DeclFlight.h"
 #include "stone/Frontend/Frontend.h"
 
 using namespace stone;
@@ -17,14 +17,14 @@ FrontendModule::FrontendModule(const Frontend &frontend) : frontend(frontend) {
 
 // FrontendSpace::FrontendSpace(Frontend &frontend)
 //     : NormalSpaceDecl(new(frontend.GetASTSession())
-//                           DeclState(frontend.GetASTSession())),
+//                           DeclFlight(frontend.GetASTSession())),
 //       frontend(frontend) {
-//   GetDeclState()->SetKind(DeclKind::NormalModule);
+//   GetDeclFlight()->SetKind(DeclKind::NormalModule);
 // }
 
 // Status FrontendSpace::Initialize() {}
 
-// // SourceFile *FrontendModule::CreateSourceFile(const InputFile inputFile) {
+// // SourceFile *FrontendModule::CreateSourceFile(const Src inputFile) {
 // //   return nullptr;
 // // }
 

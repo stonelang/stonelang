@@ -4,7 +4,7 @@ using namespace stone;
 
 enum class stone::DiagID : uint32_t {
 #define DIAG(KIND, ID, Options, Text, Signature) ID,
-#include "stone/Support/Diagnostics.def"
+#include "stone/Core/Diagnostics.def"
 };
 static_assert(static_cast<uint32_t>(stone::DiagID::invalid_diagnostic) == 0,
               "0 is not the invalid diagnostic ID");
@@ -12,7 +12,7 @@ static_assert(static_cast<uint32_t>(stone::DiagID::invalid_diagnostic) == 0,
 enum class stone::FixItID : uint32_t {
 #define DIAG(KIND, ID, Options, Text, Signature)
 #define FIXIT(ID, Text, Signature) ID,
-#include "stone/Support/Diagnostics.def"
+#include "stone/Core/Diagnostics.def"
 };
 
 // Define all of the diagnostic objects and initialize them with their
@@ -25,6 +25,6 @@ namespace diag {
 #define FIXIT(ID, Text, Signature)                                             \
   detail::StructuredFixItWithArguments<void Signature>::type ID = {FixItID::ID};
 
-#include "stone/Support/Diagnostics.def"
+#include "stone/Core/Diagnostics.def"
 } // end namespace diag
 } // end namespace stone

@@ -1,10 +1,10 @@
 #ifndef STONE_AST_DECL_ACTION_H
 #define STONE_AST_DECL_ACTION_H
 
-#include "stone/AST/Artifact.h"
+#include "stone/AST/Allocation.h"
 #include "stone/AST/InlineBitfield.h"
-#include "stone/AST/MemoryAllocation.h"
-#include "stone/AST/TypeAlignment.h"
+#include "stone/AST/Allocation.h"
+#include "stone/AST/Alignments.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -44,7 +44,7 @@ enum class EvaluatorKind : uint8_t {
   Elaboration
 };
 
-class alignas(1 << DeclAlignInBits) Evaluator : public Artifact {
+class alignas(1 << DeclAlignInBits) Evaluator : public Allocation<Evaluator> {
   EvaluatorKind kind;
 
 public:

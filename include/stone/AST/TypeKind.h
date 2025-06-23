@@ -1,6 +1,8 @@
 #ifndef STONE_AST_TYPE_KIND_H
 #define STONE_AST_TYPE_KIND_H
 
+#include "stone/AST/InlineBitfield.h"
+
 #include <cstdint>
 
 namespace stone {
@@ -30,12 +32,31 @@ constexpr unsigned BitSize128 = 128;
 enum class TypeKind : uint8_t {
   None = 0,
 #define TYPE(ID, Parent) ID,
-#define LAST_TYPE(ID) Last_Type = ID,
-#define TYPE_RANGE(Id, FirstId, LastId)                                        \
-  First_##Id##Type = FirstId, Last_##Id##Type = LastId,
+#define LAST_TYPE(ID) Count = ID,
+#define TYPE_RANGE(ID, FirstId, LastId) First##ID = FirstId, Last##ID = LastId,
 #include "stone/AST/TypeNode.def"
 };
 
-} // namespace stone
+enum : uint8_t {
+  TypeKindBitCount =
+      stone::CountBitsUsed(static_cast<unsigned>(TypeKind::Count))
+};
 
-#endif // STONE_AST_TYPE_KIND_H
+inline bool IsNominalType(TypeKind K) {
+  return K >= TypeKind::FirstNominal && K <= TypeKind::LastNominal;
+}
+
+inline bool IsMagicType(TypeKind K) {
+  return K >= TypeKind::FirstMagic && K <= TypeKind::LastMagic;
+}
+
+inline bool IsAccessType(TypeKind K) {
+  return K >= TypeKind::FirstAccess && K <= TypeKind::LastAccess;
+}
+
+inline bool IsAggregateType(TypeKind K) {
+  return K >= TypeKind::FirstAggregate && K <= TypeKind::LastAggregate;
+}
+
+} // namespace stone
+#endif

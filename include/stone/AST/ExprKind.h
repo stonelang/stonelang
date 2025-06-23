@@ -6,36 +6,14 @@
 namespace stone {
 
 enum class ExprKind : uint8_t {
-  // Core expressions
-  New,
-  This,
-  Call,
-  Paren,
+  None = 0,
+#define EXPR(ID, Parent) ID,
+#define LAST_EXPR(ID) Count = ID,
+#define EXPR_RANGE(ID, FirstID, LastID)                                        \
+  First##ID##Expr = FirstID, Last##ID##Expr = LastID,
+#include "stone/AST/ExprNode.def"
 
-  // Literal expressions
-  NullLiteral,
-  BooleanLiteral,
-  StringLiteral,
-  IntegerLiteral,
-  FloatLiteral,
-
-  // Closure expressions
-  Closure,
-
-  // Special expressions
-  IfSemi,
-  CodeCompletion,
-  Type, // Note: represents a type-level expression
-
-  // Always last
-  Count
 };
-
-// === Range Markers ===
-
-// LiteralExpr range: Null → Float
-constexpr ExprKind FirstLiteral = ExprKind::NullLiteral;
-constexpr ExprKind LastLiteral = ExprKind::FloatLiteral;
 
 } // namespace stone
 

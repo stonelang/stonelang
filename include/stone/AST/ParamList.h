@@ -1,14 +1,15 @@
 #ifndef STONE_AST_PARAM_LIST_H
 #define STONE_AST_PARAM_LIST_H
 
-#include "stone/AST/Artifact.h"
+#include "stone/AST/Allocation.h"
 #include "llvm/ADT/SmallVector.h"
 
+#include <cstdint>
 namespace stone {
 
 enum class ParamListKind : uint8_t { None = 0, Space, Using, Some, Just };
 
-class ParamList : public Artifact {
+class ParamList : public Allocation<ParamList> {
   ParamListKind kind;
 
 public:

@@ -1,9 +1,9 @@
 #ifndef STONE_DRIVER_DRIVER_H
 #define STONE_DRIVER_DRIVER_H
 
-#include "stone/Support/LangOptions.h"
-#include "stone/Support/Statistics.h"
-#include "stone/Support/Status.h"
+#include "stone/Core/LangOptions.h"
+#include "stone/Core/Statistics.h"
+#include "stone/Core/Status.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/SetVector.h"

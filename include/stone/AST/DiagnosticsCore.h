@@ -2,7 +2,7 @@
 #define STONE_AST_DIAGNOSTICS_CORE_H
 
 #include "stone/AST/Diagnostics.h"
-#include "stone/Support/LLVM.h"
+#include "stone/Core/LLVM.h"
 
 namespace stone {
 
@@ -36,7 +36,7 @@ using DeclAttribute = const DeclAttribute *;
   extern detail::DiagWithArguments<void Signature>::type ID;
 #define FIXIT(ID, Text, Signature)                                             \
   extern detail::StructuredFixItWithArguments<void Signature>::type ID;
-#include "stone/Support/DiagnosticsCore.def"
+#include "stone/Core/DiagnosticsCore.def"
 
 } // namespace diag
 

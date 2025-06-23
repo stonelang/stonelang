@@ -1,8 +1,10 @@
-#ifndef STONE_AST_MODULECONEXT_H
-#define STONE_AST_MODULECONEXT_H
+#ifndef STONE_AST_MODULECONTEXT_H
+#define STONE_AST_MODULECONTEXT_H
+
 #include "stone/AST/Diagnostics.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/MemoryManager.h"
+#include "stone/AST/Memory.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/SmallVector.h"
@@ -13,32 +15,44 @@
 
 namespace stone {
 
+/// \brief ModuleContext manages the core shared state required for building and
+/// analyzing a Stone module.
+///
+/// It owns references to the memory allocator, identifier table, and
+/// diagnostics engine, and provides access to built-in types and identifiers.
 class ModuleContext final {
-  MemoryManager &memory;
+  Memory &memory;
   IdentifierTable &identifiers;
   DiagnosticEngine &diags;
 
 public:
-  // Declare the set of builtin identifiers.
+  /// Built-in primitive types (e.g., `BuiltinInt32Type`)
 #define BUILTIN_TYPE(ID, Parent) const Type *Builtin##ID##Type;
 #include "stone/AST/TypeNode.def"
 
-  // Declare the set of builtin identifiers.
+  /// Built-in reserved identifiers (e.g., `BuiltinIfIdentifier`, etc.)
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
   Identifier Builtin##Name##Identifier;
 #include "stone/AST/BuiltinIdentifiers.def"
+
+  /// \returns The canonicalized Identifier for a given string.
   Identifier GetIdentifier(llvm::StringRef text) const;
 
 public:
-  ModuleContext(MemoryManager &memory, IdentifierTable &identifiers,
+  /// \brief Constructs a ModuleContext with shared infrastructure.
+  ModuleContext(Memory &memory, IdentifierTable &identifiers,
                 DiagnosticEngine &diags);
 
-public:
-  MemoryManager &GetMemory() { return memory; }
+  /// \returns The memory manager used for AST and type allocation.
+  Memory &GetMemory() { return memory; }
+
+  /// \returns A canonical Identifier for the given name.
   Identifier GetIdentifier(llvm::StringRef name);
+
+  /// \returns The diagnostics engine for emitting errors, warnings, and notes.
   DiagnosticEngine &GetDiags() { return diags; }
 };
 
 } // namespace stone
 
-#endif // LANG_MODULE_CONTEXT_H
+#endif // STONE_AST_MODULECONTEXT_H

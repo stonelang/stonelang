@@ -2,10 +2,6 @@
 #define TYPE(ID, Parent)
 #endif
 
-#ifndef ABSTRACT_TYPE
-#define ABSTRACT_TYPE(ID, Parent)
-#endif
-
 #ifndef TYPE_RANGE
 #define TYPE_RANGE(ID, First, Last) /* Specify range metadata */
 #endif
@@ -18,37 +14,49 @@
 TYPE(Fun,   Type)
 TYPE(Void,  Type)
 TYPE(Int,   Type)
+TYPE(Int8,  Type)
+TYPE(Int16, Type)
+TYPE(Int32, Type)
+TYPE(Int64, Type)
+TYPE(Int128, Type)
 TYPE(UInt,  Type)
-TYPE(Float, Type)
+TYPE(UInt8, Type)
+TYPE(UInt16, Type)
+TYPE(UInt32, Type)
+TYPE(UInt64, Type)
+TYPE(UInt128, Type)
+TYPE(Float,   Type)
+TYPE(Float16, Type)
+TYPE(Float32, Type)
+TYPE(Float64, Type)
+TYPE(Float128,Type)
+
 TYPE(Bool,  Type)
 TYPE(Char,  Type)
 TYPE(Null,  Type)
 TYPE(String,Type)
 
 // === Nominal Types (user-defined) ===
-ABSTRACT_TYPE(Nominal, Type)
-  TYPE(Enum,     NominalType)
-  TYPE(Struct,   NominalType)
-  TYPE(Interface, NominalType)
-  TYPE_RANGE(Nominal, Enum, Interface)
+TYPE(Enum,     Type)
+TYPE(Struct,   Type)
+TYPE(Interface, Type)
+TYPE_RANGE(Nominal, Enum, Interface)
 
 // === Magic Types (syntactic sugar, non-canonical) ===
-ABSTRACT_TYPE(Magic, Type)
-  TYPE(Alias, MagicType)
-  TYPE(Auto,  MagicType)
-  TYPE_RANGE(Magic, Alias, Auto)
+TYPE(Alias, Type)
+TYPE(Auto,  Type)
+TYPE_RANGE(Magic, Alias, Auto)
 
-// === Access Types (non-boxable, modifiers) ===
-ABSTRACT_TYPE(Access, Type)
-  TYPE(Ptr, AccessType)
-  TYPE(Ref, AccessType)
-  TYPE_RANGE(Access, Ptr, Ref)
+// === Access Types (non-boxable, modifiers) === 
+TYPE(Ptr, Type)
+TYPE(Ref, Type)
+TYPE_RANGE(Access, Ptr, Ref)
 
 // === Aggregate Types (compound layout) ===
-ABSTRACT_TYPE(Aggregate, Type)
-TYPE(ArrayType,    AggregateType)
-TYPE(TupleType,    AggregateType)
-TYPE(VariadicType, AggregateType)
+ 
+TYPE(ArrayType,    Type)
+TYPE(TupleType,    Type)
+TYPE(VariadicType, Type)
 TYPE_RANGE(Aggregate, ArrayType, VariadicType)
 
 // === Final Tag ===
@@ -56,6 +64,5 @@ LAST_TYPE(VariadicType)
 
 // === Cleanup ===
 #undef TYPE
-#undef ABSTRACT_TYPE
 #undef TYPE_RANGE
 #undef LAST_TYPE

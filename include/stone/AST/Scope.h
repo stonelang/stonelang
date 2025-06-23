@@ -1,11 +1,9 @@
 #ifndef STONE_AST_SCOPE_H
 #define STONE_AST_SCOPE_H
 
-#include "stone/AST/Artifact.h"
 #include "stone/AST/Decl.h"
-
 #include "stone/AST/Identifier.h"
-#include "stone/AST/MemoryAllocation.h"
+#include "stone/AST/Allocation.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -58,7 +56,7 @@ using ScopeList = llvm::SmallVector<Scope *, 16>;
 //   // Decl *Lookup(Identifier id);
 // };
 
-class Scope : public Artifact {
+class Scope : public Allocation<Scope> {
   Scope *parent = nullptr;
   llvm::DenseMap<Identifier, Decl *> symbols;
 
@@ -68,17 +66,11 @@ public:
 public:
   Decl *Find(Identifier identifier) const;
   void Add(Decl *member) {
-    // symbols[member->GetDeclState()->GetIdentifier()] = member;
+    // symbols[member->GetDeclFlight()->GetIdentifier()] = member;
   }
-
-  ArtifactKind GetArtifactKind() const override { return ArtifactKind::Scope; }
   Scope *GetParent() const { return parent; }
 
 public:
-  static bool classof(const Artifact *artifact) {
-    return artifact->GetArtifactKind() == ArtifactKind::Scope;
-  }
-
   /// Debug dump (to be implemented later)
   void Dump() const;
 

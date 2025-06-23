@@ -7,45 +7,13 @@ namespace stone {
 
 enum class StmtKind : uint8_t {
   None = 0,
-  // Core block and control flow
-  Brace,
-  Return,
-  Defer,
-  Case,
-  Break,
-  Free,
-  Continue,
+#define EXPR(ID, Parent) ID,
+#define LAST_EXPR(ID) Count = ID,
+#define EXPR_RANGE(ID, FirstID, LastID)                                        \
+  First##ID##Stmt = FirstID, Last##ID##Stmt = LastID,
+#include "stone/AST/StmtNode.def"
 
-  // Conditional statements
-  If,
-  Else,
-
-  // Labeled control flow
-  For,
-  Match,
-
-  // Exception handling
-  Raise,
-  Catch,
-  Next,
-
-  // Always last
-  Count
 };
-
-// === Range markers for grouping ===
-
-constexpr StmtKind FirstStmt = StmtKind::Brace;
-
-// Conditional statements (LabeledConditionalStmt)
-constexpr StmtKind FirstConditional = StmtKind::If;
-constexpr StmtKind LastConditional = StmtKind::Else;
-
-// Labeled statements (LabeledStmt)
-constexpr StmtKind FirstLabeled = StmtKind::If;
-constexpr StmtKind LastLabeled = StmtKind::Match;
-
-constexpr StmtKind LastStmt = StmtKind::Next;
 
 } // namespace stone
 

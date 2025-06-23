@@ -1,11 +1,11 @@
 #include "stone/Frontend/Frontend.h"
-#include "stone/Support/Options.h"
+#include "stone/Core/Options.h"
 
 using namespace stone;
 
 Frontend::Frontend(llvm::StringRef executablePath,
                    llvm::StringRef executableNam)
-    : astMemory(std::make_unique<MemoryManager>()) {
+    : astMemory(std::make_unique<Memory>()) {
   frontendOpts.langOpts.MainExecutablePath = executablePath;
   frontendOpts.langOpts.MainExecutableName = executableNam;
 }

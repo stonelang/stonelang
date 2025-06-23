@@ -1,14 +1,16 @@
 #include "stone/AST/Module.h"
 #include "stone/AST/ModuleContext.h"
-#include "stone/AST/ModuleFile.h"
+#include "stone/AST/File.h"
 #include "stone/AST/Type.h"
-#include "stone/AST/TypeState.h"
+#include "stone/AST/TypeFlight.h"
+#include "stone/AST/UnderlyingNode.h"
 
 using namespace stone;
 
-Module::Module(ModuleContext &context) : context(context) {}
+Module::Module(ModuleContext &context)
+    :  Base(nullptr), context(context) {}
 
-ModuleFile *Module::GetFirstFile() const {
+File *Module::GetFirstFile() const {
   assert(!files.empty() && "Module has no module files!");
   return files.front();
 }

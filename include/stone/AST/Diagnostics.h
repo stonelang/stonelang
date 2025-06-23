@@ -3,10 +3,10 @@
 
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Type.h"
-#include "stone/Support/DiagnosticOptions.h"
-#include "stone/Support/Lexing.h"
-#include "stone/Support/SrcLoc.h"
-#include "stone/Support/Version.h"
+#include "stone/Core/DiagnosticOptions.h"
+#include "stone/Core/Lexing.h"
+#include "stone/Core/SrcLoc.h"
+#include "stone/Core/Version.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"
@@ -29,7 +29,7 @@ namespace stone {
 
 class Decl;
 class Type;
-class TypeState;
+class TypeFlight;
 class ConstructorDecl;
 class FuncDecl;
 class AliasDecl;
@@ -95,7 +95,7 @@ struct FullyQualified<
     T,
     typename std::enable_if<std::is_convertible<T, stone::Type>::value>::type> {
   stone::Type t;
-  // TODO: TypeState
+  // TODO: TypeFlight
 public:
   FullyQualified(T t) : t(t){};
   stone::Type getType() const { return t; }
@@ -109,7 +109,7 @@ enum class DiagnosticArgumentKind : uint8_t {
   Unsigned,
   Identifier,
   Decl,
-  TypeState,
+  TypeFlight,
   VersionTuple,
   Diagnostic,
   ClangDecl
@@ -237,7 +237,7 @@ class DiagnosticArgument final {
     StringRef StringVal;
     Identifier IdentifierVal;
     const Decl *DeclVal;
-    TypeState *TypeStateVal;
+    TypeFlight *TypeFlightVal;
     DiagnosticInfo *DiagnosticVal;
     llvm::VersionTuple VersionVal;
     const clang::NamedDecl *ClangDecl;
@@ -262,8 +262,8 @@ public:
   DiagnosticArgument(const Decl *D)
       : Kind(DiagnosticArgumentKind::Decl), DeclVal(D) {}
 
-  DiagnosticArgument(TypeState *T)
-      : Kind(DiagnosticArgumentKind::TypeState), TypeStateVal(T) {}
+  DiagnosticArgument(TypeFlight *T)
+      : Kind(DiagnosticArgumentKind::TypeFlight), TypeFlightVal(T) {}
 
   DiagnosticArgument(llvm::VersionTuple V)
       : Kind(DiagnosticArgumentKind::VersionTuple), VersionVal(V) {}
@@ -313,9 +313,9 @@ public:
     return DeclVal;
   }
 
-  TypeState *getAsTypeState() const {
-    assert(Kind == DiagnosticArgumentKind::TypeState);
-    return TypeStateVal;
+  TypeFlight *getAsTypeFlight() const {
+    assert(Kind == DiagnosticArgumentKind::TypeFlight);
+    return TypeFlightVal;
   }
 
   llvm::VersionTuple getAsVersionTuple() const {

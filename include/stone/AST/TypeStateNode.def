@@ -1,14 +1,14 @@
 
 /// TYPESTATE(Id, Parent)
-///   The TypeState's enumerator value is TypeStateKind::Id.  The TypeState's
-///   class name is Id##TypeState, and the name of its base class is Parent.
+///   The TypeFlight's enumerator value is TypeFlightKind::Id.  The TypeFlight's
+///   class name is Id##TypeFlight, and the name of its base class is Parent.
 #ifndef TYPESTATE
-# error Included TypeStateNode.def without defining TYPESTATE!
+# error Included TypeFlightNode.def without defining TYPESTATE!
 #endif
 
 /// An abstract node is an abstract base class in the hierarchy;
 /// it is never a most-derived type, and it does not have an enumerator in
-/// TypeStateKind.
+/// TypeFlightKind.
 ///
 /// Most metaprograms do not care about abstract classes, so the default
 /// is to ignore them.
@@ -18,7 +18,7 @@
 
 /// SPECIFIER_TYPESTATE(Id, Parent)
 ///
-/// A specific TypeState that's a child of SpecifierTypeState.
+/// A specific TypeFlight that's a child of SpecifierTypeFlight.
 #ifndef SPECIFIER_TYPESTATE
 #define SPECIFIER_TYPESTATE TYPESTATE
 #endif
@@ -27,16 +27,16 @@
 #define LAST_TYPESTATE(Id)
 #endif
   
-TYPESTATE(Module,   TypeState)
-TYPESTATE(Function, TypeState)
-TYPESTATE(Builtin, TypeState)
-TYPESTATE(Nominal, TypeState)
+TYPESTATE(Module,   TypeFlight)
+TYPESTATE(Function, TypeFlight)
+TYPESTATE(Builtin, TypeFlight)
+TYPESTATE(Nominal, TypeFlight)
 
-ABSTRACT_TYPESTATE(Identifier, TypeState)
-  TYPESTATE(Normal, IdentifierTypeState)
-  TYPESTATE(Ptr, IdentifierTypeState)
-  TYPESTATE(Ref, IdentifierTypeState)
-  TYPESTATE(Ref, IdentifierTypeState)
+ABSTRACT_TYPESTATE(Identifier, TypeFlight)
+  TYPESTATE(Normal, IdentifierTypeFlight)
+  TYPESTATE(Ptr, IdentifierTypeFlight)
+  TYPESTATE(Ref, IdentifierTypeFlight)
+  TYPESTATE(Ref, IdentifierTypeFlight)
 
 
 LAST_TYPESTATE(Function)

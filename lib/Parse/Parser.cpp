@@ -2,6 +2,6 @@
 
 using namespace stone;
 
-Parser::Parser(ModuleFile &file)
+Parser::Parser(File &file)
     : file(file), lexer(std::make_unique<Lexer>(file.GetBufferID(),
                                                 file.GetDiags().GetSrcMgr())) {}

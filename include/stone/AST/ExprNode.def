@@ -1,35 +1,7 @@
-/// A subclass of LabeledStmt.  Forwards to STMT by default.
 #ifndef EXPR
-#define EXPR(Id, Parent) STMT(Id, Parent)
+#define EXPR(Id, Parent)
 #endif
 
-/// An abstract expression node is an abstract base class in the hierarchy;
-/// it is never a most-derived type, and it does not have an enumerator in
-/// ExprKind.
-///
-/// Most metaprograms do not care about abstract expressions, so the default
-/// is to ignore them.
-#ifndef ABSTRACT_EXPR
-#define ABSTRACT_EXPR(Id, Parent)
-#endif
-
-/// A literal expression node represents a literal value, such as a number,
-/// boolean, string, etc.
-///
-/// By default, these are treated like any other expression.
-#ifndef LIT_EXPR
-#define LIT_EXPR(Id, Parent) EXPR(Id, Parent)
-#endif
-
-/// A expression node with a DeclContext. For example: closures.
-///
-/// By default, these are treated like any other expression.
-#ifndef CTX_EXPR
-#define CTX_EXPR(Id, Parent) EXPR(Id, Parent)
-#endif
-
-/// A convenience for determining the range of expressions.  These will always
-/// appear immediately after the last member.
 #ifndef EXPR_RANGE
 #define EXPR_RANGE(Id, First, Last)
 #endif
@@ -38,30 +10,30 @@
 #define LAST_EXPR(Id)
 #endif
 
-EXPR(New,  Expr)
-EXPR(This, Expr)
-EXPR(Call, Expr)
-EXPR(Paren, Expr)
-ABSTRACT_EXPR(Literal, Expr)
-LIT_EXPR(NullLiteral, LiteralExpr)
-ABSTRACT_EXPR(BuiltinLiteral, LiteralExpr)
-LIT_EXPR(BooleanLiteral, BuiltinLiteralExpr)
-LIT_EXPR(StringLiteral, BuiltinLiteralExpr)
-ABSTRACT_EXPR(NumberLiteral, BuiltinLiteralExpr)
-LIT_EXPR(IntegerLiteral, NumberLiteralExpr)
-LIT_EXPR(FloatLiteral, NumberLiteralExpr)
-ABSTRACT_EXPR(AbstractClosure, Expr)
-CTX_EXPR(Closure, AbstractClosureExpr)
+//= Core expression kinds =//
+EXPR(New,             Expr)
+EXPR(This,            Expr)
+EXPR(Call,            Expr)
+EXPR(Paren,           Expr)
 
+//= Literal expressions =//
+EXPR(NullLiteral,     Expr)
+EXPR(BooleanLiteral,  Expr)
+EXPR(StringLiteral,   Expr)
+EXPR(IntegerLiteral,  Expr)
+EXPR(FloatLiteral,    Expr)
+EXPR_RANGE(LiteralExpr, NullLiteral, FloatLiteral)
 
-EXPR(IfSemi, Expr)     
-EXPR(CodeCompletion, Expr)
-EXPR(Type, Expr)
+//= Contextual expression (closure) =//
+EXPR(Closure,         Expr)
+EXPR_RANGE(ContextualExpr, Closure, Closure)
+
+//= Other expressions =//
+EXPR(IfSemi,          Expr)
+EXPR(CodeCompletion,  Expr)
+EXPR(Type,            Expr)
 LAST_EXPR(Type)
 
 #undef EXPR_RANGE
-#undef LIT_EXPR
-#undef ABSTRACT_EXPR
-#undef CTX_EXPR
 #undef EXPR
 #undef LAST_EXPR

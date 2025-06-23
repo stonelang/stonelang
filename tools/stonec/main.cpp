@@ -1,6 +1,6 @@
 #include "stone/Driver/Run.h"
-#include "stone/Support/LLVMInit.h"
-#include "stone/Support/MainExecutablePath.h"
+#include "stone/Core/LLVMInit.h"
+#include "stone/Core/MainExecutablePath.h"
 
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/InitLLVM.h"

@@ -19,6 +19,9 @@ DECL(Just,     Decl)
 DECL(IfConfig, Decl)
 DECL(Macro,    Decl)
 
+// === Binding Declarations ===
+DECL(Var,   Decl)
+
 // === Type Declarations ===
 DECL(Alias,     Decl)
 DECL(Struct,    Decl)
@@ -36,10 +39,6 @@ DECL(PrefixOperator,  Decl)
 DECL(PostfixOperator, Decl)
 DECL_RANGE(Operator, NewOperator, PostfixOperator)
 
-// === Binding Declarations ===
-DECL(Var,   Decl)
-DECL(Param, Decl)
-DECL_RANGE(Binding, Var, Param)
 
 // === Final Tag ===
 LAST_DECL(Macro)

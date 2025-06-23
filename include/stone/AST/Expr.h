@@ -1,84 +1,65 @@
 #ifndef STONE_AST_EXPR_H
 #define STONE_AST_EXPR_H
 
+#include "stone/AST/ExprKind.h"
 #include "stone/AST/Node.h"
+#include "stone/AST/NodeKind.h"
 
 namespace stone {
+class ExprFlight;
 
-enum class ExprKind : uint8_t {
-#define EXPR(Id, Parent) Id,
-#define LAST_EXPR(Id) Last_Expr = Id,
-#define EXPR_RANGE(Id, FirstId, LastId)                                        \
-  First_##Id##Expr = FirstId, Last_##Id##Expr = LastId,
-#include "stone/AST/ExprNode.def"
+/// \brief The base class for all expression nodes in the AST.
+///
+/// Each expression node is tagged with an `ExprKind` and participates in
+/// the node hierarchy using `NodeKind::Expr`. Subclasses are defined via
+/// macro expansion using `ExprNode.def`.
+class alignas(8) Expr : public Node<NodeKind::Expr, Expr> {
+  using Base = Node<NodeKind::Expr, Expr>;
 
-};
-
-class alignas(8) Expr : public Node {
-  ExprKind kind;
-
-public:
-  Expr() = delete;
-  Expr(const Expr &) = delete;
-  Expr(Expr &&) = delete;
-  Expr &operator=(const Expr &) = delete;
-  Expr &operator=(Expr &&) = delete;
+  ExprFlight *flight = nullptr;
 
 public:
-  Expr(ExprKind kind);
+  using Base::Base;
+  /// \brief Constructs an expression node of a given kind.
+  explicit Expr(ExprFlight *flight);
 
-  // ExprKind kind, Type qualTy, ExprValueKind VK, ExprObjectKind OK
+  /// \brief Returns the kind of this expression.
+  ExprKind GetKind() const;
 
-public:
-  ExprKind GetKind() const { return kind; }
-  ArtifactKind GetArtifactKind() const override { return ArtifactKind::Expr; }
-  /// This recursively walks the AST rooted at this expression.
-  // Expr *Walk(Walker &walker);
-  // Expr *Walk(Walker &&walker) { return Walk(walker); }
+  /// \brief LLVM-style RTTI: Returns true if the node is an expression.
+  static bool classof(const Expr *expr) {
+    return expr->GetKind() >= FirstExpr && expr->GetKind() <= LastExpr;
+  }
 
-public:
-  // static bool classof(const Expr *E) {
-  //   return D->GetKind() >= ExprKind::FirstValueDecl &&
-  //          D->GetKind() <= ExprKind::LastValueDecl;
-  // }
-  static bool classof(const Artifact *artifact) {
-    return artifact->GetArtifactKind() == ArtifactKind::Expr;
+  /// \brief LLVM-style RTTI: Returns true if the node is an Expr.
+  static bool classof(const Node *node) {
+    return node->GetKind() == NodeKind::Expr;
   }
 };
 
-class NewExpr final : public Expr {
+/// \brief Defines a concrete Expr subclass corresponding to each ExprKind.
+///
+/// This macro generates a final class for every expression kind defined in
+/// `ExprNode.def`. Each subclass wraps an `ExprKind`, passed to the base
+/// `Expr` constructor. A `classof` method is also provided for LLVM-style RTTI.
+///
+/// Example Expansion:
+/// \code
+/// class CallExpr final : public Expr {
+/// public:
+///   explicit CallExpr(ExprKind kind) : Expr(kind) {}
+///   static bool classof(const Expr *E);
+/// };
+/// \endcode
+#define EXPR(ID, Parent)                                                       \
+  class ID##Expr final : public Parent {                                       \
+  public:                                                                      \
+    explicit ID##Expr(ExprFlight *flight) : Parent(flight) {}                  \
+    static bool classof(const Expr *E);                                        \
+  };
 
-public:
-  NewExpr() : Expr(ExprKind::New) {}
-};
-
-class ParmetricExpr : public Expr {
-public:
-};
-
-class IfExpr : public ParmetricExpr {
-public:
-};
-
-class MatchExpr : public ParmetricExpr {
-public:
-};
-
-class UniqueExpr : public ParmetricExpr {
-public:
-};
-
-// if: error then "error"
-//                 else if warning then "warn"
-//                 else if debug then "debug"
-//                 else "ok";
-
-// auto result = match[ value
-//     case a then true
-//     case b then false
-//     else       null;
-// match: val case 1 then "one" case 2 then "many"];
+#include "stone/AST/ExprNode.def"
 
 } // namespace stone
 
-#endif
+#endif // STONE_AST_EXPR_H

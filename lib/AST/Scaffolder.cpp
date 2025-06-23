@@ -11,7 +11,7 @@ void Scaffolder::ScaffoldDecl(Decl *D) {}
 void Scaffolder::ScaffoldSpaceDecl(SpaceDecl *MD) {}
 
 void FullScaffoldingEvaluator::Evaluate(Decl *D) {
-  // D->GetState()->GetASTSession().CreateScafolder().ScaffoldSpaceDecl(D);
+  // D->GetFlight()->GetASTSession().CreateScafolder().ScaffoldSpaceDecl(D);
 }
 
 void ShallowValidationEvaluator::Evaluate(Decl *D) {}

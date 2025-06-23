@@ -5,14 +5,14 @@ set(LLVM_LINK_COMPONENTS
  )
 
 set(stone_ast_sources
-	Artifact.cpp
 	Decl.cpp
+	DeclFlight.cpp
 	Identifier.cpp
 	Module.cpp
 	ModuleContext.cpp
-	ModuleFile.cpp
+	File.cpp
 	Node.cpp
-	DeclState.cpp
+	DeclFlight.cpp
 	Diagnostics.cpp
 	DiagnosticID.cpp
 	EvaluatorEngine.cpp
@@ -22,11 +22,11 @@ set(stone_ast_sources
 	Stmt.cpp
 	Type.cpp
 	Logic.cpp
-	TypeState.cpp
+	TypeFlight.cpp
 	Visibility.cpp
 
 	LINK_LIBS
-	StoneSupport
+	StoneCore
 
 )
 add_stone_library(StoneAST

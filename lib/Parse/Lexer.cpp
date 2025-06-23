@@ -2,7 +2,7 @@
 #include "stone/AST/DiagnosticsParse.h"
 #include "stone/AST/Identifier.h"
 #include "stone/Parse/Confusable.h"
-#include "stone/Support/SrcMgr.h"
+#include "stone/Core/SrcMgr.h"
 
 #include "clang/Basic/CharInfo.h"
 
@@ -59,6 +59,8 @@ static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
         char(0x80 | (0x3F & (CharValue >> (NumTrailingBytes * 6)))));
   return false;
 }
+
+
 
 /// CLO8 - Return the number of leading ones in the specified 8-bit value.
 static unsigned CLO8(unsigned char C) {
@@ -610,7 +612,7 @@ tok Lexer::kindOfIdentifier(llvm::StringRef tokStr) {
 #define KEYWORD(kw)                                                            \
   if (tokStr == #kw)                                                           \
     return tok::kw_##kw;
-#include "stone/Support/TokenKind.def"
+#include "stone/Core/TokenKind.def"
 
   return tok::identifier;
 }
@@ -646,7 +648,7 @@ void Lexer::lexHash() {
   // Map the character sequence onto
   tok Kind = llvm::StringSwitch<tok>(StringRef(CurPtr, tmpPtr - CurPtr))
 #define POUND_KEYWORD(id) .Case(#id, tok::pound_##id)
-#include "stone/Support/TokenKind.def"
+#include "stone/Core/TokenKind.def"
                  .Default(tok::pound);
 
   // If we didn't find a match, then just return tok::pound.  This is highly

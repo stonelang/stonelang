@@ -1,27 +1,27 @@
 #ifndef STONE_FRONTEND_FRONTEND_OPTIONS_H
 #define STONE_FRONTEND_FRONTEND_OPTIONS_H
 
-#include "stone/Support/InputFile.h"
-#include "stone/Support/LangOptions.h"
-#include "stone/Support/OutputPaths.h"
+#include "stone/Core/Src.h"
+#include "stone/Core/LangOptions.h"
+#include "stone/Core/OutputPaths.h"
 #include <vector>
 
 namespace stone {
 
-class FrontendInputFile final : public InputFile {
+class FrontendSrc final : public Src {
   friend class Frontend;
   friend class FrontendOptions;
 
   FileSpecificPaths fileSpecificPaths;
 
 public:
-  FrontendInputFile(llvm::StringRef file,
+  FrontendSrc(llvm::StringRef file,
                     llvm::MemoryBuffer *memoryBuffer = nullptr)
-      : InputFile(file, memoryBuffer) {}
+      : Src(file, memoryBuffer) {}
 
-  FrontendInputFile(llvm::StringRef file, stone::FileType fileType,
+  FrontendSrc(llvm::StringRef file, stone::FileType fileType,
                     llvm::MemoryBuffer *memoryBuffer = nullptr)
-      : InputFile(file, fileType, memoryBuffer) {}
+      : Src(file, fileType, memoryBuffer) {}
 
 public:
   /// Get the output paths for this file.
@@ -31,7 +31,7 @@ public:
 enum class FrontendAction : uint8_t {
   None = 0,
 #define FRONTEND_ACTION(A) A,
-#include "stone/Support/Action.def"
+#include "stone/Core/Action.def"
 };
 
 class FrontendOptions final {
@@ -44,13 +44,13 @@ public:
   /// The base set of options
   LangOptions CurrentLangOpts;
 
-  std::vector<FrontendInputFile> Inputs;
+  std::vector<FrontendSrc> Inputs;
 
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool MustParseAsStdLib = false;
 
   /// Indicates that we must process duplicate files
-  bool MustProcessDuplicateInputFile = false;
+  bool MustProcessDuplicateSrc = false;
 
   /// In Single-threaded WMO action, all inputs are used
   /// both for importing and compiling.
@@ -67,21 +67,21 @@ public:
   void AddInput(llvm::StringRef file, llvm::MemoryBuffer *buffer = nullptr);
 
   /// Add an input.
-  void AddInput(const FrontendInputFile input);
+  void AddInput(const FrontendSrc input);
 
   /// Clear all input files
   void ClearInputs();
 
   /// If \p fn returns true, exits early and returns true.
   bool
-  ForEachInput(std::function<bool(const FrontendInputFile &)> callback) const;
+  ForEachInput(std::function<bool(const FrontendSrc &)> callback) const;
 
-  llvm::ArrayRef<FrontendInputFile> GetInputs() const { return inputs; }
+  llvm::ArrayRef<FrontendSrc> GetInputs() const { return inputs; }
   unsigned NumOfInputs() const { return inputs.size(); }
   bool HasInputs() const { return !inputs.empty(); }
-  const FrontendInputFile &GetFirstInput() const { return inputs[0]; }
-  FrontendInputFile &GetFirstInput() { return inputs[0]; }
-  const FrontendInputFile &GetLastInput() const { return inputs.back(); }
+  const FrontendSrc &GetFirstInput() const { return inputs[0]; }
+  FrontendSrc &GetFirstInput() { return inputs[0]; }
+  const FrontendSrc &GetLastInput() const { return inputs.back(); }
 
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
@@ -120,7 +120,7 @@ public:
   /// \return true if this is any action.
   static bool IsAnyAction(FrontendAction action);
 
-  void ForAllOutputPaths(const FrontendInputFile &input,
+  void ForAllOutputPaths(const FrontendSrc &input,
                          std::function<void(StringRef)> callbac) const;
 };
 

@@ -6,10 +6,10 @@
 #include "stone/Frontend/FrontendMemoryBuffers.h"
 #include "stone/Frontend/FrontendObserver.h"
 #include "stone/Frontend/FrontendOptions.h"
-#include "stone/Support/CodeGenOptions.h"
-#include "stone/Support/DiagnosticOptions.h"
-#include "stone/Support/LangOptions.h"
-#include "stone/Support/Status.h"
+#include "stone/Core/CodeGenOptions.h"
+#include "stone/Core/DiagnosticOptions.h"
+#include "stone/Core/LangOptions.h"
+#include "stone/Core/Status.h"
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/FileSystemOptions.h"
@@ -31,7 +31,7 @@ class Frontend final {
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
   FrontendObserver *observer;
 
-  std::unique_ptr<MemoryManager> astMemory;
+  std::unique_ptr<Memory> astMemory;
   std::unique_ptr<ClangImporter> clangImporter;
 
 public:
