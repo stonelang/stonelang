@@ -1,8 +1,8 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/AST/DiagnosticsParse.h"
 #include "stone/AST/Identifier.h"
-#include "stone/Parse/Confusable.h"
 #include "stone/Core/SrcMgr.h"
+#include "stone/Parse/Confusable.h"
 
 #include "clang/Basic/CharInfo.h"
 
@@ -59,8 +59,6 @@ static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
         char(0x80 | (0x3F & (CharValue >> (NumTrailingBytes * 6)))));
   return false;
 }
-
-
 
 /// CLO8 - Return the number of leading ones in the specified 8-bit value.
 static unsigned CLO8(unsigned char C) {

@@ -9,8 +9,7 @@ using namespace stone;
 using stone::Token;
 
 SrcUnit SrcMgr::CreateSrcUnit(llvm::StringRef fileName) {
-  llvm::StringRef normalizedName =
-      fileName.equals("<stdin>") ? "-" : fileName;
+  llvm::StringRef normalizedName = fileName.equals("<stdin>") ? "-" : fileName;
 
   if (auto existingID = getIDForBufferIdentifier(normalizedName)) {
     return SrcUnit(normalizedName, *existingID);
@@ -19,13 +18,12 @@ SrcUnit SrcMgr::CreateSrcUnit(llvm::StringRef fileName) {
   auto bufferOrErr = llvm::MemoryBuffer::getFileOrSTDIN(fileName);
   if (!bufferOrErr) {
     // bufferID = 0 => invalid
-    return SrcUnit(normalizedName); 
+    return SrcUnit(normalizedName);
   }
 
   unsigned bufferID = addNewSourceBuffer(std::move(*bufferOrErr));
   return SrcUnit(normalizedName, bufferID);
 }
-
 
 void SrcMgr::verifyAllBuffers() const {
   llvm::PrettyStackTraceString backtrace{

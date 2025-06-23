@@ -1,9 +1,9 @@
 #ifndef STONE_AST_SCOPE_H
 #define STONE_AST_SCOPE_H
 
+#include "stone/AST/Allocation.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/Allocation.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

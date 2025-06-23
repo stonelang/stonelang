@@ -1,10 +1,10 @@
 #ifndef STONE_AST_DECLINFLUENCER_H
 #define STONE_AST_DECLINFLUENCER_H
 
+#include "stone/AST/Alignments.h"
+#include "stone/AST/Allocation.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/Allocation.h"
-#include "stone/AST/Alignments.h"
 #include "stone/AST/Visibility.h"
 #include "stone/Core/SrcLoc.h"
 

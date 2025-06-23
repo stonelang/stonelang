@@ -2,10 +2,6 @@
 #define STMT(ID, Parent)
 #endif
 
-#ifndef ABSTRACT_STMT
-#define ABSTRACT_STMT(ID, Parent)
-#endif
-
 #ifndef STMT_RANGE
 #define STMT_RANGE(ID, First, Last)
 #endif
@@ -25,13 +21,14 @@ STMT(Free,        Stmt)
 STMT(Continue,    Stmt)
 
 
+STMT(For,   Stmt)
+STMT(Match, Stmt)
+STMT_RANGE(LabeledStmt, If, Match)
+
 STMT(If,    Stmt)
 STMT(Else,  Stmt)
 STMT_RANGE(LabeledConditionalStmt, If, Else)
 
-STMT(For,   LabeledStmt)
-STMT(Match, LabeledStmt)
-STMT_RANGE(LabeledStmt, If, Match)
 
 STMT(Throw,       Stmt)
 STMT(Catch,       Stmt)
@@ -41,5 +38,4 @@ LAST_STMT(Next)
 // Undef macros to avoid leakage
 #undef STMT
 #undef STMT_RANGE
-#undef ABSTRACT_STMT
 #undef LAST_STMT

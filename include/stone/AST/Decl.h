@@ -1,11 +1,11 @@
 #ifndef STONE_AST_DECL_H
 #define STONE_AST_DECL_H
 
+#include "stone/AST/Alignments.h"
 #include "stone/AST/DeclKind.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Node.h"
 #include "stone/AST/NodeKind.h"
-#include "stone/AST/Alignments.h"
 #include "stone/Core/SrcLoc.h"
 
 #include "llvm/Support/Casting.h"

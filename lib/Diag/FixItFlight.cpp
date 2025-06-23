@@ -2,10 +2,11 @@
 
 namespace stone {
 
-#define FIXIT(ID, TEXT, SIG)                                                      \
-  static constexpr auto ID##Args = MakeFixItArgumentKindArray SIG ();             \
-  static const FixItFlight ID##FixFlight = {FixItID::ID, TEXT, ID##Args,          \
-                                            sizeof(ID##Args)/sizeof(DiagnosticArgumentKind)};
+#define FIXIT(ID, TEXT, SIG)                                                   \
+  static constexpr auto ID##Args = MakeFixItArgumentKindArray SIG();           \
+  static const FixItFlight ID##FixFlight = {                                   \
+      FixItID::ID, TEXT, ID##Args,                                             \
+      sizeof(ID##Args) / sizeof(DiagnosticArgumentKind)};
 
 #include "stone/Core/Diagnostics.def"
 

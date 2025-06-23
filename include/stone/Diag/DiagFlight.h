@@ -1,8 +1,8 @@
 #pragma once
 
 #include "DiagID.h"
-#include "FixItFlight.h"
 #include "DiagnosticArgumentKind.h"
+#include "FixItFlight.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -18,11 +18,9 @@ struct DiagFlight {
   DiagFlight &AddFixIt(FixItID id);
 };
 
-template <typename... ArgTypes>
-constexpr auto MakeArgumentKindArray() {
+template <typename... ArgTypes> constexpr auto MakeArgumentKindArray() {
   static constexpr DiagnosticArgumentKind kinds[] = {
-    DiagnosticArgumentKindOf<ArgTypes>::kind...
-  };
+      DiagnosticArgumentKindOf<ArgTypes>::kind...};
   return kinds;
 }
 

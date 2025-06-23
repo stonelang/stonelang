@@ -1,5 +1,5 @@
-#include "stone/Frontend/Frontend.h"
 #include "stone/Core/Options.h"
+#include "stone/Frontend/Frontend.h"
 
 using namespace stone;
 

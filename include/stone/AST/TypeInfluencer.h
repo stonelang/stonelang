@@ -5,11 +5,11 @@
 // Includes
 //===----------------------------------------------------------------------===//
 
+#include "stone/AST/Alignments.h"
+#include "stone/AST/Allocation.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/Allocation.h"
 #include "stone/AST/Memory.h"
-#include "stone/AST/Alignments.h"
 #include "stone/AST/Visibility.h"
 #include "stone/Core/SrcLoc.h"
 

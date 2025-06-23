@@ -1,9 +1,9 @@
 #ifndef STONE_AST_TYPE_H
 #define STONE_AST_TYPE_H
 
+#include "stone/AST/Alignments.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Node.h"
-#include "stone/AST/Alignments.h"
 #include "stone/AST/TypeKind.h"
 
 #include "llvm/ADT/APFloat.h"

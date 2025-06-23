@@ -5,6 +5,7 @@
 #include "stone/AST/StmtKind.h"
 
 namespace stone {
+class StmtFlight;
 
 /// \brief The base class for all statement nodes in the AST.
 ///
@@ -16,7 +17,7 @@ namespace stone {
 /// extended using flight metadata (`StmtFlight*`) if desired.
 class alignas(8) Stmt : public Node<NodeKind::Stmt, Stmt> {
   using Base = Node<NodeKind::Stmt, Stmt>;
-  ExprFlight *flight = nullptr;
+  StmtFlight *flight = nullptr;
 
 public:
   using Base::Base;

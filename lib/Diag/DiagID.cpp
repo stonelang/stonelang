@@ -2,11 +2,11 @@
 
 namespace stone::diag {
 
-#define DIAG(KIND, ID, Options, Text, Signature) \
-  detail::DiagWithArguments<void Signature>::type ID = { DiagID::ID };
+#define DIAG(KIND, ID, Options, Text, Signature)                               \
+  detail::DiagWithArguments<void Signature>::type ID = {DiagID::ID};
 
-#define FIXIT(ID, Text, Signature) \
-  detail::StructuredFixItWithArguments<void Signature>::type ID = { FixItID::ID };
+#define FIXIT(ID, Text, Signature)                                             \
+  detail::StructuredFixItWithArguments<void Signature>::type ID = {FixItID::ID};
 
 #include "stone/Core/Diagnostics.def"
 

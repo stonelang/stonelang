@@ -1,47 +1,52 @@
-set(stone_include_files
-	${STONE_SOURCE_DIR}/include/stone/*.h
-	${STONE_SOURCE_DIR}/include/stone/AST/*.h
-	${STONE_SOURCE_DIR}/include/stone/LLVM/*.h
-	${STONE_SOURCE_DIR}/include/stone/Compile/*.h
-	${STONE_SOURCE_DIR}/include/stone/Driver/*.h
-	${STONE_SOURCE_DIR}/include/stone/Frontend/*.h
-	${STONE_SOURCE_DIR}/include/stone/Parse/*.h
-	${STONE_SOURCE_DIR}/include/stone/Core/*.h
-	
-)
-set(stone_lib_files
-	${STONE_SOURCE_DIR}/lib/AST/*.cpp
-	${STONE_SOURCE_DIR}/lib/LLVM/*.cpp
-	${STONE_SOURCE_DIR}/lib/Compile/*.cpp
-	${STONE_SOURCE_DIR}/lib/Driver/*.cpp
-	${STONE_SOURCE_DIR}/lib/Frontend/*.cpp
-	${STONE_SOURCE_DIR}/lib/Parse/*.cpp	
-	${STONE_SOURCE_DIR}/lib/Core/*.cpp
-	
-)
-set(stone_tools_files
-	${STONE_SOURCE_DIR}/tools/stonec/*.cpp  
-	${STONE_SOURCE_DIR}/tools/stonef/*.cpp  
+#===--------------------------------------------------------------------===#
+# Stone Format Targets
+#===--------------------------------------------------------------------===#
+
+# Globs for include headers (grouped by subdir, merged into one variable)
+file(GLOB_RECURSE stone_include_files
+  ${STONE_SOURCE_DIR}/include/stone/*.h
+  ${STONE_SOURCE_DIR}/include/stone/AST/*.h
+  ${STONE_SOURCE_DIR}/include/stone/Basic/*.h
+  ${STONE_SOURCE_DIR}/include/stone/Compile/*.h
+  ${STONE_SOURCE_DIR}/include/stone/CodeGen/*.h
+  ${STONE_SOURCE_DIR}/include/stone/Driver/*.h
+  ${STONE_SOURCE_DIR}/include/stone/Diag/*.h
+  ${STONE_SOURCE_DIR}/include/stone/Lex/*.h
+  ${STONE_SOURCE_DIR}/include/stone/Parse/*.h
+  ${STONE_SOURCE_DIR}/include/stone/Core/*.h
 )
 
-set(stone_tests_files
-	#${STONE_SOURCE_DIR}/tests/units/AST/*.cpp 
-	#${STONE_SOURCE_DIR}/tests/units/Basic/*.cpp 
-	#${STONE_SOURCE_DIR}/tests/units/LLVM/*.cpp 
-	#${STONE_SOURCE_DIR}/tests/units/Compile/*.cpp 
-	#${STONE_SOURCE_DIR}/tests/units/Driver/*.cpp 
-	#${STONE_SOURCE_DIR}/tests/units/Parse/*.cpp 
-	
+# Globs for library sources (grouped by subdir, merged into one variable)
+file(GLOB_RECURSE stone_lib_files
+  ${STONE_SOURCE_DIR}/lib/AST/*.cpp
+  ${STONE_SOURCE_DIR}/lib/Basic/*.cpp
+  ${STONE_SOURCE_DIR}/lib/Compile/*.cpp
+  ${STONE_SOURCE_DIR}/lib/CodeGen/*.cpp
+  ${STONE_SOURCE_DIR}/lib/Driver/*.cpp
+  ${STONE_SOURCE_DIR}/lib/Diag/*.cpp
+  ${STONE_SOURCE_DIR}/lib/Lex/*.cpp
+  ${STONE_SOURCE_DIR}/lib/Parse/*.cpp
+  ${STONE_SOURCE_DIR}/lib/Core/*.cpp
 )
+
+# Globs for tool sources (optional)
+file(GLOB_RECURSE stone_tools_files
+  ${STONE_SOURCE_DIR}/tools/stonec/*.cpp
+  ${STONE_SOURCE_DIR}/tools/stonef/*.cpp
+)
+
+# Run clang-format on everything if available
 find_program(CLANG_FORMAT clang-format)
-	if(CLANG_FORMAT)
-	add_custom_target(
-		stone-format
-		clang-format
-		-i
-		-style=llvm
-		${stone_lib_files}
-		${stone_include_files}
-		${stone_tools_files}
-	)
+
+if(CLANG_FORMAT)
+  add_custom_target(stone-format
+    COMMAND ${CLANG_FORMAT} -i -style=llvm
+      ${stone_include_files}
+      ${stone_lib_files}
+      ${stone_tools_files}
+    VERBATIM
+    COMMENT "Formatting all Stone source files with clang-format"
+  )
+else()
+  message(STATUS "clang-format not found. Skipping stone-format target.")
 endif()

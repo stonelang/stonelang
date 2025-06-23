@@ -12,18 +12,19 @@
 #ifndef STONE_LEX_LEXER_H
 #define STONE_LEX_LEXER_H
 
-#include "stone/Core/SrcUnit.h"
 #include "stone/Core/SrcMgr.h"
+#include "stone/Core/SrcUnit.h"
 #include "stone/Diag/DiagID.h"
+#include "llvm/ADT/FunctionExtras.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
-#include "llvm/ADT/FunctionExtras.h"
 
 namespace stone {
 
 class LexerObserver;
 
-/// \brief Represents a saved lexical state, used for rewinding or nested lexing.
+/// \brief Represents a saved lexical state, used for rewinding or nested
+/// lexing.
 ///
 /// A `LexerState` captures the current position within a source buffer and any
 /// associated leading trivia. It enables resuming lexing from a specific point,
@@ -48,13 +49,16 @@ public:
 private:
   explicit LexerState(SrcLoc loc) : loc(loc) {}
 
-  SrcLoc loc;                     ///< The current byte-level location in the source.
-  llvm::StringRef leadingTrivia; ///< Optional trivia preceding a token (e.g., whitespace/comments).
+  SrcLoc loc; ///< The current byte-level location in the source.
+  llvm::StringRef leadingTrivia; ///< Optional trivia preceding a token (e.g.,
+                                 ///< whitespace/comments).
 
-  friend class Lexer; ///< Grants `Lexer` access to construct and manipulate `LexerState`.
+  friend class Lexer; ///< Grants `Lexer` access to construct and manipulate
+                      ///< `LexerState`.
 };
 
-/// \brief Specifies whether the lexer should accept a hashbang line (`#!`) at the start.
+/// \brief Specifies whether the lexer should accept a hashbang line (`#!`) at
+/// the start.
 enum class HashbangMode : bool {
   Disallowed, ///< Reject `#!` at the beginning of the file (default).
   Allowed     ///< Allow and skip over the hashbang line.
@@ -62,15 +66,15 @@ enum class HashbangMode : bool {
 
 /// \brief Controls how the lexer treats comments in the source buffer.
 enum class CommentRetentionMode {
-  None,               ///< Discard comments entirely.
-  AttachToNextToken,  ///< Store comment as metadata on the next token.
-  ReturnAsTokens      ///< Emit comments as separate tokens in the stream.
+  None,              ///< Discard comments entirely.
+  AttachToNextToken, ///< Store comment as metadata on the next token.
+  ReturnAsTokens     ///< Emit comments as separate tokens in the stream.
 };
 
 /// \brief Describes the style of conflict markers to detect in source.
 enum class ConflictMarkerKind {
-  Normal,   ///< Standard Git or diff3-style conflict markers.
-  Perforce  ///< Perforce-style conflict markers.
+  Normal,  ///< Standard Git or diff3-style conflict markers.
+  Perforce ///< Perforce-style conflict markers.
 };
 
 using TokenCallback = llvm::function_ref<void(const Token &)>;
@@ -79,8 +83,8 @@ using TokenCallback = llvm::function_ref<void(const Token &)>;
 ///
 /// `Lexer` scans characters from a `SrcUnit`, emitting tokens and collecting
 /// diagnostics. It supports nested lexing via `LexerState`, optional comment
-/// and trivia tracking, configurable conflict marker behavior, and observer-based
-/// side-effect hooks.
+/// and trivia tracking, configurable conflict marker behavior, and
+/// observer-based side-effect hooks.
 class Lexer final {
   SrcUnit unit;
   SrcMgr &sm;
@@ -116,7 +120,7 @@ class Lexer final {
 
   Token nextToken;
 
-   /// The location at which the comment of the next token starts. \c nullptr if
+  /// The location at which the comment of the next token starts. \c nullptr if
   /// the next token doesn't have a comment.
   const char *CommentStart;
 
@@ -144,7 +148,8 @@ public:
 
   /// Pull-style tokenization: emit the next token into `result`.
   ///
-  /// If the lexer has reached the end of the stream, `result` will contain an EOF token.
+  /// If the lexer has reached the end of the stream, `result` will contain an
+  /// EOF token.
   void Lex(Token &result);
 
   /// Push-style tokenization: emit all tokens to the provided callback.
@@ -152,7 +157,8 @@ public:
   /// This includes the final EOF token at the end.
   void Lex(TokenCallback callback);
 
-  /// Set an optional observer to track internal lexing events (e.g., trivia, diagnostics).
+  /// Set an optional observer to track internal lexing events (e.g., trivia,
+  /// diagnostics).
   void SetObserver(LexerObserver *observer);
 
   /// \returns the current observer, if any.
@@ -164,14 +170,13 @@ public:
   /// \returns a read-only view of diagnostic IDs encountered during lexing.
   llvm::ArrayRef<DiagID> GetIssues() const { return issues; }
 
-
 public:
-   /// Returns true if this lexer will produce a code completion token.
+  /// Returns true if this lexer will produce a code completion token.
   bool IsCodeCompletion() const { return CodeCompletionPtr != nullptr; }
 
-
 public:
-  /// Whether to allow and skip over a hashbang line (`#!`) at the top of the source file.
+  /// Whether to allow and skip over a hashbang line (`#!`) at the top of the
+  /// source file.
   HashbangMode HashbangAllowed = HashbangMode::Disallowed;
 
   /// Type of conflict markers to recognize and report.

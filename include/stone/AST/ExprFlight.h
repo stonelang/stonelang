@@ -1,10 +1,10 @@
 #ifndef STONE_AST_EXPRFLIGHT_H
 #define STONE_AST_EXPRFLIGHT_H
 
-#include "stone/AST/Allocation.h"
 #include "stone/AST/Alignments.h"
-#include "stone/AST/TypeInfluencer.h"
+#include "stone/AST/Allocation.h"
 #include "stone/AST/ExprKind.h"
+#include "stone/AST/TypeInfluencer.h"
 
 namespace stone {
 

@@ -37,7 +37,7 @@ DECL(FreeOperator,    Decl)
 DECL(InfixOperator,   Decl)
 DECL(PrefixOperator,  Decl)
 DECL(PostfixOperator, Decl)
-DECL_RANGE(Operator, NewOperator, PostfixOperator)
+DECL_RANGE(OperatorDecl, NewOperator, PostfixOperator)
 
 
 // === Final Tag ===

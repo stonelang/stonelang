@@ -97,12 +97,10 @@ llvm::StringRef GetFileStem(llvm::StringRef path);
 /// Get the file base
 llvm::StringRef GetFileBase(llvm::StringRef input);
 
-
 // // In a FileUtils.cpp or similar
 // llvm::StringRef TranslateFileName(llvm::StringRef name) {
 //   return name.equals("<stdin>") ? "-" : name;
 // }
-
 
 } // namespace stone
 

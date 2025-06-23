@@ -12,8 +12,6 @@
 namespace stone {
 
 class Module;
-class SpaceDecl;
-
 /// \brief Stages of semantic and code generation processing for a File.
 enum class FileStage : uint8_t {
   None = 1 << 0,
@@ -32,11 +30,11 @@ inline bool HasStage(FileStage current, FileStage check) {
 ///
 /// Each `File` is tied to a specific buffer, owns a list of top-level
 /// declarations, and tracks the semantic/codegen analysis stages.
-class File final : public Node {
+class File final : public Node<NodeKind::File, File> {
   SrcUnit unit;
-  Module &parent;          
+  Module &parent;
   Scope *scope = nullptr; ///< Top-level lexical scope (may be null early on)
-  std::vector<Decl *> topLevelDecls;             ///< Top-level declarations
+  std::vector<Decl *> topLevelDecls; ///< Top-level declarations
   FileStage stage = FileStage::None; ///< Processing stage flags
 
 public:
@@ -52,10 +50,10 @@ public:
   /// \returns The unique buffer ID associated with this file.
   unsigned GetBufferID() { return bufferID; }
 
-  /// \returns The SrcUnit that initiated this File 
+  /// \returns The SrcUnit that initiated this File
   SrcUnit GetSrcUnit() const { return srcUnit; }
 
-  /// \returns the parent of this file which is the module 
+  /// \returns the parent of this file which is the module
   Module &GetParent() { return parent; }
 
   /// \returns The associated top-level lexical scope.
@@ -75,7 +73,6 @@ public:
 
   /// \returns All top-level declarations in the file.
   llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
-
 
   /// \brief Dumps a human-readable representation of the module file to output.
   void Dump(llvm::raw_ostream &os) const;

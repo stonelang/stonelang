@@ -2,7 +2,7 @@
 
 namespace stone {
 
-#define DIAG(ID, CODE, TEXT, SIG) \
+#define DIAG(ID, CODE, TEXT, SIG)                                              \
   static DiagFlight ID##Flight = {DiagID::ID, CODE, TEXT};
 
 #include "stone/Core/Diagnostics.def"
@@ -25,16 +25,15 @@ DiagFlight &DiagFlight::AddFixIt(FixItID id) {
 
 } // namespace stone
 
-
-
 #include "FixItFlight.h"
 
 namespace stone {
 
-#define FIXIT(ID, TEXT, SIG)                                                      \
-  static constexpr auto ID##Args = MakeFixItArgumentKindArray SIG ();             \
-  static const FixItFlight ID##FixFlight = {FixItID::ID, TEXT, ID##Args,          \
-                                            sizeof(ID##Args)/sizeof(DiagnosticArgumentKind)};
+#define FIXIT(ID, TEXT, SIG)                                                   \
+  static constexpr auto ID##Args = MakeFixItArgumentKindArray SIG();           \
+  static const FixItFlight ID##FixFlight = {                                   \
+      FixItID::ID, TEXT, ID##Args,                                             \
+      sizeof(ID##Args) / sizeof(DiagnosticArgumentKind)};
 
 #include "stone/Core/Diagnostics.def"
 

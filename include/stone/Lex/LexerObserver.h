@@ -1,8 +1,8 @@
 #ifndef STONE_LEX_LEXER_OBSERVER_H
 #define STONE_LEX_LEXER_OBSERVER_H
 
-#include "stone/Diag/DiagID.h"
 #include "stone/Core/SrcLoc.h"
+#include "stone/Diag/DiagID.h"
 #include "llvm/ADT/StringRef.h"
 
 namespace stone {
@@ -10,8 +10,8 @@ namespace stone {
 class Token;
 /// \brief Interface for observing internal lexer events.
 ///
-/// Observers can be attached to the lexer to intercept trivia, token boundaries,
-/// errors, or special conditions such as conflict markers.
+/// Observers can be attached to the lexer to intercept trivia, token
+/// boundaries, errors, or special conditions such as conflict markers.
 class LexerObserver {
 public:
   virtual ~LexerObserver() = default;

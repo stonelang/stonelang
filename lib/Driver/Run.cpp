@@ -1,6 +1,6 @@
 #include "stone/Driver/Run.h"
-#include "stone/Driver/Driver.h"
 #include "stone/Core/LLVMInit.h"
+#include "stone/Driver/Driver.h"
 
 using namespace stone;
 

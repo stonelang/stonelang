@@ -1,10 +1,8 @@
 #ifndef STONE_AST_NODE_H
 #define STONE_AST_NODE_H
 
-
-#include "stone/AST/NodeKind.h"
 #include "stone/AST/Allocation.h"
-
+#include "stone/AST/NodeKind.h"
 
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/SmallVector.h"

@@ -16,25 +16,25 @@ namespace stone {
 /// - The input name `<stdin>` is normalized to `"-"` internally.
 /// - Only files with `.stone` extension or `"-"` are accepted when valid.
 class SrcUnit final {
-  unsigned bufferID;           ///< Source manager-assigned buffer ID (0 = invalid).
-  llvm::StringRef name;        ///< Normalized file name (e.g., "main.stone" or "-").
+  unsigned bufferID;    ///< Source manager-assigned buffer ID (0 = invalid).
+  llvm::StringRef name; ///< Normalized file name (e.g., "main.stone" or "-").
 public:
   /// \brief Constructs a `SrcUnit`. If `bufferID == 0`, the unit is invalid.
   ///
   /// \param inputName The file name or `<stdin>`.
-  /// \param bufferID The buffer ID assigned by the source manager (default = 0).
+  /// \param bufferID The buffer ID assigned by the source manager (default =
+  /// 0).
   explicit SrcUnit(llvm::StringRef inputName, unsigned bufferID = 0)
       : bufferID(bufferID),
         name(inputName.equals("<stdin>") ? "-" : inputName) {
     assert(!name.empty() && "File name must not be empty!");
+    assert(IsValid() && "Invalid buffer id!");
 
-    if (IsValid()) {
-      using llvm::sys::path::extension;
-      assert(name == "-" || extension(name) == ".stone" &&
-             "SrcUnit must represent a `.stone` file!");
-    }
+    using llvm::sys::path::extension;
+    assert(name == "-" || extension(name) == ".stone" &&
+                              "SrcUnit must represent a `.stone` file!");
   }
-   /// \returns true if this unit is valid (i.e., has a non-zero buffer ID).
+  /// \returns true if this unit is valid (i.e., has a non-zero buffer ID).
   explicit operator bool() const { return IsValid(); }
 
   /// \returns true if this unit is valid (i.e., has a non-zero buffer ID).
@@ -49,14 +49,15 @@ public:
   /// \returns the normalized file name (non-owning reference).
   const llvm::StringRef &GetName() const { return name; }
 
-  /// \returns a user-facing name for diagnostics ("<stdin>" or the actual file name).
+  /// \returns a user-facing name for diagnostics ("<stdin>" or the actual file
+  /// name).
   llvm::StringRef GetDisplayName() const {
     return IsStdin() ? "<stdin>" : name;
   }
 
   /// \brief Compile-time tag identifying this unit's file kind.
-  static constexpr FileKind Kind = FileKind::Stone;
+  static constexpr FileType Kind = FileType::Stone;
 };
-}
+} // namespace stone
 
 #endif // STONE_BASIC_SRC_H

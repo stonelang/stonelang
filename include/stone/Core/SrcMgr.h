@@ -158,8 +158,9 @@ public:
   /// This will read the file, cache its buffer ID, and normalize `<stdin>`
   /// to `"-"` as required by the `SrcUnit` interface.
   ///
-  /// \param fileName File path or virtual input (e.g., "main.stone", "<stdin>").
-  /// \returns A validated `SrcUnit` with normalized name and unique buffer ID.
+  /// \param fileName File path or virtual input (e.g., "main.stone",
+  /// "<stdin>"). \returns A validated `SrcUnit` with normalized name and unique
+  /// buffer ID.
   SrcUnit CreateSrcUnit(llvm::StringRef fileName);
 
   /// Returns a buffer ID for a previously added buffer with the given

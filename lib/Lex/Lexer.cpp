@@ -8,19 +8,13 @@
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/MemoryBuffer.h"
 
-
 static bool IsWhitespace(char c) {
   return clang::isHorizontalWhitespace(c) || clang::isVerticalWhitespace(c);
 }
 
-static bool IsIdentifierStart(char c) {
-  return clang::isIdentifierHead(c);
-}
+static bool IsIdentifierStart(char c) { return clang::isIdentifierHead(c); }
 
-static bool IsIdentifierContinue(char c) {
-  return clang::isIdentifierBody(c);
-}
-
+static bool IsIdentifierContinue(char c) { return clang::isIdentifierBody(c); }
 
 inline bool HasUTF8BOM(const char *Ptr) {
   return Ptr[0] == '\xEF' && Ptr[1] == '\xBB' && Ptr[2] == '\xBF';
@@ -71,7 +65,6 @@ Lexer::Lexer(SrcUnit unit, SrcMgr &sm) : unit(unit), sm(sm) {
   Lex(); // emits into nextToken
 }
 
-
 void Lexer::Lex(Token &result) {
   result = nextToken;
   if (!result.IsEOF()) {
@@ -93,8 +86,7 @@ Lexer::Lexer(Lexer &parent, LexerState begin, LexerState end)
     : unit(parent.unit), sm(parent.sm) {
 
   assert(begin.IsValid() && end.IsValid());
-  assert(unit.GetBufferID() ==
-         sm.findBufferContainingLoc(begin.loc) &&
+  assert(unit.GetBufferID() == sm.findBufferContainingLoc(begin.loc) &&
          "Mismatched SrcUnit and LexerState");
 
   // Start lexing from the given location
@@ -104,8 +96,4 @@ Lexer::Lexer(Lexer &parent, LexerState begin, LexerState end)
   Lex(); // prime first token
 }
 
-void Lexer::Track(DiagID ID) {
-  issues.push_back(ID);
-}
-
- 
+void Lexer::Track(DiagID ID) { issues.push_back(ID); }

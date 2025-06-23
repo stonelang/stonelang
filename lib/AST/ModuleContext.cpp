@@ -4,8 +4,7 @@
 
 using namespace stone;
 
-ModuleContext::ModuleContext(Memory &memory,
-                             IdentifierTable &identifiers,
+ModuleContext::ModuleContext(Memory &memory, IdentifierTable &identifiers,
                              DiagnosticEngine &diags)
     : memory(memory), identifiers(identifiers), diags(diags) {
 

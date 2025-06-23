@@ -1,9 +1,9 @@
 #ifndef STONE_AST_TYPESTATE_H
 #define STONE_AST_TYPESTATE_H
 
+#include "stone/AST/Alignments.h"
 #include "stone/AST/Allocation.h"
 #include "stone/AST/Number.h"
-#include "stone/AST/Alignments.h"
 #include "stone/AST/TypeInfluencer.h"
 #include "stone/AST/TypeKind.h"
 

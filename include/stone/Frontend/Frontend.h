@@ -3,13 +3,13 @@
 
 #include "stone/AST/ASTSession.h"
 #include "stone/AST/LogicOptions.h"
-#include "stone/Frontend/FrontendMemoryBuffers.h"
-#include "stone/Frontend/FrontendObserver.h"
-#include "stone/Frontend/FrontendOptions.h"
 #include "stone/Core/CodeGenOptions.h"
 #include "stone/Core/DiagnosticOptions.h"
 #include "stone/Core/LangOptions.h"
 #include "stone/Core/Status.h"
+#include "stone/Frontend/FrontendMemoryBuffers.h"
+#include "stone/Frontend/FrontendObserver.h"
+#include "stone/Frontend/FrontendOptions.h"
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/FileSystemOptions.h"

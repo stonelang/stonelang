@@ -1,10 +1,9 @@
 #ifndef STONE_AST_DECL_ACTION_H
 #define STONE_AST_DECL_ACTION_H
 
+#include "stone/AST/Alignments.h"
 #include "stone/AST/Allocation.h"
 #include "stone/AST/InlineBitfield.h"
-#include "stone/AST/Allocation.h"
-#include "stone/AST/Alignments.h"
 
 #include "llvm/Support/Casting.h"
 

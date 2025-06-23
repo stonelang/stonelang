@@ -1,9 +1,9 @@
 #ifndef STONE_FRONTEND_FRONTEND_OPTIONS_H
 #define STONE_FRONTEND_FRONTEND_OPTIONS_H
 
-#include "stone/Core/Src.h"
 #include "stone/Core/LangOptions.h"
 #include "stone/Core/OutputPaths.h"
+#include "stone/Core/Src.h"
 #include <vector>
 
 namespace stone {
@@ -15,12 +15,11 @@ class FrontendSrc final : public Src {
   FileSpecificPaths fileSpecificPaths;
 
 public:
-  FrontendSrc(llvm::StringRef file,
-                    llvm::MemoryBuffer *memoryBuffer = nullptr)
+  FrontendSrc(llvm::StringRef file, llvm::MemoryBuffer *memoryBuffer = nullptr)
       : Src(file, memoryBuffer) {}
 
   FrontendSrc(llvm::StringRef file, stone::FileType fileType,
-                    llvm::MemoryBuffer *memoryBuffer = nullptr)
+              llvm::MemoryBuffer *memoryBuffer = nullptr)
       : Src(file, fileType, memoryBuffer) {}
 
 public:
@@ -73,8 +72,7 @@ public:
   void ClearInputs();
 
   /// If \p fn returns true, exits early and returns true.
-  bool
-  ForEachInput(std::function<bool(const FrontendSrc &)> callback) const;
+  bool ForEachInput(std::function<bool(const FrontendSrc &)> callback) const;
 
   llvm::ArrayRef<FrontendSrc> GetInputs() const { return inputs; }
   unsigned NumOfInputs() const { return inputs.size(); }

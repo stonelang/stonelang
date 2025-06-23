@@ -1,12 +1,12 @@
 #ifndef STONE_AST_DECLSTATE_H
 #define STONE_AST_DECLSTATE_H
 
+#include "stone/AST/Alignments.h"
+#include "stone/AST/Allocation.h"
 #include "stone/AST/DeclInfluencer.h"
 #include "stone/AST/DeclKind.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/Allocation.h"
 #include "stone/AST/ParamList.h"
-#include "stone/AST/Alignments.h"
 #include "stone/AST/TypeFlight.h"
 #include "stone/AST/TypeInfluencer.h"
 
@@ -38,8 +38,7 @@ enum class DeclFlightKind : uint8_t {
   Function,
 };
 
-class alignas(1 << DeclAlignInBits) DeclFlight
-    : public Allocation<DeclFlight> {
+class alignas(1 << DeclAlignInBits) DeclFlight : public Allocation<DeclFlight> {
   // friend Decl;
   Memory &mem;
 

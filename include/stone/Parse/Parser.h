@@ -5,9 +5,9 @@
 #include "stone/AST/File.h"
 #include "stone/AST/Scope.h"
 #include "stone/AST/TypeFlight.h"
+#include "stone/Core/Token.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"
-#include "stone/Core/Token.h"
 
 #include "llvm/Support/PrettyStackTrace.h"
 

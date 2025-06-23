@@ -22,8 +22,7 @@ class Module final : public Node<NodeKind::Module, Module> {
       &context; ///< Owning context for identifier memory, global types, etc.
   Scope *scope =
       nullptr; ///< Optional top-level scope associated with the module.
-  llvm::SmallVector<File *, 16>
-      files; ///< Files contained in this module.
+  llvm::SmallVector<File *, 16> files; ///< Files contained in this module.
   llvm::SmallVector<const Module *>
       deps; ///< List of other modules this module depends on.
 

@@ -12,11 +12,9 @@ struct FixItFlight {
   size_t numArgs;
 };
 
-template <typename... ArgTypes>
-constexpr auto MakeFixItArgumentKindArray() {
+template <typename... ArgTypes> constexpr auto MakeFixItArgumentKindArray() {
   static constexpr DiagnosticArgumentKind kinds[] = {
-    DiagnosticArgumentKindOf<ArgTypes>::kind...
-  };
+      DiagnosticArgumentKindOf<ArgTypes>::kind...};
   return kinds;
 }
 

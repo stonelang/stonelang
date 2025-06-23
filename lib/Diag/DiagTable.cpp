@@ -22,10 +22,11 @@ struct LocalDiagnosticInfo {
   bool isNoUsage : 1;
 
   constexpr LocalDiagnosticInfo(DiagnosticKind k, LocalDiagnosticOptions opts)
-      : kind(k),
-        pointsToFirstBadToken(opts == LocalDiagnosticOptions::PointsToFirstBadToken),
+      : kind(k), pointsToFirstBadToken(
+                     opts == LocalDiagnosticOptions::PointsToFirstBadToken),
         isFatal(opts == LocalDiagnosticOptions::Fatal),
-        isAPIDigesterBreakage(opts == LocalDiagnosticOptions::APIDigesterBreakage),
+        isAPIDigesterBreakage(opts ==
+                              LocalDiagnosticOptions::APIDigesterBreakage),
         isDeprecation(opts == LocalDiagnosticOptions::Deprecation),
         isNoUsage(opts == LocalDiagnosticOptions::NoUsage) {}
 };
@@ -37,44 +38,40 @@ enum LocalDiagID : uint32_t {
 };
 
 static constexpr LocalDiagnosticInfo storedDiagnosticInfos[] = {
-#define ERROR(ID, Options, Text, Signature) \
+#define ERROR(ID, Options, Text, Signature)                                    \
   LocalDiagnosticInfo(DiagnosticKind::Error, LocalDiagnosticOptions::Options),
-#define WARNING(ID, Options, Text, Signature) \
+#define WARNING(ID, Options, Text, Signature)                                  \
   LocalDiagnosticInfo(DiagnosticKind::Warning, LocalDiagnosticOptions::Options),
-#define NOTE(ID, Options, Text, Signature) \
+#define NOTE(ID, Options, Text, Signature)                                     \
   LocalDiagnosticInfo(DiagnosticKind::Note, LocalDiagnosticOptions::Options),
-#define REMARK(ID, Options, Text, Signature) \
+#define REMARK(ID, Options, Text, Signature)                                   \
   LocalDiagnosticInfo(DiagnosticKind::Remark, LocalDiagnosticOptions::Options),
 #include "stone/Core/DiagEngine.def"
 };
 
 static_assert(static_cast<uint32_t>(LocalDiagID::NumDiags) ==
-              sizeof(storedDiagnosticInfos) / sizeof(LocalDiagnosticInfo),
+                  sizeof(storedDiagnosticInfos) / sizeof(LocalDiagnosticInfo),
               "Mismatch between diagnostic enum and info table");
 
-static constexpr const char* diagnosticTexts[] = {
+static constexpr const char *diagnosticTexts[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) Text,
 #include "stone/Core/DiagEngine.def"
-  "<not a diagnostic>"
-};
+    "<not a diagnostic>"};
 
-static constexpr const char* debugDiagnosticTexts[] = {
+static constexpr const char *debugDiagnosticTexts[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) Text " [" #ID "]",
 #include "stone/Core/DiagEngine.def"
-  "<not a diagnostic>"
-};
+    "<not a diagnostic>"};
 
-static constexpr const char* diagnosticIDNames[] = {
+static constexpr const char *diagnosticIDNames[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) #ID,
 #include "stone/Core/DiagEngine.def"
-  "<not a diagnostic>"
-};
+    "<not a diagnostic>"};
 
-static constexpr const char* fixItTexts[] = {
+static constexpr const char *fixItTexts[] = {
 #define DIAG(KIND, ID, Options, Text, Signature)
 #define FIXIT(ID, Text, Signature) Text,
 #include "stone/Core/DiagEngine.def"
-  "<not a fix-it>"
-};
+    "<not a fix-it>"};
 
 } // namespace

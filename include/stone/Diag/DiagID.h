@@ -12,4 +12,4 @@ enum class DiagID : uint32_t {
 };
 } // namespace diag
 } // namespace stone
-#endif 
+#endif

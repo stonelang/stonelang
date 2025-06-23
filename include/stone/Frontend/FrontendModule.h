@@ -2,8 +2,8 @@
 #define STONE_FRONTEND_FRONTEND_MODULE_H
 
 #include "stone/AST/ModuleDecl.h"
-#include "stone/Frontend/Frontend.h"
 #include "stone/Core/Status.h"
+#include "stone/Frontend/Frontend.h"
 
 namespace stone {
 

@@ -1,6 +1,6 @@
 #include "stone/Frontend/FrontendOptions.h"
-#include "stone/Frontend/Frontend.h"
 #include "stone/Core/Status.h"
+#include "stone/Frontend/Frontend.h"
 
 using namespace stone;
 

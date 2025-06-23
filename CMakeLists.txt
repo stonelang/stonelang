@@ -70,10 +70,11 @@ endif()
 #===--------------------------------------------------------------------===#
 # Core Modules
 #===--------------------------------------------------------------------===#
-include(StoneLang)        # Macro helpers
-#include(StoneOptions)     # Feature toggles
-#include(StoneVersion)     # Version logic
-#include(StoneDependencies)# Platform checks
+include(StoneLang)            # Macro helpers
+#include(StoneOptions)        # Feature toggles
+#include(StoneVersion)        # Version logic
+#include(StoneDependencies)   # Platform checks
+include(StoneFmt)             # Macro helpers
 
 #===--------------------------------------------------------------------===#
 # Resource Configuration
@@ -88,7 +89,11 @@ configure_file(
 include_directories(BEFORE
   ${STONE_SOURCE_DIR}/include
   ${STONE_BINARY_DIR}/include
+  ${CMAKE_BINARY_DIR}/tools/clang/include
+  ${CMAKE_SOURCE_DIR}/tools/clang/include
 )
+
+
 
 #===--------------------------------------------------------------------===#
 # Source Tree
