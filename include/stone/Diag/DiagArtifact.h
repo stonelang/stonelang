@@ -5,6 +5,7 @@
 #include <string>
 
 namespace stone {
+class Decl;
 
 /// \brief Represents the kind of data (artifact) attached to a diagnostic.
 ///
@@ -69,6 +70,13 @@ template <> struct DiagArtifactKindOf<Type *> {
 template <> struct DiagArtifactKindOf<Identifier> {
   static constexpr DiagArtifactKind kind = DiagArtifactKind::Identifier;
 };
+
+class DiagArtifact final {};
+
+class StringDiagArtifact : public DiagArtifact {};
+
+class IntegerDiagArtifact : public DiagArtifact {};
+class RangeDiagArtifact : public DiagArtifact {};
 
 } // namespace stone
 

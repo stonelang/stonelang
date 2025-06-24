@@ -19,9 +19,10 @@ namespace stone {
 /// - Lexing embedded/interpolated syntactic regions
 /// - Saving/restoring trivia position across token boundaries
 class LexerBookmark final {
-  SrcLoc loc; ///< Current lexical position in the source.
-  llvm::StringRef
-      leadingTrivia; ///< Leading trivia before the associated token.
+  ///< Current lexical position in the source.
+  SrcLoc loc; 
+  ///< Leading trivia before the associated token.
+  llvm::StringRef leadingTrivia; 
 
 public:
   /// \brief Constructs an invalid bookmark (useful as a placeholder).

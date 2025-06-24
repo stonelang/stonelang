@@ -101,6 +101,110 @@ public:
   /// This includes the final EOF token at the end.
   void Lex(TokenCallback callback);
 
+  void LexHash();
+  void LexIdentifier();
+  void LexOperatorIdentifier();
+  void LexHexNumber();
+  void LexNumber();
+
+  /// Peek - Return the next token to be returned by Lex without
+  /// actually lexing it.
+  const Token &PeekNext() const { return nextToken; }
+
+  Trivia LexTrivia(bool isForTrailingTrivia, const char *allTriviaStart);
+
+  static unsigned LexUnicodeEscape(const char *&curPtr,
+                                   lvm::SmallVector<DiagID, 8> issues);
+
+  unsigned LexCharacter(const char *&curPtr, char stopQuote,
+                        bool isMultilineString = false,
+                        unsigned customDelimiterLen = 0);
+
+  void LexStringLiteral(unsigned customDelimiterLen = 0);
+
+  void LexEscapedIdentifier();
+
+  void LexRegexLiteral(const char *tokStart);
+
+  void TryLexEditorPlaceholder();
+
+  const char *FindEndOfCurlyQuoteStringLiteral(const char *);
+
+  /// Try to lex conflict markers by checking for the presence of the start and
+  /// end of the marker in diff3 or Perforce style respectively.
+  bool TryLexConflictMarker(bool eatNewline);
+
+public:
+  void FormToken(tok Kind, const char *TokStart);
+  void FormEscapedIdentifierToken(const char *TokStart);
+  void FormStringLiteralToken(const char *TokStart, bool IsMultilineString,
+                              unsigned CustomDelimiterLen);
+
+public:
+  /// Advance to the end of the line.
+  /// If EatNewLine is true, CurPtr will be at end of newline character.
+  /// Otherwise, CurPtr will be at newline character.
+  void SkipToEndOfLine(bool EatNewline);
+
+  /// Skip to the end of the line of a // comment.
+  void SkipSlashSlashComment(bool EatNewline);
+
+  /// Skip a #! hashbang line.
+  void SkipHashbang(bool EatNewline);
+
+  void SkipSlashStarComment();
+
+public:
+  /// Return the start location of the token that the offset in the given buffer
+  /// points to.
+  ///
+  /// Note that this is more expensive than \c GetLocForEndOfToken because it
+  /// finds and re-lexes from the beginning of the line.
+  ///
+  /// Due to the parser splitting tokens the adjustment may be incorrect, e.g:
+  /// \code
+  ///   func +<T>(a : T, b : T)
+  /// \endcode
+  /// The start of the '<' token is '<', but the lexer will produce "+<" before
+  /// the parser splits it up.
+  ////
+  /// If the offset points to whitespace the returned source location will point
+  /// to the whitespace offset.
+  static SrcLoc GetLocForStartOfToken(SrcMgr &sm, unsigned bufferID,
+                                      unsigned offset);
+
+  static SrcLoc GetLocForStartOfToken(SrcMgr &SM, SrcLoc Loc);
+
+  /// Retrieve the start location of the line containing the given location.
+  /// the given location.
+  static SrcLoc GetLocForStartOfLine(SrcMgr &SM, SrcLoc Loc);
+
+  /// Retrieve the source location for the end of the line containing the
+  /// given location, which is the location of the start of the next line.
+  static SrcLoc GetLocForEndOfLine(SrcMgr &SM, SrcLoc Loc);
+
+  /// Retrieve the string used to indent the line that contains the given
+  /// source location.
+  ///
+  /// If \c ExtraIndentation is not null, it will be set to an appropriate
+  /// additional intendation for adding code in a smaller scope "within" \c Loc.
+  static StringRef GetIndentationForLine(SrcMgr &sm, SrcLoc loc,
+                                         StringRef *extraIndentation = nullptr);
+
+  /// Determines if the given string is a valid non-operator
+  /// identifier, without escaping characters.
+  static bool IsIdentifier(llvm::StringRef identifier);
+
+  /// Determine the token kind of the string, given that it is a valid
+  /// non-operator identifier. Return tok::identifier if the string is not a
+  /// reserved word.
+  static tok KindOfIdentifier(llvm::StringRef identifier);
+
+  /// Determines if the given string is a valid operator identifier,
+  /// without escaping characters.
+  static bool IsOperator(llvm::StringRef operatorStr);
+
+public:
   /// Set an optional observer to track internal lexing events (e.g., trivia,
   /// diagnostics).
   void SetObserver(LexerObserver *observer);

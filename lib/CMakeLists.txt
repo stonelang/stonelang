@@ -1,5 +1,6 @@
 add_subdirectory(AST)
 add_subdirectory(Core)
+add_subdirectory(Diag)
 
 #add_subdirectory(Parse)
 #add_subdirectory(CodeGen)

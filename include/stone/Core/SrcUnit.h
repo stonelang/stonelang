@@ -18,27 +18,28 @@ enum class HashbangMode : bool {
 };
 
 /// \brief Controls how the lexer treats comments in the source buffer.
-enum class CommentRetentionMode {
-  None,              ///< Discard comments entirely.
+enum class CommentRetentionMode : uint8_t {
+  None = 0,          ///< Discard comments entirely.
   AttachToNextToken, ///< Store comment as metadata on the next token.
   ReturnAsTokens     ///< Emit comments as separate tokens in the stream.
 };
 
 /// \brief Describes the style of conflict markers to detect in source.
-enum class ConflictMarkerKind {
+enum class ConflictMarkerKind : uint8_t {
   Normal,  ///< Standard Git or diff3-style conflict markers.
   Perforce ///< Perforce-style conflict markers.
 };
 
 /// \brief Controls how line directives (e.g., `#line`) are interpreted.
-enum class LineDirectiveMode {
+enum class LineDirectiveMode : uint8_t {
   Ignore, ///< Treat line directives as comments.
   Parse,  ///< Parse and apply them to remap line/filename.
   Error   ///< Treat line directives as errors.
 };
 
 /// \brief Describes leading trivia attached to tokens or tracked in the unit.
-enum class TriviaKind {
+enum class TriviaKind uint8_t : uint8_t {
+  None, ///< Skip trivia
   Space,
   Tab,
   Newline,
@@ -56,20 +57,37 @@ struct Trivia final {
 /// \brief Represents a `.stone` source file unit tracked by the compiler.
 /// This is the central abstraction for lexical control over a source buffer.
 class SrcUnit final {
-  unsigned bufferID = 0; ///< Source manager-assigned buffer ID.
-  llvm::StringRef name;  ///< Normalized input name (e.g., "main.stone" or "-").
 
+  ///< Source manager-assigned buffer ID.
+  unsigned bufferID = 0;
+
+  ///< Normalized input name (e.g., "main.stone" or "-").
+  llvm::StringRef name;
+
+  ///< Collected lexical diagnostics.
+  // llvm::SmallVector<DiagID, 8> issues;
+
+  ///< Final token stream for this unit.
+  llvm::SmallVector<Token, 32> tokens;
+
+  ///< Detached trivia stream (if enabled).
+  llvm::SmallVector<Trivia, 32> trivia;
+
+public:
+  ///< Trivia settings -- default is None
+  TriviaKind triviaKind = TriviaKind::None;
+
+  ///< HashbangMode settings -- default is Disallowed
   HashbangMode hashbangAllowed = HashbangMode::Disallowed;
+
+  ///< ConflictMarkerKind settings -- default is Normal
   ConflictMarkerKind conflictMarkerKind = ConflictMarkerKind::Normal;
+
+  ///< CommentRetentionMode settings -- default is None
   CommentRetentionMode commentRetentionMode = CommentRetentionMode::None;
+
+  ///< LineDirectiveMode settings -- default is Ignore
   LineDirectiveMode lineDirectiveMode = LineDirectiveMode::Ignore;
-
-  //llvm::SmallVector<DiagID, 8> issues; ///< Collected lexical diagnostics.
-  llvm::SmallVector<Token, 32> tokens; ///< Final token stream for this unit.
-
-  bool skipTrivia = false;
-  llvm::SmallVector<Trivia, 32>
-      trivia; ///< Detached trivia stream (if enabled).
 
 public:
   /// \brief Constructs a `SrcUnit`. If `bufferID == 0`, the unit is invalid.
@@ -105,53 +123,26 @@ public:
     return IsStdin() ? "<stdin>" : name;
   }
 
+  /// Reset the SrcUnit for another Lex
+  void Clear();
+
   /// Compile-time tag identifying this unit's file kind.
   static constexpr FileType Kind = FileType::Stone;
 
-  /// --- Lexing Policy Accessors ---
-
-  void SetHashbangAllowed(HashbangMode mode) { hashbangAllowed = mode; }
-  HashbangMode GetHashbangAllowed() const { return hashbangAllowed; }
-
-  void SetConflictMarkerKind(ConflictMarkerKind kind) {
-    conflictMarkerKind = kind;
-  }
-  ConflictMarkerKind GetConflictMarkerKind() const {
-    return conflictMarkerKind;
-  }
-
-  void SetCommentRetentionMode(CommentRetentionMode mode) {
-    commentRetentionMode = mode;
-  }
-  CommentRetentionMode GetCommentRetentionMode() const {
-    return commentRetentionMode;
-  }
-
-  void SetLineDirectiveMode(LineDirectiveMode mode) {
-    lineDirectiveMode = mode;
-  }
-  LineDirectiveMode GetLineDirectiveMode() const { return lineDirectiveMode; }
-
   /// --- Diagnostic Management ---
-
   // void AddDiag(DiagID diag) { issues.push_back(diag); }
   // llvm::ArrayRef<DiagID> GetDiags() const { return issues; }
   // void ClearDiags() { issues.clear(); }
 
   /// --- Token Stream ---
-
   void AddToken(const Token &tok) { tokens.push_back(tok); }
   llvm::ArrayRef<Token> GetTokens() const { return tokens; }
   void ClearTokens() { tokens.clear(); }
 
   /// --- Trivia Buffer (optional detached storage) ---
-
   void AddTrivia(const Trivia &t) { trivia.push_back(t); }
   llvm::ArrayRef<Trivia> GetTrivia() const { return trivia; }
   void ClearTrivia() { trivia.clear(); }
-
-  void SetSkipTrivia(bool skip) { skipTrivia = skip; }
-  bool ShouldSkipTrivia() const { return skipTrivia; }
 
 public:
   /// \brief Dumps a textual summary(.stonelex) of this `SrcUnit` to the given

@@ -7,7 +7,7 @@ namespace stone {
 namespace diag {
 enum class DiagID : uint32_t {
 #define DIAG(ID, CODE, MESSAGE, SIG) ID,
-#include "stone/Core/DiagID.def"
+#include "stone/Diag/DiagID.def"
   Count
 };
 } // namespace diag

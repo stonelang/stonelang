@@ -20,11 +20,10 @@ inline bool HasUTF8BOM(const char *Ptr) {
 
 Lexer::Lexer(SrcUnit &unit, SrcMgr &sm) : unit(unit), sm(sm) {
 
-  assert(unit && "Cannot initialize Lexer with invalid SrcUnit");
+  static constexpr size_t UTF8_BOM_SIZE = 3;
 
   unsigned bufferID = unit.GetBufferID();
   auto buffer = sm.getBuffer(bufferID);
-
   assert(buffer && "Source buffer must be available in SrcMgr");
 
   llvm::StringRef contents = buffer->getBuffer();
@@ -33,11 +32,13 @@ Lexer::Lexer(SrcUnit &unit, SrcMgr &sm) : unit(unit), sm(sm) {
   BufferEnd = BufferStart + contents.size();
   assert(BufferStart <= BufferEnd && "Buffer is malformed");
 
-  // Check for UTF-8 BOM at the start
-  size_t bomLen = (contents.startswith("\xEF\xBB\xBF")) ? 3 : 0;
-  ContentStart = BufferStart + bomLen;
+  if (HasUTF8BOM(BufferStart)) {
+    ContentStart = BufferStart + UTF8_BOM_SIZE;
+  } else {
+    ContentStart = BufferStart;
+  }
 
-  // Set the current pointer to the start of meaningful content
+  // Set the current lexing pointer to the start of meaningful content
   CurPtr = ContentStart;
 
   // Set artificial EOF to real end of file unless overridden later

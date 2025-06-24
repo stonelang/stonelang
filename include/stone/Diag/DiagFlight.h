@@ -1,4 +1,5 @@
-#pragma once
+#ifndef STONE_DIAG_FLIGHT_KIND_H
+#define STONE_DIAG_FLIGHT_KIND_H
 
 #include "DiagID.h"
 #include "DiagnosticArgumentKind.h"
@@ -7,23 +8,26 @@
 
 namespace stone {
 
-struct DiagFlight {
+class DiagFlight {
   DiagID id;
-  const char *code; // e.g. "E001"
-  const char *message;
-  const DiagnosticArgumentKind *args;
+  llvm::StringRef code; // e.g. "E001"
+  llvm::StringRef message;
+  const DiagArtifactKind *args;
   size_t numArgs;
   llvm::SmallVector<const FixItFlight *, 1> fixIts;
 
-  DiagFlight &AddFixIt(FixItID id);
+public:
+  DiagFlight();
+  DiagFlight &AddFixIt(FixItID fixItID);
 };
 
-template <typename... ArgTypes> constexpr auto MakeArgumentKindArray() {
-  static constexpr DiagnosticArgumentKind kinds[] = {
-      DiagnosticArgumentKindOf<ArgTypes>::kind...};
+template <typename... ArgTypes> constexpr auto MakeDiagArtifactKinds() {
+  static constexpr DiagArtifactKind kinds[] = {
+      DiagArtifactKindOf<ArgTypes>::kind...};
   return kinds;
 }
 
 const DiagFlight *GetDiagFlight(DiagID id);
 
 } // namespace stone
+#endif
