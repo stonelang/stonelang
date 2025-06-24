@@ -6,8 +6,8 @@
 namespace stone {
 namespace diag {
 enum class FixItID : uint32_t {
-#define FIXIT(ID, MESSAGE, SIG) ID,
-#include "stone/Diag/DiagID.def"
+#define FIXIT(ID, MSG, SIG) ID,
+#include "stone/Core/FixItCore.def"
   Count
 };
 } // namespace diag

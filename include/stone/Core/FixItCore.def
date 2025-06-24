@@ -1,0 +1,10 @@
+#define DEFINE_DIAG_MACROS
+#include "stone/Core/DiagDef.h"
+
+FIXIT(fixit_try_different_name, "try using a different name", (llvm::StringRef))
+FIXIT(fixit_insert_semicolon, "insert ';'", ())
+FIXIT(fixit_replace_with_alternative, "replace with '%0'", (llvm::StringRef))
+
+#include "stone/Core/DiagDef.h"
+#define UNDEFINE_DIAG_MACROS
+#include "stone/Core/DiagDef.h"

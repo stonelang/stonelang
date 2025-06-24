@@ -1,5 +1,0 @@
-DIAG(sys_try_emit_tell, "S000", "Welcome to the stone compiler. Type '--tell' for help!")
-
-
-DIAG(error_opening_output, "E001", "error opening '%0' for output: %1", (llvm::StringRef, llvm::StringRef))
-FIXIT(fixit_try_different_name, "try using a different name", (llvm::StringRef))

@@ -21,10 +21,13 @@ list(REMOVE_ITEM LLVM_COMMON_DEPENDS stone-tablegen-targets)
 set(stone_support_sources
   About.cpp
   Algorithm.cpp
+  CharInfo.cpp
+  DiagEngine.cpp
   EditorPlaceholder.cpp
   FileSystem.cpp
   FileSystemStatCache.cpp
   FileType.cpp
+  FixItID.cpp
   Help.cpp
   LangOptions.cpp
   Options.cpp
@@ -32,6 +35,7 @@ set(stone_support_sources
   SrcMgr.cpp
   SrcUnit.cpp
   Statistics.cpp
+  Unicode.cpp
   Version.cpp
 )
 

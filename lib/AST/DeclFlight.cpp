@@ -4,8 +4,7 @@
 
 using namespace stone;
 
-DeclFlight::DeclFlight(Memory &mem, DeclFlight *parent)
-    : mem(mem), parent(parent) {}
+DeclFlight::DeclFlight(DeclFlight *parent) : parent(parent) {}
 
 // // void Decl::Evaluate(DeclActionKind kind) {
 // //   GetDeclFlight()->GetASTSession().GetDeclEvaluator().Evaluate(this,

@@ -20,9 +20,9 @@ namespace stone {
 /// - Saving/restoring trivia position across token boundaries
 class LexerBookmark final {
   ///< Current lexical position in the source.
-  SrcLoc loc; 
+  SrcLoc loc;
   ///< Leading trivia before the associated token.
-  llvm::StringRef leadingTrivia; 
+  llvm::StringRef leadingTrivia;
 
 public:
   /// \brief Constructs an invalid bookmark (useful as a placeholder).

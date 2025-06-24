@@ -1,0 +1,20 @@
+#define UNDEFINE_DIAG_MACROS
+#include "DiagDef.h"
+
+
+
+DIAG(error_open_output, 		"E0001", "error opening '%0' for output: %1", (llvm::StringRef, llvm::StringRef))
+//DIAG(error_invalid_token, 		"E0002", "invalid token '%0'", (llvm::StringRef))
+//DIAG(warn_deprecated_syntax, 	"W0001", "use of deprecated syntax", ())
+DIAG(note_suggest_alternative, 	"N0001", "consider using '%0' instead", (llvm::StringRef))
+
+
+DIAG(UTF16BOMMarker, 		"E0001", "error opening '%0' for output: %1", ())
+
+
+#define UNDEFINE_DIAG_MACROS
+#include "DiagDef.h"
+
+
+
+

@@ -22,21 +22,5 @@ enum : uint8_t {
       stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
 };
 
-// inline bool IsTypeDecl(DeclKind K) {
-//   return K >= DeclKind::TypeDecl && K <= DeclKind::LastTypeDecl;
-// }
-
-// inline bool IsOperatorDecl(DeclKind K) {
-//   return K >= DeclKind::FirstOperator && K <= DeclKind::LastOperator;
-// }
-
-// inline bool IsBindingDecl(DeclKind K) {
-//   return K >= DeclKind::FirstBinding && K <= DeclKind::LastBinding;
-// }
-
-// inline bool IsTopLevelDecl(DeclKind K) {
-//   return K >= DeclKind::Join && K <= DeclKind::Macro;
-// }
-
 } // namespace stone
 #endif

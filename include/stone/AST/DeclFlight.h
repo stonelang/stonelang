@@ -21,7 +21,6 @@ class Decl;
 class DeclFlight;
 // class TypeFlight;
 class ParamList;
-// template <TypeKind K> class TypeFlight; -- want type
 
 // enum class DeclFlightKind : uint8_t {
 //   Parametric,
@@ -40,7 +39,7 @@ enum class DeclFlightKind : uint8_t {
 
 class alignas(1 << DeclAlignInBits) DeclFlight : public Allocation<DeclFlight> {
   // friend Decl;
-  Memory &mem;
+  Memory *mem = nullptr;
 
   // The declaration kind
   DeclKind kind = DeclKind::None;
@@ -66,7 +65,7 @@ class alignas(1 << DeclAlignInBits) DeclFlight : public Allocation<DeclFlight> {
   // The properties for the DeclFlight
   TypeInfluencerList typeInfluencerList;
 
-  ParamList *paramList;
+  ParamList *paramList = nullptr;
 
 public:
   // Direct comparison is disabled for states
@@ -74,7 +73,7 @@ public:
   void operator!=(DeclFlight D) const = delete;
 
   // Every DeclFlight must have a context
-  explicit DeclFlight(Memory &mem, DeclFlight *parent = nullptr);
+  explicit DeclFlight(DeclFlight *parent = nullptr);
 
 public:
   void SetKind(DeclKind K) { kind = K; }
@@ -102,7 +101,10 @@ public:
 
   void SetParamList(ParamList *PL) { paramList = PL; }
   ParamList *GetParamList() { return paramList; }
-  Memory &GetMemory() { return mem; }
+
+  void SetMemory(Memory *M) { mem = M; }
+  Memory *GetMemory() { return mem; }
+  bool HasMemory() { return mem != nullptr; }
 
   // template <typename T>
   // T *GetParamListAs() const {
