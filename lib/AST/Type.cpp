@@ -5,10 +5,10 @@
 
 using namespace stone;
 
-Type::Type(TypeFlightBase *flight) : Node(nullptr), flight(flight) {
-  assert(flight && "Expected TypeFlight for a Type!");
-  // flight->SetOwner(this);
-}
+// Type::Type(TypeFlightBase *flight) : Node(nullptr), flight(flight) {
+//   assert(flight && "Expected TypeFlight for a Type!");
+//   // flight->SetOwner(this);
+// }
 
 bool Type::IsCanType() const {
   // return (flight->HasCanType() && flight->GetCanType() == this);

@@ -3,5 +3,3 @@
 #include "stone/AST/StmtFlight.h"
 
 using namespace stone;
-
-Stmt::Stmt(StmtFlight *flight) : Node(this), flight(flight) {}

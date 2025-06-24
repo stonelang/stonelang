@@ -8,20 +8,4 @@
 
 using namespace stone;
 
-Node::Node(NodeUnion parent) : parent(parent) {}
-
-NodeKind Node::GetKind() const {
-  if (parent.is<Decl *>())
-    return NodeKind::Decl;
-  if (parent.is<Expr *>())
-    return NodeKind::Expr;
-  if (parent.is<Stmt *>())
-    return NodeKind::Stmt;
-  if (parent.is<Type *>())
-    return NodeKind::Type;
-  if (parent.is<File *>())
-    return NodeKind::File;
-  if (parent.is<Module *>())
-    return NodeKind::Module;
-  llvm_unreachable("Unknown node kind");
-}
+NodeKind NodeBase::GetKind() const { return kind; }

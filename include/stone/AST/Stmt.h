@@ -17,13 +17,13 @@ class StmtFlight;
 ///
 /// This design allows each statement to be tagged with a `StmtKind` and
 /// extended using flight metadata (`StmtFlight*`) if desired.
-class alignas(1 << StmtAlignInBits) Stmt : public Node {
+class alignas(1 << StmtAlignInBits) Stmt : public Node<NodeKind::Stmt> {
 
   StmtFlight *flight = nullptr;
 
 public:
   /// \brief Constructs a Stmt with a specific kind.
-  explicit Stmt(StmtFlight *flight);
+  explicit Stmt(StmtFlight *flight) : Node<NodeKind::Stmt>(), flight(flight) {}
 
   /// \brief Returns the kind of this statement.
   StmtKind GetKind() const;

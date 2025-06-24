@@ -4,7 +4,6 @@
 #include "stone/AST/Allocation.h"
 #include "stone/AST/NodeKind.h"
 
-#include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -16,63 +15,57 @@ class Type;
 class Expr;
 class Stmt;
 
-/// \brief A low-level root base class for all AST nodes.
-///
-/// You may derive from this to create other tagged or specialized node roots.
-/// For now, this base serves as a clean anchor for allocation or static casting.
-class NodeBase : public Allocation<NodeBase> {
-  // Empty by design, for tagging and layering.
-};
-
 /// \brief The base class for all AST nodes.
-class Node : public NodeBase {
+///
+/// Stores classification and tree structure (parent and children).
+/// Do not instantiate directly — use `Node<K>` instead.
+class NodeBase : public Allocation<NodeBase> {
 protected:
-  /// \brief The parent node (generic union type)
-  NodeUnion parent;
+  NodeKind kind = NodeKind::None;
+  NodeBase *parent = nullptr;
+  llvm::SmallVector<NodeBase *, 8> children;
 
-  /// \brief The list of children (generic union types)
-  llvm::SmallVector<NodeUnion, 16> children;
+  explicit NodeBase(NodeKind kind, NodeBase *parent = nullptr)
+      : kind(kind), parent(parent) {}
 
 public:
-  explicit Node(NodeUnion parent);
+  NodeBase(const NodeBase &) = delete;
+  NodeBase &operator=(const NodeBase &) = delete;
 
-  /// \returns The kind of node this instance represents
   NodeKind GetKind() const;
+  NodeBase *GetParent() const { return parent; }
+  void SetParent(NodeBase *P) { parent = P; }
 
-  /// \returns The parent node (as NodeUnion)
-  NodeUnion GetParent() const { return parent; }
+  llvm::ArrayRef<NodeBase *> GetChildren() const { return children; }
 
-  /// \brief Sets the parent node
-  void SetParent(NodeUnion P) { parent = P; }
-
-  /// \returns a read-only view of the child nodes
-  llvm::ArrayRef<NodeUnion> GetChildren() const { return children; }
-
-  /// \brief Add a child to this node
-  void AddChild(NodeUnion child) {
-    assert(!child.isNull() && "Cannot add null child");
+  void AddChild(NodeBase *child) {
+    assert(child && "Cannot add null child");
     children.push_back(child);
   }
 
-  /// \brief Type-safe cast of the parent
   template <typename T> T *GetParentAs() const {
-    return parent.dyn_cast<T *>();
+    return llvm::dyn_cast_or_null<T>(parent);
   }
 
-  /// \brief Type check on the parent
-  template <typename T> bool IsParentType() const { return parent.is<T *>(); }
+  template <typename T> bool IsParentType() const {
+    return llvm::isa<T>(parent);
+  }
 };
 
-/// \brief AST traversal driver for structured tree walking.
-///
-/// Meant to provide optional hooks for tree traversal passes.
-/// You can subclass and override only what you need.
+/// \brief A strongly typed AST node with static kind information.
+template <NodeKind K> class Node : public NodeBase {
+public:
+  static constexpr NodeKind kind = K;
+  explicit Node(NodeBase *parent = nullptr) : NodeBase(K, parent) {}
+};
+
+/// \brief AST walker for structured traversal.
 class Walker {
 public:
   Walker() = default;
 
-  // Hook points – uncomment as needed for structure-driven walks.
-  // bool Walk(Node *node);
+  // Hook points:
+  // bool Walk(NodeBase *node);
   // bool WalkDecl(Decl *D);
   // bool WalkType(Type *T);
   // bool WalkExpr(Expr *E);
@@ -81,13 +74,15 @@ public:
   // bool WalkFile(File *F);
 };
 
-/// \brief AST visitor for inspection or transformation.
+/// \brief AST visitor for diagnostics or transformation.
 class Visitor {
 public:
   Visitor() = default;
 
-  // Entry points and fine-grained visit hooks – enable on demand.
-  // void Visit(Node *node);
+  // Dispatch entry point:
+  // void Visit(NodeBase *node);
+
+  // Optional fine-grained hooks:
   // void VisitDecl(Decl *D);
   // void VisitType(Type *T);
   // void VisitExpr(Expr *E);

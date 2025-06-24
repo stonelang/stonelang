@@ -28,12 +28,13 @@ class TypeFlightBase;
 ///
 /// All `Type` subclasses are created through macros in `TypeNode.def`, and are
 /// aligned to `TypeAlignInBits` to support efficient allocation and casting.
-class alignas(1 << TypeAlignInBits) Type : public Node {
+class alignas(1 << TypeAlignInBits) Type : public Node<NodeKind::Type> {
   TypeFlightBase *flight = nullptr;
 
 public:
   /// \brief Constructs a type node with the associated metadata wrapper.
-  explicit Type(TypeFlightBase *flight);
+  explicit Type(TypeFlightBase *flight)
+      : Node<NodeKind::Type>(), flight(flight) {}
 
   /// \returns The specific kind of this type (e.g., Int32, Struct, Auto).
   TypeKind GetKind() const;

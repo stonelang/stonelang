@@ -18,7 +18,8 @@ class ModuleContext;
 /// A `Module` manages one or more `File` units and maintains their
 /// shared context, scope, and dependency graph. It is the top-level container
 /// for semantic and code generation phases.
-class alignas(1 << ModuleAlignInBits) Module final : public Node {
+class alignas(1 << ModuleAlignInBits) Module final
+    : public Node<NodeKind::Module> {
   ModuleContext
       &context; ///< Owning context for identifier memory, global types, etc.
   Scope *scope =
@@ -33,7 +34,8 @@ public:
 
 public:
   /// \brief Constructs a new module with the given context.
-  explicit Module(ModuleContext &context);
+  explicit Module(ModuleContext &context)
+      : Node<NodeKind::Module>(), context(context) {}
 
   /// \returns true if the module contains at least one file.
   explicit operator bool() const { return HasFiles(); }

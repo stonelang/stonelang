@@ -30,7 +30,7 @@ inline bool HasStage(FileStage current, FileStage check) {
 ///
 /// Each `File` is tied to a specific buffer, owns a list of top-level
 /// declarations, and tracks the semantic/codegen analysis stages.
-class alignas(1 << FileAlignInBits) File final : public Node {
+class alignas(1 << FileAlignInBits) File final : public Node<NodeKind::File> {
 
   SrcUnit unit;
   Module &parent;
@@ -40,7 +40,8 @@ class alignas(1 << FileAlignInBits) File final : public Node {
 
 public:
   /// \brief Constructs a File with a buffer and parent module.
-  File(SrcUnit unit, Module &parent);
+  File(SrcUnit unit, Module &parent)
+      : Node<NodeKind::File>(), unit(unit), parent(parent) {}
 
   /// \returns true if the file has a valid SpaceDecl as its first top-level
   /// declaration.

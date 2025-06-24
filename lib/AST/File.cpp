@@ -6,8 +6,8 @@
 
 using namespace stone;
 
-File::File(SrcUnit unit, Module &parent)
-    : Node(this), unit(unit), parent(parent) {}
+// File::File(SrcUnit unit, Module &parent)
+//     : Node(this), unit(unit), parent(parent) {}
 
 Decl *File::GetFirstDecl() const { return nullptr; }
 

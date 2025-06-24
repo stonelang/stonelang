@@ -22,7 +22,7 @@ class DeclFlight;
 /// in the associated DeclFlight, which is accessible via GetFlight().
 ///
 /// Decl is aligned according to DeclAlignInBits for efficient packing.
-class alignas(1 << DeclAlignInBits) Decl : public Node {
+class alignas(1 << DeclAlignInBits) Decl : public Node<NodeKind::Decl> {
 
   /// Pointer to the associated metadata record for this declaration.
   /// Carries all semantic attributes, modifiers, and type info.
@@ -30,7 +30,7 @@ class alignas(1 << DeclAlignInBits) Decl : public Node {
 
 public:
   /// \brief Constructs a Decl with a reference to its metadata.
-  explicit Decl(DeclFlight *flight);
+  explicit Decl(DeclFlight *flight) : Node<NodeKind::Decl>(), flight(flight) {}
 
   // Inherit the constructor
   // using Node::Node;
