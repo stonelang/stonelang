@@ -6,7 +6,7 @@
 
 using namespace stone;
 
-Module::Module(ModuleContext &context) : context(context) {}
+Module::Module(ModuleContext &context) : Node(nullptr), context(context) {}
 
 File *Module::GetFirstFile() const {
   assert(!files.empty() && "Module has no module files!");

@@ -27,8 +27,8 @@ class ModuleContext final {
 
 public:
   /// Built-in primitive types (e.g., `BuiltinInt32Type`)
-#define BUILTIN_TYPE(ID, Parent) const Type *Builtin##ID##Type;
-#include "stone/AST/TypeNode.def"
+  // #define BUILTIN_TYPE(ID, Parent) const Type *Builtin##ID##Type;
+  // #include "stone/AST/TypeNode.def"
 
   /// Built-in reserved identifiers (e.g., `BuiltinIfIdentifier`, etc.)
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \

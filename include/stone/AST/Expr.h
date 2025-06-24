@@ -1,6 +1,7 @@
 #ifndef STONE_AST_EXPR_H
 #define STONE_AST_EXPR_H
 
+#include "stone/AST/Alignments.h"
 #include "stone/AST/ExprKind.h"
 #include "stone/AST/Node.h"
 #include "stone/AST/NodeKind.h"
@@ -13,7 +14,7 @@ class ExprFlight;
 /// Each expression node is tagged with an `ExprKind` and participates in
 /// the node hierarchy using `NodeKind::Expr`. Subclasses are defined via
 /// macro expansion using `ExprNode.def`.
-class alignas(8) Expr : public Node {
+class alignas(1 << ExprAlignInBits) Expr : public Node {
 
   ExprFlight *flight = nullptr;
 

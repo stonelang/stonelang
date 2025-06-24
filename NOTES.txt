@@ -929,3 +929,204 @@ public:
 };
 
 
+
+
+//===----------------------------------------------------------------------===//
+// TypeFlight Showcase Utilities
+//      • short aliases for common TypeFlight instantiations
+//      • C++20 concepts for tag-based constraints
+//      • sample helper traits / factories
+//===----------------------------------------------------------------------===//
+
+#pragma once
+#include "stone/AST/TypeKind.h"
+#include "stone/AST/TypeState.h"   // contains TypeFlightBase / TypeFlight
+
+namespace stone {
+
+// ---------------------------------------------------------------------------
+// 1.  Concrete aliases (readability + brevity)
+// ---------------------------------------------------------------------------
+
+using Int32Flight   = TypeFlight<TypeKind::Int32>;
+using Int64Flight   = TypeFlight<TypeKind::Int64>;
+using Float32Flight = TypeFlight<TypeKind::Float32>;
+using Float64Flight = TypeFlight<TypeKind::Float64>;
+using PtrFlight     = TypeFlight<TypeKind::Ptr>;
+using FunFlight     = TypeFlight<TypeKind::Fun>;
+
+// ---------------------------------------------------------------------------
+// 2.  Template alias (family shortcut, if you want one)
+// ---------------------------------------------------------------------------
+
+template <TypeKind K>
+using FlightFor = TypeFlight<K>;  // e.g.  FlightFor<TypeKind::Tuple>
+
+// ---------------------------------------------------------------------------
+// 3.  Concepts (compile-time predicates on flights)
+// ---------------------------------------------------------------------------
+
+// “Is this flight tagged numeric (Int32 or Float64)?”
+template <typename T>
+concept IsNumericFlight = requires {
+  { T::kind } -> std::same_as<TypeKind>;
+  requires T::kind == TypeKind::Int32 || T::kind == TypeKind::Float64;
+};
+
+// Any integral kind?
+template <typename T>
+concept IsIntegralFlight = requires {
+  { T::kind } -> std::same_as<TypeKind>;
+  requires (T::kind == TypeKind::Int8  || T::kind == TypeKind::Int16 ||
+            T::kind == TypeKind::Int32 || T::kind == TypeKind::Int64);
+};
+
+// Any floating-point kind?
+template <typename T>
+concept IsFloatFlight = requires {
+  { T::kind } -> std::same_as<TypeKind>;
+  requires (T::kind == TypeKind::Float32 || T::kind == TypeKind::Float64);
+};
+
+// ---------------------------------------------------------------------------
+// 4.  Traits / helpers that leverage the tags
+// ---------------------------------------------------------------------------
+
+// Example: pick a human-readable name from the static tag.
+template <typename FlightT>
+constexpr const char *FlightTagName() {
+  if constexpr (FlightT::kind == TypeKind::Int32)   return "Int32";
+  if constexpr (FlightT::kind == TypeKind::Int64)   return "Int64";
+  if constexpr (FlightT::kind == TypeKind::Float32) return "Float32";
+  if constexpr (FlightT::kind == TypeKind::Float64) return "Float64";
+  if constexpr (FlightT::kind == TypeKind::Ptr)     return "Ptr";
+  if constexpr (FlightT::kind == TypeKind::Fun)     return "Fun";
+  return "<unknown>";
+}
+
+// ---------------------------------------------------------------------------
+// 5.  Tiny factory helpers (placement-new style)
+// ---------------------------------------------------------------------------
+
+template <TypeKind K, typename Ty>
+Ty *MakeTypeWithFlight(void *mem, TypeFlightBase *parent = nullptr) {
+  auto flight = new (mem) TypeFlight<K>(static_cast<TypeFlight<K>*>(parent));
+  return new (mem) Ty(flight);          // assumes Ty has ctor(TF*)
+}
+
+// Convenience factory for canonical Int32.
+inline Type *MakeCanonicalInt32Type(ASTContext &ctx) {
+  void *mem = ctx.Allocate(/*bytes=*/sizeof(IntType), /*align=*/alignof(IntType));
+  return MakeTypeWithFlight<TypeKind::Int32, IntType>(mem);
+}
+
+} // namespace stone
+
+
+
+
+---
+
+//===----------------------------------------------------------------------===//
+// Core TypeFlight Definition
+//===----------------------------------------------------------------------===//
+
+enum class TypeKind {
+  Int32, Float64, Bool, String
+};
+
+template <TypeKind K>
+class TypeFlight {
+public:
+  static constexpr TypeKind kind = K;
+  // other metadata...
+};
+
+//===----------------------------------------------------------------------===//
+// Named Aliases for Common Flights
+//===----------------------------------------------------------------------===//
+
+using Int32Flight  = TypeFlight<TypeKind::Int32>;
+using Float64Flight = TypeFlight<TypeKind::Float64>;
+using BoolFlight   = TypeFlight<TypeKind::Bool>;
+
+//===----------------------------------------------------------------------===//
+// Concepts for Tag-Based Filtering
+//===----------------------------------------------------------------------===//
+
+template <typename T>
+concept IsNumericFlight = requires {
+  { T::kind } -> std::same_as<TypeKind>;
+  requires T::kind == TypeKind::Int32 || T::kind == TypeKind::Float64;
+};
+
+template <typename T>
+concept IsSignedInt = requires {
+  { T::kind } -> std::same_as<TypeKind>;
+  requires T::kind == TypeKind::Int32;
+};
+
+template <typename T>
+concept IsFloating = requires {
+  { T::kind } -> std::same_as<TypeKind>;
+  requires T::kind == TypeKind::Float64;
+};
+
+//===----------------------------------------------------------------------===//
+// Example Dispatch Function
+//===----------------------------------------------------------------------===//
+
+template <typename T>
+void Visit(const T& node) requires IsNumericFlight<T> {
+  std::cout << "Visiting numeric type of kind: " << static_cast<int>(T::kind) << "\n";
+}
+
+//===----------------------------------------------------------------------===//
+// Usage
+//===----------------------------------------------------------------------===//
+
+Int32Flight i;
+Float64Flight f;
+Visit(i); // OK
+Visit(f); // OK
+// Visit(BoolFlight{}); // ❌ Compile-time error (not numeric)
+
+
+
+class UInt128Type final : public Type {
+public:
+  explicit UInt128Type(TypeFlight<TypeKind::UInt128>* flight) : Type(flight) {}
+};
+template <TypeKind K>
+explicit Type(TypeFlight<K>* typedFlight) : flight(typedFlight) {
+  static_assert(K != TypeKind::None, "Invalid TypeKind for Type constructor");
+}
+
+
+
+
+template <typename T>
+concept IsIntFlight = std::is_base_of_v<TypeFlight<TypeKind::Int32>, T>;
+
+void Process(const TypeFlightBase *flight) {
+  switch (flight->GetKind()) {
+    case TypeKind::Int32:
+      // cast to TypeFlight<TypeKind::Int32>
+      break;
+    ...
+  }
+}
+TypeFlightBase *flight = ...;
+Type *ty = new Int32Type(flight);
+
+TypeFlight<TypeKind::Int32> *intFlight = cast<TypeFlight<TypeKind::Int32>>(flightBase);
+template <typename T>
+concept IsIntFlight = std::same_as<typename T::Kind, TypeKind::Int32>;
+
+template <TypeKind K>
+TypeFlight<K> *castTo(TypeFlightBase *base) {
+  assert(base->GetKind() == K && "Invalid cast to TypeFlight");
+  return static_cast<TypeFlight<K> *>(base);
+}
+auto *intFlight = castTo<TypeKind::Int32>(flightBase);
+

@@ -1,6 +1,7 @@
 #ifndef STONE_AST_MODULE_H
 #define STONE_AST_MODULE_H
 
+#include "stone/AST/Alignments.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Node.h"
 
@@ -17,7 +18,7 @@ class ModuleContext;
 /// A `Module` manages one or more `File` units and maintains their
 /// shared context, scope, and dependency graph. It is the top-level container
 /// for semantic and code generation phases.
-class Module final : public Node {
+class alignas(1 << ModuleAlignInBits) Module final : public Node {
   ModuleContext
       &context; ///< Owning context for identifier memory, global types, etc.
   Scope *scope =

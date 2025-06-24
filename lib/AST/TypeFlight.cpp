@@ -2,6 +2,8 @@
 
 using namespace stone;
 
+
+
 // bool BuiltinTypeFlight::IsNumberType(TypeKind kind) const {
 //   switch (kind) {
 //   case TypeKind::Int:

@@ -12,7 +12,8 @@ using namespace stone;
 //   flight->SetOwner(this);
 // }
 
-Decl::Decl(DeclFlight *parent) : flight(flight) {
+Decl::Decl(DeclFlight *flight)
+    : Node(flight->GetParent()->GetOwner()), flight(flight) {
 
   assert(flight && "DeclFlight is required for Decl");
   flight->SetOwner(this);

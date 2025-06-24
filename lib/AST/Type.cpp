@@ -5,14 +5,23 @@
 
 using namespace stone;
 
-Type::Type(TypeFlight *flight) : flight(flight) {
+Type::Type(TypeFlightBase *flight) : Node(nullptr), flight(flight) {
   assert(flight && "Expected TypeFlight for a Type!");
-  flight->SetOwner(this);
+  // flight->SetOwner(this);
 }
 
 bool Type::IsCanType() const {
-  return (flight->HasCanType() && flight->GetCanType() == this);
+  // return (flight->HasCanType() && flight->GetCanType() == this);
+
+  // if (flight->GetKind() == TypeKind::Int32) {
+  //   auto *int32Flight = static_cast<TypeFlight<TypeKind::Int32> *>(flight);
+  // }
+  return false;
 }
-TypeKind Type::GetKind() const { return flight->GetTypeKind(); }
+TypeKind Type::GetKind() const { 
+  //return flight->GetTypeKind(); 
+  return TypeKind::None;
+
+}
 
 bool FunType::classof(const Type *T) {}

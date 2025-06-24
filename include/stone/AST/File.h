@@ -30,7 +30,7 @@ inline bool HasStage(FileStage current, FileStage check) {
 ///
 /// Each `File` is tied to a specific buffer, owns a list of top-level
 /// declarations, and tracks the semantic/codegen analysis stages.
-class File final : public Node {
+class alignas(1 << FileAlignInBits) File final : public Node {
 
   SrcUnit unit;
   Module &parent;
@@ -39,7 +39,6 @@ class File final : public Node {
   FileStage stage = FileStage::None; ///< Processing stage flags
 
 public:
-
   /// \brief Constructs a File with a buffer and parent module.
   File(SrcUnit unit, Module &parent);
 

@@ -1,6 +1,7 @@
 #ifndef STONE_AST_STMT_H
 #define STONE_AST_STMT_H
 
+#include "stone/AST/Alignments.h"
 #include "stone/AST/Node.h"
 #include "stone/AST/NodeKind.h"
 #include "stone/AST/StmtKind.h"
@@ -16,7 +17,7 @@ class StmtFlight;
 ///
 /// This design allows each statement to be tagged with a `StmtKind` and
 /// extended using flight metadata (`StmtFlight*`) if desired.
-class alignas(8) Stmt : public Node {
+class alignas(1 << StmtAlignInBits) Stmt : public Node {
 
   StmtFlight *flight = nullptr;
 

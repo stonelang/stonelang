@@ -10,59 +10,75 @@
 #define LAST_TYPE(ID)
 #endif
 
-// === Root Types ===
-TYPE(Fun,   Type)
-TYPE(Void,  Type)
-TYPE(Int,   Type)
-TYPE(Int8,  Type)
-TYPE(Int16, Type)
-TYPE(Int32, Type)
-TYPE(Int64, Type)
-TYPE(Int128, Type)
-TYPE(UInt,  Type)
-TYPE(UInt8, Type)
-TYPE(UInt16, Type)
-TYPE(UInt32, Type)
-TYPE(UInt64, Type)
-TYPE(UInt128, Type)
-TYPE(Float,   Type)
-TYPE(Float16, Type)
-TYPE(Float32, Type)
-TYPE(Float64, Type)
-TYPE(Float128,Type)
+//===----------------------------------------------------------------------===//
+// Root Types
+//===----------------------------------------------------------------------===//
+TYPE(Fun,    Type)
+TYPE(Void,   Type)
 
-TYPE(Bool,  Type)
-TYPE(Char,  Type)
-TYPE(Null,  Type)
-TYPE(String,Type)
+TYPE(Int,     Type)
+TYPE(Int8,    Type)
+TYPE(Int16,   Type)
+TYPE(Int32,   Type)
+TYPE(Int64,   Type)
+TYPE(Int128,  Type)
 
-// === Nominal Types (user-defined) ===
-TYPE(Enum,     Type)
-TYPE(Struct,   Type)
+TYPE(UInt,     Type)
+TYPE(UInt8,    Type)
+TYPE(UInt16,   Type)
+TYPE(UInt32,   Type)
+TYPE(UInt64,   Type)
+TYPE(UInt128,  Type)
+
+TYPE(Float,     Type)
+TYPE(Float16,   Type)
+TYPE(Float32,   Type)
+TYPE(Float64,   Type)
+TYPE(Float128,  Type)
+
+TYPE(Bool,    Type)
+TYPE(Char,    Type)
+TYPE(Null,    Type)
+TYPE(String,  Type)
+
+//===----------------------------------------------------------------------===//
+// Nominal Types (user-defined)
+//===----------------------------------------------------------------------===//
+TYPE(Enum,      Type)
+TYPE(Struct,    Type)
 TYPE(Interface, Type)
 TYPE_RANGE(Nominal, Enum, Interface)
 
-// === Magic Types (syntactic sugar, non-canonical) ===
+//===----------------------------------------------------------------------===//
+// Magic Types (syntactic sugar, non-canonical)
+//===----------------------------------------------------------------------===//
 TYPE(Alias, Type)
 TYPE(Auto,  Type)
 TYPE_RANGE(Magic, Alias, Auto)
 
-// === Access Types (non-boxable, modifiers) === 
+//===----------------------------------------------------------------------===//
+// Access Types (non-boxable modifiers)
+//===----------------------------------------------------------------------===//
 TYPE(Ptr, Type)
 TYPE(Ref, Type)
 TYPE_RANGE(Access, Ptr, Ref)
 
-// === Aggregate Types (compound layout) ===
- 
-TYPE(ArrayType,    Type)
-TYPE(TupleType,    Type)
-TYPE(VariadicType, Type)
-TYPE_RANGE(Aggregate, ArrayType, VariadicType)
+//===----------------------------------------------------------------------===//
+// Aggregate Types (compound layout)
+//===----------------------------------------------------------------------===//
+TYPE(Array,    Type)
+TYPE(Tuple,    Type)
+TYPE(Variadic, Type)
+TYPE_RANGE(Aggregate, Array, Variadic)
 
-// === Final Tag ===
-LAST_TYPE(VariadicType)
+//===----------------------------------------------------------------------===//
+// Final Tag
+//===----------------------------------------------------------------------===//
+LAST_TYPE(Variadic)
 
-// === Cleanup ===
+//===----------------------------------------------------------------------===//
+// Cleanup
+//===----------------------------------------------------------------------===//
 #undef TYPE
 #undef TYPE_RANGE
 #undef LAST_TYPE

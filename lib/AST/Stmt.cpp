@@ -4,4 +4,4 @@
 
 using namespace stone;
 
-Stmt::Stmt(StmtFlight *flight) : flight(flight) {}
+Stmt::Stmt(StmtFlight *flight) : Node(this), flight(flight) {}

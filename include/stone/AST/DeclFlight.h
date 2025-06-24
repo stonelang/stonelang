@@ -7,7 +7,7 @@
 #include "stone/AST/DeclKind.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/ParamList.h"
-#include "stone/AST/TypeFlight.h"
+// #include "stone/AST/TypeFlight.h"
 #include "stone/AST/TypeInfluencer.h"
 
 #include "llvm/ADT/BitVector.h"
@@ -19,9 +19,9 @@
 namespace stone {
 class Decl;
 class DeclFlight;
-class TypeFlight;
-class ASTSession;
+// class TypeFlight;
 class ParamList;
+// template <TypeKind K> class TypeFlight; -- want type
 
 // enum class DeclFlightKind : uint8_t {
 //   Parametric,

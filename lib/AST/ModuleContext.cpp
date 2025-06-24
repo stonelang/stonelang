@@ -8,9 +8,9 @@ ModuleContext::ModuleContext(Memory &memory, IdentifierTable &identifiers,
                              DiagnosticEngine &diags)
     : memory(memory), identifiers(identifiers), diags(diags) {
 
-#define BUILTIN_TYPE(ID, Parent)                                               \
-  Builtin##ID##Type = new (memory) ID##Type(new (memory) BuiltinTypeFlight());
-#include "stone/AST/TypeNode.def"
+  // #define BUILTIN_TYPE(ID, Parent)                                               \
+//   Builtin##ID##Type = new (memory) ID##Type(new (memory) BuiltinTypeFlight());
+  // #include "stone/AST/TypeNode.def"
 
   // Initialize all of the known identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \

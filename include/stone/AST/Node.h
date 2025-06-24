@@ -20,50 +20,43 @@ class Type;
 class Expr;
 class Stmt;
 
-/// \file Node.h
-/// \brief Defines the base `Node` structure for representing AST and semantic
-/// units
-///        such as modules, declarations, expressions, statements, and types.
-
+/// \brief The base class for the nodes
 class Node : public Allocation<Node> {
 protected:
-  ///< Enumerated type for fast runtime classification
-  NodeKind kind = NodeKind::None;
-  ///< Pointer to this node's parent in the AST hierarchy
-  Node *parent = nullptr;
+  /// \brief The parent node (generic union type)
+  NodeUnion parent;
 
-  /// \brief The list of child nodes in this subtree
-  llvm::SmallVector<Node *, 16> children;
+  /// \brief The list of children (generic union types)
+  llvm::SmallVector<NodeUnion, 16> children;
 
 public:
-  explicit Node();
+  explicit Node(NodeUnion parent);
 
-public:
-  /// \returns The `NodeKind` tag indicating what kind of node this is
-  NodeKind GetKind() const { return kind; }
+  /// \returns The kind of node this instance represents
+  NodeKind GetKind() const;
 
-  /// \returns The parent node in the AST, if any
-  Node *GetParent() const { return parent; }
+  /// \returns The parent node (as NodeUnion)
+  NodeUnion GetParent() const { return parent; }
 
-  /// \brief Sets the parent of this node
-  void SetParent(Node *p) { parent = p; }
+  /// \brief Sets the parent node
+  void SetParent(NodeUnion P) { parent = P; }
 
-  /// \returns A read-only view of the children of this node
-  llvm::ArrayRef<Node *> GetChildren() const { return children; }
+  /// \returns a read-only view of the child nodes
+  llvm::ArrayRef<NodeUnion> GetChildren() const { return children; }
 
-  /// \brief Adds a non-null child node to this node's children list
-  /// \param child The child node to add
-  void AddChild(Node *child);
+  /// \brief Add a child to this node
+  void AddChild(NodeUnion child) {
+    assert(!child.isNull() && "Cannot add null child");
+    children.push_back(child);
+  }
 
-  /// \brief Type check against the underlying pointer
-  /// \tparam T The desired type (e.g., `Decl`, `Expr`)
-  /// \returns `true` if the stored value is of type `T*`
-  // template <typename T> bool is() const { return underlying.is<T *>(); }
+  /// \brief Type-safe cast of the parent
+  template <typename T> T *GetParentAs() const {
+    return parent.dyn_cast<T *>();
+  }
 
-  // /// \brief Retrieves the stored pointer if it matches type `T*`
-  // /// \tparam T The expected type (e.g., `Decl`, `Expr`)
-  // /// \returns Pointer to type `T`, or undefined behavior if type mismatch
-  // template <typename T> T *get() const { return underlying.get<T *>(); }
+  /// \brief Type check on the parent
+  template <typename T> bool IsParentType() const { return parent.is<T *>(); }
 };
 
 class Walker {

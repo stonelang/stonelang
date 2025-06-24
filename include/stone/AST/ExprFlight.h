@@ -9,7 +9,12 @@
 namespace stone {
 
 class alignas(8) ExprFlight : public Allocation<ExprFlight> {
+  Expr *owner;
+  ExprFlight *parent;
+
 public:
+  ExprFlight(ExprFlight *parent = nullptr) : parent(parent) {}
+  Expr *GetOwner() { return owner; }
 };
 
 } // namespace stone

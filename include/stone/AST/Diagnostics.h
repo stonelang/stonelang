@@ -29,7 +29,7 @@ namespace stone {
 
 class Decl;
 class Type;
-class TypeFlight;
+class TypeFlightBase;
 class ConstructorDecl;
 class FuncDecl;
 class AliasDecl;
@@ -95,7 +95,7 @@ struct FullyQualified<
     T,
     typename std::enable_if<std::is_convertible<T, stone::Type>::value>::type> {
   stone::Type t;
-  // TODO: TypeFlight
+  // TODO: TypeFlightBase
 public:
   FullyQualified(T t) : t(t){};
   stone::Type getType() const { return t; }
@@ -237,7 +237,7 @@ class DiagnosticArgument final {
     StringRef StringVal;
     Identifier IdentifierVal;
     const Decl *DeclVal;
-    TypeFlight *TypeFlightVal;
+    TypeFlightBase *TypeFlightVal;
     DiagnosticInfo *DiagnosticVal;
     llvm::VersionTuple VersionVal;
     const clang::NamedDecl *ClangDecl;
@@ -262,7 +262,7 @@ public:
   DiagnosticArgument(const Decl *D)
       : Kind(DiagnosticArgumentKind::Decl), DeclVal(D) {}
 
-  DiagnosticArgument(TypeFlight *T)
+  DiagnosticArgument(TypeFlightBase *T)
       : Kind(DiagnosticArgumentKind::TypeFlight), TypeFlightVal(T) {}
 
   DiagnosticArgument(llvm::VersionTuple V)
@@ -313,7 +313,7 @@ public:
     return DeclVal;
   }
 
-  TypeFlight *getAsTypeFlight() const {
+  TypeFlightBase *getAsTypeFlight() const {
     assert(Kind == DiagnosticArgumentKind::TypeFlight);
     return TypeFlightVal;
   }
@@ -590,7 +590,7 @@ public:
   /// future version of the compiler. In such cases, it may be helpful to
   /// avoid failing to build a module from its interface if the interface was
   /// emitted using a compiler that no longer has the restriction.
-  InFlightDiagnostic &warnInStoneInterface(const DeclContext *context);
+  // InFlightDiagnostic &warnInStoneInterface(const DeclContext *context);
 
   /// Conditionally limit the diagnostic behavior to warning until
   /// the specified version.  If the condition is false, no limit is

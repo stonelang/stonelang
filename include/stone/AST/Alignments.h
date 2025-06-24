@@ -4,21 +4,19 @@
 #include <cstddef>
 
 namespace stone {
-
+class Module;
+class File;
 class Decl;
 class Expr;
 class Stmt;
 class Type;
-class ASTSession;
-class DeclContext;
 
+constexpr size_t ModuleAlignInBits = 3;
+constexpr size_t FileAlignInBits = 3;
 constexpr size_t DeclAlignInBits = 3;
 constexpr size_t ExprAlignInBits = 3;
 constexpr size_t StmtAlignInBits = 3;
 constexpr size_t TypeAlignInBits = 3;
-
-constexpr size_t ASTSessionAlignInBits = 3;
-constexpr size_t DeclContextAlignInBits = 3;
 
 } // namespace stone
 
@@ -45,6 +43,8 @@ template <class T> struct PointerLikeTypeTraits;
       : public MoreAlignedPointerTraits<CLASS, ALIGNMENT> {};                  \
   }
 
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::Module, stone::ModuleAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::File, stone::FileAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Decl, stone::DeclAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Expr, stone::ExprAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Stmt, stone::StmtAlignInBits)

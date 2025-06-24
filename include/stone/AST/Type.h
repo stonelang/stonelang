@@ -17,7 +17,7 @@
 namespace stone {
 
 class Type;
-class TypeFlight;
+class TypeFlightBase;
 
 /// \brief The root base class for all semantic types in the Stone language.
 ///
@@ -29,18 +29,17 @@ class TypeFlight;
 /// All `Type` subclasses are created through macros in `TypeNode.def`, and are
 /// aligned to `TypeAlignInBits` to support efficient allocation and casting.
 class alignas(1 << TypeAlignInBits) Type : public Node {
-
-  TypeFlight *flight = nullptr;
+  TypeFlightBase *flight = nullptr;
 
 public:
   /// \brief Constructs a type node with the associated metadata wrapper.
-  explicit Type(TypeFlight *flight);
+  explicit Type(TypeFlightBase *flight);
 
   /// \returns The specific kind of this type (e.g., Int32, Struct, Auto).
   TypeKind GetKind() const;
 
   /// \returns The associated `TypeFlight`, which stores additional metadata.
-  TypeFlight *GetFlight() { return flight; }
+  TypeFlightBase *GetFlight() { return flight; }
 
   /// \returns True if this type is canonical (i.e., resolved, not sugar).
   bool IsCanType() const;
@@ -69,7 +68,7 @@ public:
 #define TYPE(ID, Parent)                                                       \
   class ID##Type final : public Parent {                                       \
   public:                                                                      \
-    explicit ID##Type(TypeFlight *flight) : Parent(flight) {}                  \
+    explicit ID##Type(TypeFlightBase *flight) : Parent(flight) {}              \
     static bool classof(const Type *T);                                        \
   };
 
