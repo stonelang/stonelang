@@ -32,6 +32,8 @@ enum class TypeFlightKind {
 class alignas(1 << TypeAlignInBits) TypeFlightBase
     : public Allocation<TypeFlightBase> {
 protected:
+  TypeKind kind = TypeKind::None;
+
   /// \brief The parent `TypeFlight`, if this type is nested inside another.
   ///
   /// For example, in a function type `(Int32) -> Float64`, the return type
@@ -39,7 +41,8 @@ protected:
   TypeFlightBase *parent = nullptr;
 
   /// \brief Protected constructor to prevent direct instantiation.
-  explicit TypeFlightBase(TypeFlightBase *parent) : parent(parent) {
+  explicit TypeFlightBase(TypeKind kind, TypeFlightBase *parent = nullptr)
+      : kind(kind), parent(parent) {
     static_assert(
         !std::is_same_v<std::remove_cv_t<decltype(*this)>, TypeFlightBase>,
         "TypeFlightBase must never be instantiated directly.");
@@ -55,14 +58,8 @@ public:
   /// \returns The parent `TypeFlightBase`, if any.
   TypeFlightBase *GetParent() const { return parent; }
 
-  // template <TypeKind K> inline bool IsA() const {
-  //   return static_cast<const TypeFlight<K> *>(this)->kind == K;
-  // }
-
-  // template <TypeKind K> TypeFlight<K> *DynCast() {
-  //   return TypeFlight<K>::classof(this) ? static_cast<TypeFlight<K> *>(this)
-  //                                       : nullptr;
-  // }
+  /// \returns The static kind of this flight.
+  TypeKind GetTypeKind() const { return kind; }
 };
 
 /// \brief A type-specific metadata container used during type resolution.
@@ -91,11 +88,8 @@ public:
   static constexpr TypeKind kind = K;
 
   /// \brief Construct a `TypeFlight` with an optional parent.
-  explicit TypeFlight(TypeFlightBase* parent = nullptr)
-      : TypeFlightBase(parent) {}
-
-  /// \returns The static kind of this flight.
-  TypeKind GetTypeKind() const { return kind; }
+  explicit TypeFlight(TypeFlightBase *parent = nullptr)
+      : TypeFlightBase(K, parent) {}
 
   void SetCanType(Type *T) {
     assert(T && "TypeFlight cannot be assigned a null canonical Type!");
@@ -119,6 +113,8 @@ public:
   static bool classof(const TypeFlightBase *B) {
     return B && static_cast<const TypeFlight<K> *>(B)->kind == K;
   }
+
+  static constexpr TypeKind GetKindStatic() { return K; }
 
   /// \returns The runtime flight-kind discriminator.
   virtual TypeFlightKind GetTypeFlightKind() const = 0;

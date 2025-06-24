@@ -18,10 +18,9 @@ bool Type::IsCanType() const {
   // }
   return false;
 }
-TypeKind Type::GetKind() const { 
-  //return flight->GetTypeKind(); 
+TypeKind Type::GetKind() const {
+  // return flight->GetTypeKind();
   return TypeKind::None;
-
 }
 
 bool FunType::classof(const Type *T) {}

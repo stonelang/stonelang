@@ -9,10 +9,6 @@
 
 namespace stone {
 
-// void Walk(ArtifactWalker &walker);
-// void Walk(ArtifactWalker &&walker) { Walk(walker); }
-// void Visit(ASTVisitor& visitor);
-/// NodeConext { Node* scope ... }
 class Module;
 class File;
 class Decl;
@@ -20,8 +16,16 @@ class Type;
 class Expr;
 class Stmt;
 
-/// \brief The base class for the nodes
-class Node : public Allocation<Node> {
+/// \brief A low-level root base class for all AST nodes.
+///
+/// You may derive from this to create other tagged or specialized node roots.
+/// For now, this base serves as a clean anchor for allocation or static casting.
+class NodeBase : public Allocation<NodeBase> {
+  // Empty by design, for tagging and layering.
+};
+
+/// \brief The base class for all AST nodes.
+class Node : public NodeBase {
 protected:
   /// \brief The parent node (generic union type)
   NodeUnion parent;
@@ -59,74 +63,39 @@ public:
   template <typename T> bool IsParentType() const { return parent.is<T *>(); }
 };
 
+/// \brief AST traversal driver for structured tree walking.
+///
+/// Meant to provide optional hooks for tree traversal passes.
+/// You can subclass and override only what you need.
 class Walker {
 public:
-  Walker();
+  Walker() = default;
 
-  // virtual ~ArtifactWalker() = default;
-
-  // /// Unified dispatcher
-  // virtual bool Walk(Node *A) {
-
-  // }
-
-  // // === Hook points (optional) ===
-  // virtual bool WalkDecl(Decl *D) { return true; }
-  // virtual bool WalkType(Type *T) { return true; }
-  // virtual bool WalkExpr(Expr *E) { return true; }
-  // virtual bool WalkStmt(Stmt *S) { return true; }
-
-  // virtual bool WalkModule(Module *M) { return true; }
-  // virtual bool WalkFile(File *MF) { return true; }
-
-  // virtual void Walk(Node *node) = 0;
+  // Hook points – uncomment as needed for structure-driven walks.
+  // bool Walk(Node *node);
+  // bool WalkDecl(Decl *D);
+  // bool WalkType(Type *T);
+  // bool WalkExpr(Expr *E);
+  // bool WalkStmt(Stmt *S);
+  // bool WalkModule(Module *M);
+  // bool WalkFile(File *F);
 };
 
+/// \brief AST visitor for inspection or transformation.
 class Visitor {
 public:
-  Visitor();
+  Visitor() = default;
 
-  // virtual ~ArtifactVisitor() = default;
-
-  // virtual void Visit(Artifact *A) {
-  // if (!A) return;
-
-  // switch (A->GetArtifactKind()) {
-  // case ArtifactKind::Decl:
-  //   return VisitDecl(static_cast<Decl *>(A));
-  // case ArtifactKind::Type:
-  //   return VisitType(static_cast<Type *>(A));
-  // case ArtifactKind::Expr:
-  //   return VisitExpr(static_cast<Expr *>(A));
-  // case ArtifactKind::Stmt:
-  //   return VisitStmt(static_cast<Stmt *>(A));
-  // case ArtifactKind::Module:
-  //   return VisitModule(static_cast<Module *>(A));
-  // case ArtifactKind::File:
-  //   return VisitFile(static_cast<File *>(A));
-  // default:
-  //   return;
-  // }
-
-  // virtual void Visit(Node *node) {} // fallback
-
-  // virtual void VisitDecl(Decl *decl) {
-  //   Visit(static_cast<Node *>(decl));
-  // }
-
-  // virtual void VisitType(Type *type) {
-  //   Visit(static_cast<Node *>(type));
-  // }
-
-  // Optional fine-grained visits
-  // virtual void VisitDecl(Decl *D) {}
-  // virtual void VisitType(Type *T) {}
-  // virtual void VisitExpr(Expr *E) {}
-  // virtual void VisitStmt(Stmt *S) {}
-
-  // virtual void VisitModule(Module *M) {}
-  // virtual void VisitFile(File *MF) {}
+  // Entry points and fine-grained visit hooks – enable on demand.
+  // void Visit(Node *node);
+  // void VisitDecl(Decl *D);
+  // void VisitType(Type *T);
+  // void VisitExpr(Expr *E);
+  // void VisitStmt(Stmt *S);
+  // void VisitModule(Module *M);
+  // void VisitFile(File *F);
 };
+
 } // namespace stone
 
-#endif
+#endif // STONE_AST_NODE_H

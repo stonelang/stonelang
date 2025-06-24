@@ -1130,3 +1130,145 @@ TypeFlight<K> *castTo(TypeFlightBase *base) {
 }
 auto *intFlight = castTo<TypeKind::Int32>(flightBase);
 
+
+auto *flt = new TypeFlight<TypeKind::Float64>();
+
+if (flt->GetKind() == TypeKind::Float64) {
+    auto *asFloat = static_cast<TypeFlight<TypeKind::Float64> *>(flt);
+    // Use asFloat
+}
+inline bool IsNumericKind(TypeKind kind) {
+  switch (kind) {
+  case TypeKind::Int32:
+  case TypeKind::Float64:
+    return true;
+  default:
+    return false;
+  }
+}
+
+template <typename T>
+concept IsNumericFlight = requires {
+  { T::kind } -> std::same_as<TypeKind>;
+  requires IsNumericKind(T::kind);
+};
+
+
+inline void VisitFlight(TypeFlightBase *base) {
+  switch (base->GetKind()) {
+  case TypeKind::Int32:
+    Visit(*static_cast<TypeFlight<TypeKind::Int32> *>(base));
+    break;
+  case TypeKind::Float64:
+    Visit(*static_cast<TypeFlight<TypeKind::Float64> *>(base));
+    break;
+  default:
+    // Error or fallback
+    break;
+  }
+}
+void Visit(TypeFlight<TypeKind::Int32> &f) { /* handle int32 */ }
+void Visit(TypeFlight<TypeKind::Float64> &f) { /* handle float64 */ }
+
+void VisitFlight(TypeFlightBase *base) {
+  switch (base->GetKind()) {
+    case TypeKind::Int32:
+      Visit(*static_cast<TypeFlight<TypeKind::Int32> *>(base));
+      break;
+    case TypeKind::Float64:
+      Visit(*static_cast<TypeFlight<TypeKind::Float64> *>(base));
+      break;
+    default:
+      break;
+  }
+}
+
+
+
+//===----------------------------------------------------------------------===//
+// TypeFlightVisitor - Static dispatch without virtual calls
+//===----------------------------------------------------------------------===//
+
+class TypeFlightVisitor {
+public:
+  // === Individual Visit Overloads ===
+#define VISIT_TYPE_FLIGHT(KIND) \
+  void Visit(TypeFlight<TypeKind::KIND> &flight);
+
+#include "stone/AST/TypeNode.def"
+#undef VISIT_TYPE_FLIGHT
+
+  // === Dispatch Based on Runtime TypeKind ===
+  void Dispatch(TypeFlightBase &base) {
+    switch (base.GetKind()) {
+#define VISIT_TYPE_FLIGHT(KIND) \
+      case TypeKind::KIND: \
+        Visit(static_cast<TypeFlight<TypeKind::KIND> &>(base)); \
+        break;
+
+#include "stone/AST/TypeNode.def"
+#undef VISIT_TYPE_FLIGHT
+
+      default:
+        // Handle unknown or invalid kind.
+        break;
+    }
+  }
+};
+// stone/AST/TypeNode.def
+
+#ifndef VISIT_TYPE_FLIGHT
+#define VISIT_TYPE_FLIGHT(KIND)
+#endif
+
+VISIT_TYPE_FLIGHT(Int8)
+VISIT_TYPE_FLIGHT(Int16)
+VISIT_TYPE_FLIGHT(Int32)
+VISIT_TYPE_FLIGHT(Float32)
+VISIT_TYPE_FLIGHT(Bool)
+VISIT_TYPE_FLIGHT(Void)
+
+#undef VISIT_TYPE_FLIGHT
+
+TypeFlight<TypeKind::Int32> int32F;
+TypeFlightVisitor visitor;
+visitor.Dispatch(int32F); // calls Visit(TypeFlight<Int32>&)
+
+
+class TypeFlightVisitor {
+public:
+  // Example visit methods
+  void Visit(TypeFlight<TypeKind::Int8> &);
+  void Visit(TypeFlight<TypeKind::Int32> &);
+  void Visit(TypeFlight<TypeKind::Float64> &);
+  // ... add more as needed
+};
+
+
+#define VISIT_TYPE_FLIGHT(KIND) \
+  if (auto *typed = llvm::dyn_cast<TypeFlight<TypeKind::KIND>>(flight)) { \
+    visitor.Visit(*typed); \
+    return; \
+  }
+
+template <typename VisitorT>
+void DispatchTypeFlight(TypeFlightBase *flight, VisitorT &visitor) {
+  // Expand for each KIND
+  VISIT_TYPE_FLIGHT(Int8)
+  VISIT_TYPE_FLIGHT(Int16)
+  VISIT_TYPE_FLIGHT(Int32)
+  VISIT_TYPE_FLIGHT(Int64)
+  VISIT_TYPE_FLIGHT(UInt32)
+  VISIT_TYPE_FLIGHT(Float64)
+  // ... add more
+
+  // Optional fallback
+  stone::Trap("Unhandled TypeFlight in visitor dispatch.");
+}
+
+
+
+
+
+
+
