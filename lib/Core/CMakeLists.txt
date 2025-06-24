@@ -30,6 +30,7 @@ set(stone_support_sources
   Options.cpp
   Platform.cpp
   SrcMgr.cpp
+  SrcUnit.cpp
   Statistics.cpp
   Version.cpp
 )

@@ -15,6 +15,8 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SrcUnit.h"
 #include "stone/Diag/DiagID.h"
+#include "stone/Lex/LexerBookmark.h"
+
 #include "llvm/ADT/FunctionExtras.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
@@ -22,77 +24,19 @@
 namespace stone {
 
 class LexerObserver;
-
-/// \brief Represents a saved lexical state, used for rewinding or nested
-/// lexing.
-///
-/// A `LexerState` captures the current position within a source buffer and any
-/// associated leading trivia. It enables resuming lexing from a specific point,
-/// supporting speculative parsing and embedded lexers (e.g., for macros or
-/// interpolated strings).
-class LexerState final {
-public:
-  LexerState() {}
-
-  /// \returns true if this state has a valid source location.
-  bool IsValid() const { return loc.isValid(); }
-
-  /// \brief Advances the current state by the given byte offset.
-  ///
-  /// \note The returned `LexerState` is a shallow copy with its location
-  /// advanced by the specified number of bytes.
-  LexerState Advance(unsigned offset) const {
-    assert(IsValid());
-    return LexerState(loc.getAdvancedLoc(offset));
-  }
-
-private:
-  explicit LexerState(SrcLoc loc) : loc(loc) {}
-
-  SrcLoc loc; ///< The current byte-level location in the source.
-  llvm::StringRef leadingTrivia; ///< Optional trivia preceding a token (e.g.,
-                                 ///< whitespace/comments).
-
-  friend class Lexer; ///< Grants `Lexer` access to construct and manipulate
-                      ///< `LexerState`.
-};
-
-/// \brief Specifies whether the lexer should accept a hashbang line (`#!`) at
-/// the start.
-enum class HashbangMode : bool {
-  Disallowed, ///< Reject `#!` at the beginning of the file (default).
-  Allowed     ///< Allow and skip over the hashbang line.
-};
-
-/// \brief Controls how the lexer treats comments in the source buffer.
-enum class CommentRetentionMode {
-  None,              ///< Discard comments entirely.
-  AttachToNextToken, ///< Store comment as metadata on the next token.
-  ReturnAsTokens     ///< Emit comments as separate tokens in the stream.
-};
-
-/// \brief Describes the style of conflict markers to detect in source.
-enum class ConflictMarkerKind {
-  Normal,  ///< Standard Git or diff3-style conflict markers.
-  Perforce ///< Perforce-style conflict markers.
-};
-
 using TokenCallback = llvm::function_ref<void(const Token &)>;
-
 /// \brief The core class responsible for tokenizing `.stone` source files.
 ///
 /// `Lexer` scans characters from a `SrcUnit`, emitting tokens and collecting
-/// diagnostics. It supports nested lexing via `LexerState`, optional comment
+/// diagnostics. It supports nested lexing via `LexerBookmark`, optional comment
 /// and trivia tracking, configurable conflict marker behavior, and
 /// observer-based side-effect hooks.
 class Lexer final {
-  SrcUnit unit;
+
+  SrcUnit &unit;
   SrcMgr &sm;
-
   Token nextToken;
-  LexerState state;
-
-  llvm::SmallVector<DiagID, 3> issues;
+  LexerBookmark bookmark;
   LexerObserver *observer = nullptr;
 
   /// Pointer to the first character of the buffer, even in a lexer that
@@ -137,14 +81,14 @@ public:
   ///
   /// \param unit The `.stone` source unit to tokenize.
   /// \param sm   The source manager that owns the input buffer.
-  explicit Lexer(SrcUnit unit, SrcMgr &sm);
+  explicit Lexer(SrcUnit &unit, SrcMgr &sm);
 
-  /// Constructs a nested lexer over a subrange defined by two saved states.
+  /// Constructs a nested lexer over a subrange defined by two saved bookmarks.
   ///
   /// \param parent      The parent lexer for context.
-  /// \param beginState  Starting state of the subrange.
-  /// \param endState    Ending state (exclusive) of the subrange.
-  explicit Lexer(Lexer &parent, LexerState beginState, LexerState endState);
+  /// \param begin  Starting bookmark of the subrange.
+  /// \param end    Ending bookmark (exclusive) of the subrange.
+  explicit Lexer(Lexer &parent, LexerBookmark begin, LexerBookmark end);
 
   /// Pull-style tokenization: emit the next token into `result`.
   ///
@@ -164,33 +108,23 @@ public:
   /// \returns the current observer, if any.
   LexerObserver *GetObserver() const;
 
-  /// \returns the current lexer state (including source location and trivia).
-  LexerState GetState() const { return state; }
-
-  /// \returns a read-only view of diagnostic IDs encountered during lexing.
-  llvm::ArrayRef<DiagID> GetIssues() const { return issues; }
+  /// \returns the current lexer bookmark (including source location and
+  /// trivia).
+  LexerBookmark GetBookmark() const { return bookmark; }
 
 public:
   /// Returns true if this lexer will produce a code completion token.
   bool IsCodeCompletion() const { return CodeCompletionPtr != nullptr; }
-
-public:
-  /// Whether to allow and skip over a hashbang line (`#!`) at the top of the
-  /// source file.
-  HashbangMode HashbangAllowed = HashbangMode::Disallowed;
-
-  /// Type of conflict markers to recognize and report.
-  ConflictMarkerKind conflictMarkerKind = ConflictMarkerKind::Normal;
-
-  /// Strategy for retaining or discarding comments/trivia.
-  CommentRetentionMode commentRetentionMode = CommentRetentionMode::None;
 
 private:
   /// Internal scanning routine: advances to the next token.
   void Lex();
 
   /// Records a diagnostic encountered during lexing.
-  void Track(DiagID ID) { issues.push_back(ID); }
+  void Track(DiagID ID) { unit.AddDiag(ID); }
+
+public:
+  static void LexUnit(SrcUnit &unit, SrcMgr &sm);
 };
 
 } // namespace stone

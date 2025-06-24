@@ -11,20 +11,14 @@
 static bool IsWhitespace(char c) {
   return clang::isHorizontalWhitespace(c) || clang::isVerticalWhitespace(c);
 }
-
 static bool IsIdentifierStart(char c) { return clang::isIdentifierHead(c); }
-
 static bool IsIdentifierContinue(char c) { return clang::isIdentifierBody(c); }
 
 inline bool HasUTF8BOM(const char *Ptr) {
   return Ptr[0] == '\xEF' && Ptr[1] == '\xBB' && Ptr[2] == '\xBF';
 }
 
-#include "stone/Parse/Lexer.h"
-
-using namespace stone;
-
-Lexer::Lexer(SrcUnit unit, SrcMgr &sm) : unit(unit), sm(sm) {
+Lexer::Lexer(SrcUnit &unit, SrcMgr &sm) : unit(unit), sm(sm) {
 
   assert(unit && "Cannot initialize Lexer with invalid SrcUnit");
 
@@ -94,6 +88,16 @@ Lexer::Lexer(Lexer &parent, LexerState begin, LexerState end)
 
   // TODO: store or check end.loc for bounds enforcement if needed
   Lex(); // prime first token
+}
+
+void Lexer::LexUnit(SrcUnit &unit, SrcMgr &sm) {
+  Lexer lexer(sm, unit);
+  // lexer.Lex([&](const Token &tok) {
+  //   unit.AddToken(tok);
+
+  //   for (const DiagID &diag : lexer.ConsumeDiagnostics())
+  //     unit.AddDiagnostic(diag);
+  // });
 }
 
 void Lexer::Track(DiagID ID) { issues.push_back(ID); }

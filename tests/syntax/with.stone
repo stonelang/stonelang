@@ -8,3 +8,31 @@ struct Decl with Node {
 
 struct FunDecl with Decl {
 }
+
+
+
+struct A {
+	trust int i = 0;
+}
+
+struct B with A {
+
+	override trust int i = 0; // eroro -- chose one. illogical. 
+}
+struct C with B {
+
+}
+
+join C fun C(int x)  {
+
+}
+
+struct B with A {
+    alias trust int baseId = A.id;
+}
+trust is not about who can access the data — it’s about who can inherit the structure of the data.
+
+field-level inheritance modifier
+
+
+trust is a field-level inheritance modifier, not an visibility control modifier.
