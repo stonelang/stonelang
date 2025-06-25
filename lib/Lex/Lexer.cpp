@@ -402,7 +402,6 @@ Trivia LexTrivia(Cursor &cursor, bool isForTrailingTrivia) {
       if (isForTrailingTrivia || IsKeepingComments()) {
         break;
       }
-
       if (cursor.LookAhead(1).IsSlash()) {
         bool isDoc = cursor.LookAhead(2).IsSlash();
         cursor.Advance(); // consume second slash
@@ -434,7 +433,7 @@ Trivia LexTrivia(Cursor &cursor, bool isForTrailingTrivia) {
       }
     }
 
-    if (cursor.Is('<') || cursor.Is('>')) {
+    if (cursor.IsGreater() || cursor.IsLess() {
       if (TryLexConflictMarker(cursor, /*EatNewline=*/false)) {
         return Trivia{TriviaKind::LineComment, cursor.GetTmpRange()};
       }

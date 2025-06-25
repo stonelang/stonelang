@@ -47,12 +47,10 @@ struct StringSegment {
 
 /// \brief The core class responsible for tokenizing `.stone` source files.
 class Lexer final {
-
   SrcUnit &unit;
   SrcMgr &sm;
   Cursor cursor;
   Token nextToken;
-  BufferState buf;
   LexerState state;
   LexerObserver *observer = nullptr;
   const char *CodeCompletionPtr = nullptr;
