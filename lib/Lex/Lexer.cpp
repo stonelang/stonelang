@@ -58,8 +58,11 @@ void Lexer::Init(SrcUnit &unit, SrcMgr &sm) {
   // Extract and store length-based offsets
   // ComputeOffsetsForUnit(unit);
 
-  // llvm::StringRef contents =
-  //     sm.extractText(sm.getRangeForBuffer(unit.GetBufferID()));
+  cursor.Clear();
+  auto contents = sm.extractText(sm.getRangeForBuffer(unit.GetBufferID()));
+  cursor.Init(contents.data(), contents.size());
+  Lex();
+  cursor.Check();
 
   // BufferStart = contents.data();
   // BufferEnd = BufferStart + contents.size();
@@ -127,6 +130,17 @@ void Lexer::Lex(Token &result) {
   }
 }
 
+void Lexer::Lex() {
+  cursor.Check();
+  if (cursor.CurPtr == cursor.InitialBuffer) {
+    cursor.SkipUTF8BOM();
+    nextToken.SetAtStartOfLine(true);
+  } else {
+    nextToken.SetAtStartOfLine(false);
+  }
+
+  Trivia trivia = LexTrivia(cursor);
+}
 // clang-format off
 // void Lexer::Lex() {
 //   assert(HasValidBufferBounds() && "Lexer cursor is out of buffer bounds!");
@@ -324,109 +338,136 @@ void Lexer::Lex(Token &result) {
 //   // TODO
 // }
 
-// Trivia Lexer::LexTrivia(bool isForTrailingTrivia, const char *allTriviaStart) {
-//   CommentStart = nullptr;
 
-//   while (CurPtr < BufferEnd) {
-//     const char *triviaStart = CurPtr;
-//     char c = *CurPtr++;
 
-//     switch (c) {
-//     case ' ':
-//       return Trivia{TriviaKind::Space, llvm::StringRef(triviaStart, 1)};
-//     case '\t':
-//       return Trivia{TriviaKind::Tab, llvm::StringRef(triviaStart, 1)};
-//     case '\v':
-//     case '\f':
-//       return Trivia{TriviaKind::Space, llvm::StringRef(triviaStart, 1)};
-//     case '\n':
-//       if (!isForTrailingTrivia)
-//         nextToken.SetAtStartOfLine(true);
-//       return Trivia{TriviaKind::Newline, llvm::StringRef(triviaStart, 1)};
-//     case '\r':
-//       if (!isForTrailingTrivia)
-//         nextToken.SetAtStartOfLine(true);
-//       if (CurPtr < BufferEnd && *CurPtr == '\n')
-//         ++CurPtr;
-//       return Trivia{TriviaKind::Newline,
-//                     llvm::StringRef(triviaStart, CurPtr - triviaStart)};
 
-//     case '/':
-//       if (isForTrailingTrivia || IsKeepingComments())
-//         break;
+Trivia Lexer::LexTrivia(Cursor& cursor, bool isForTrailingTrivia){
 
-//       if (CurPtr[0] == '/') {
-//         if (!CommentStart)
-//           CommentStart = CurPtr - 1;
-//         bool isDoc = CurPtr[1] == '/';
-//         const char *commentStart = CurPtr - 1;
-//         SkipLineComment(/*eatNewline=*/false);
-//         return Trivia{isDoc ? TriviaKind::DocComment : TriviaKind::LineComment,
-//                       llvm::StringRef(commentStart, CurPtr - commentStart)};
-//       } else if (CurPtr[0] == '*') {
-//         if (!CommentStart)
-//           CommentStart = CurPtr - 1;
-//         bool isDoc = CurPtr[1] == '*';
-//         const char *commentStart = CurPtr - 1;
-//         SkipBlockComment();
-//         return Trivia{isDoc ? TriviaKind::DocComment : TriviaKind::BlockComment,
-//                       llvm::StringRef(commentStart, CurPtr - commentStart)};
-//       }
-//       break;
+   while (cursor.HasNext()) {
+    switch(cursor.Peek()){
+    case ' ':
+      return Trivia{TriviaKind::Space, llvm::StringRef(cursor.GetCurPtr(), 1)};
+    case '\t':
+      return Trivia{TriviaKind::Tab, llvm::StringRef(cursor.GetCurPtr(), 1)};
+    case '\v':
+    case '\f':
+      return Trivia{TriviaKind::Space, llvm::StringRef(cursor.GetCurPtr(), 1)};
+    case '\n':
+      if (!isForTrailingTrivia)
+        nextToken.SetAtStartOfLine(true);
+      return Trivia{TriviaKind::Newline, llvm::StringRef(cursor.GetCurPtr(), 1)};
+    }
+   }
+return Trivia{TriviaKind::None, llvm::StringRef()};
 
-//     case '#':
-//       if (triviaStart == ContentStart && CurPtr[0] == '!') {
-//         --CurPtr; // rewind to '#'
-//         if (!IsHashbangAllowed())
-//           Diagnose(triviaStart, DiagID::HashbangNotAllowed);
-//         SkipHashbang(/*eatNewline=*/false);
-//         return Trivia{TriviaKind::LineComment,
-//                       llvm::StringRef(triviaStart, CurPtr - triviaStart)};
-//       }
-//       break;
+}
+//Trivia Lexer::LexTrivia(const char *allTriviaStart, bool isForTrailingTrivia) {
+  //CommentStart = nullptr;
 
-//     case '<':
-//     case '>':
-//       if (TryLexConflictMarker(/*EatNewline=*/false)) {
-//         return Trivia{TriviaKind::LineComment,
-//                       llvm::StringRef(triviaStart, CurPtr - triviaStart)};
-//       }
-//       break;
+  // while (CurPtr < BufferEnd) {
+  //   const char *triviaStart = CurPtr;
+  //   char c = *CurPtr++;
 
-//     case 0:
-//       switch (GetNullCharacterKind(CurPtr - 1)) {
-//       case NullCharacterKind::Embedded:
-//         DiagnoseEmbeddedNul(CurPtr - 1);
-//         continue; // treat as ignorable trivia
-//       case NullCharacterKind::CodeCompletion:
-//       case NullCharacterKind::BufferEnd:
-//         break;
-//       }
-//       break;
+  //   switch (c) {
+  //   case ' ':
+  //     return Trivia{TriviaKind::Space, llvm::StringRef(triviaStart, 1)};
+  //   case '\t':
+  //     return Trivia{TriviaKind::Tab, llvm::StringRef(triviaStart, 1)};
+  //   case '\v':
+  //   case '\f':
+  //     return Trivia{TriviaKind::Space, llvm::StringRef(triviaStart, 1)};
+  //   case '\n':
+  //     if (!isForTrailingTrivia)
+  //       nextToken.SetAtStartOfLine(true);
+  //     return Trivia{TriviaKind::Newline, llvm::StringRef(triviaStart, 1)};
+  //   case '\r':
+  //     if (!isForTrailingTrivia)
+  //       nextToken.SetAtStartOfLine(true);
+  //     if (CurPtr < BufferEnd && *CurPtr == '\n')
+  //       ++CurPtr;
+  //     return Trivia{TriviaKind::Newline,
+  //                   llvm::StringRef(triviaStart, CurPtr - triviaStart)};
 
-//     default: {
-//       const char *tmp = CurPtr - 1;
-//       if (AdvanceIfValidStartOfIdentifier(tmp, BufferEnd))
-//         break;
+  //   case '/':
+  //     if (isForTrailingTrivia || IsKeepingComments())
+  //       break;
 
-//       if (AdvanceIfValidStartOfOperator(tmp, BufferEnd))
-//         break;
+  //     if (CurPtr[0] == '/') {
+  //       if (!CommentStart)
+  //         CommentStart = CurPtr - 1;
+  //       bool isDoc = CurPtr[1] == '/';
+  //       const char *commentStart = CurPtr - 1;
+  //       SkipLineComment(/*eatNewline=*/false);
+  //       return Trivia{isDoc ? TriviaKind::DocComment : TriviaKind::LineComment,
+  //                     llvm::StringRef(commentStart, CurPtr - commentStart)};
+  //     } else if (CurPtr[0] == '*') {
+  //       if (!CommentStart)
+  //         CommentStart = CurPtr - 1;
+  //       bool isDoc = CurPtr[1] == '*';
+  //       const char *commentStart = CurPtr - 1;
+  //       SkipBlockComment();
+  //       return Trivia{isDoc ? TriviaKind::DocComment : TriviaKind::BlockComment,
+  //                     llvm::StringRef(commentStart, CurPtr - commentStart)};
+  //     }
+  //     break;
 
-//       bool shouldTokenize = LexUnknown(/*track=*/false);
-//       if (shouldTokenize) {
-//         CurPtr = tmp;
-//         return Trivia{TriviaKind::None,
-//                       llvm::StringRef(allTriviaStart, CurPtr - allTriviaStart)};
-//       }
-//       continue;
-//     }
-//     }
-//     --CurPtr; // Rewind one byte if we exited switch without advancing
-//     break;
-//   }
+  //   case '#':
+  //     if (triviaStart == ContentStart && CurPtr[0] == '!') {
+  //       --CurPtr; // rewind to '#'
+  //       if (!IsHashbangAllowed())
+  //         Diagnose(triviaStart, DiagID::HashbangNotAllowed);
+  //       SkipHashbang(/*eatNewline=*/false);
+  //       return Trivia{TriviaKind::LineComment,
+  //                     llvm::StringRef(triviaStart, CurPtr - triviaStart)};
+  //     }
+  //     break;
+
+  //   case '<':
+  //   case '>':
+  //     if (TryLexConflictMarker(/*EatNewline=*/false)) {
+  //       return Trivia{TriviaKind::LineComment,
+  //                     llvm::StringRef(triviaStart, CurPtr - triviaStart)};
+  //     }
+  //     break;
+
+  //   case 0:
+  //     switch (GetNullCharacterKind(CurPtr - 1)) {
+  //     case NullCharacterKind::Embedded:
+  //       DiagnoseEmbeddedNul(CurPtr - 1);
+  //       continue; // treat as ignorable trivia
+  //     case NullCharacterKind::CodeCompletion:
+  //     case NullCharacterKind::BufferEnd:
+  //       break;
+  //     }
+  //     break;
+
+  //   default: {
+  //     const char *tmp = CurPtr - 1;
+  //     if (AdvanceIfValidStartOfIdentifier(tmp, BufferEnd))
+  //       break;
+
+  //     if (AdvanceIfValidStartOfOperator(tmp, BufferEnd))
+  //       break;
+
+  //     bool shouldTokenize = LexUnknown(/*track=*/false);
+  //     if (shouldTokenize) {
+  //       CurPtr = tmp;
+  //       return Trivia{TriviaKind::None,
+  //                     llvm::StringRef(allTriviaStart, CurPtr - allTriviaStart)};
+  //     }
+  //     continue;
+  //   }
+  //   }
+  //   --CurPtr; // Rewind one byte if we exited switch without advancing
+  //   break;
+  //}
 
 //   return Trivia{TriviaKind::None, llvm::StringRef()};
 // }
+
+
+
+
 // //===----------------------------------------------------------------------===//
 // // StringSegment helpers
 // //===----------------------------------------------------------------------===//
@@ -540,3 +581,6 @@ void Lexer::Lex(Token &result) {
 //                                                  const char *end) {
 //   return AdvanceIf(ptr, end, stone::charinfo::IsOperatorContinuation);
 // }
+
+
+void CursorRange::Finish(const Cursor &cursor) { end = cursor.GetCurPtr(); }

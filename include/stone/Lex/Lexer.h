@@ -9,6 +9,7 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SrcUnit.h"
 
+#include "stone/Lex/BufferState.h"
 #include "stone/Lex/Cursor.h"
 #include "stone/Lex/LexerState.h"
 
@@ -51,6 +52,7 @@ class Lexer final {
   SrcMgr &sm;
   Cursor cursor;
   Token nextToken;
+  BufferState buf;
   LexerState state;
   LexerObserver *observer = nullptr;
   const char *CodeCompletionPtr = nullptr;
@@ -126,7 +128,10 @@ public:
   //   // Trivia and Comments
   //   //===--------------------------------------------------------------------===//
 
-  //   Trivia LexTrivia(bool isForTrailingTrivia, const char *allTriviaStart);
+  Trivia LexTrivia(const char *allTriviaStart,
+                   bool isForTrailingTrivia = false);
+
+  Trivia LexTrivia(Cursor &cursor, bool isForTrailingTrivia = false);
 
   //   static unsigned LexUnicodeEscape(const char *&curPtr, Issues &issues);
 

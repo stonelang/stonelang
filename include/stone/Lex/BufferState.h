@@ -8,13 +8,13 @@ namespace stone {
 /// character pointers and their corresponding offsets.
 ///
 /// === Notes ===
-/// - "Buffer": denotes a physical range (e.g., [InitialBuffer, MaxBuffer))
+/// - "BufferState": denotes a physical range (e.g., [InitialBuffer, MaxBuffer))
 /// - "Ptr":     denotes a specific position within that range
 /// - Offsets:   mirror positions as byte distances from InitialBuffer
 ///
 struct BufferState final {
   //===--------------------------------------------------------------------===//
-  // Raw Buffer Pointers (Physical Range)
+  // Raw BufferState Pointers (Physical Range)
   //===--------------------------------------------------------------------===//
 
   const char *InitialBuffer = nullptr; ///< Pointer to start of buffer.
@@ -29,6 +29,8 @@ struct BufferState final {
   const char *CurPtr = nullptr;         ///< Current lexing position.
   const char *LastCommentPtr = nullptr; ///< Start of last comment (if any).
   const char *CutOffPtr = nullptr;      ///< Optional hard cutoff.
+
+  const char *TmpPtr = nullptr; ///< Holding temporary stuff
 
   //===--------------------------------------------------------------------===//
   // Offset Metadata (Byte Distances)
@@ -51,12 +53,18 @@ struct BufferState final {
 
   BufferState() { Clear(); }
 
-  BufferState(const char *initialBuffer, size_t bufferSize) {
+  void Init(const char *initialBuffer, size_t bufferSize) {
     InitialBuffer = initialBuffer;
     MaxBuffer = initialBuffer + bufferSize;
     StartPtr = initialBuffer;
     CurPtr = StartPtr;
     TotalOffsetSize = bufferSize;
+  }
+
+  bool HasNext() { return (CurPtr < MaxBuffer); }
+  char PeekNext() const {
+    assert(CurPtr && "Trying to peek null");
+    return *CurPtr;
   }
 
   //===--------------------------------------------------------------------===//
@@ -76,12 +84,14 @@ struct BufferState final {
     InitialBuffer = MaxBuffer = EOFBuffer = StartPtr = CurPtr = nullptr;
     LastCommentPtr = CutOffPtr = nullptr;
     CurOffset = EndOffset = TotalOffsetSize = InitialOffset = MaxOffset = 0;
+    ClearTmp();
   }
+  void ClearTmp() { TmpPtr = nullptr; }
 
   /// \brief Asserts internal consistency of buffer layout.
   void Check() const {
     assert(InitialBuffer && MaxBuffer && "BufferState is uninitialized");
-    assert(InitialBuffer <= MaxBuffer && "Buffer range is invalid");
+    assert(InitialBuffer <= MaxBuffer && "BufferState range is invalid");
     assert(StartPtr >= InitialBuffer && StartPtr <= MaxBuffer &&
            "StartPtr out of range");
     assert(CurPtr >= InitialBuffer && CurPtr <= MaxBuffer &&
@@ -104,6 +114,10 @@ struct BufferState final {
   /// \returns true if the current pointer is within the buffer range.
   bool IsValid() const {
     return (CurPtr >= InitialBuffer && CurPtr <= MaxBuffer);
+  }
+
+  unsigned GetOffset() const {
+    return static_cast<unsigned>(CurPtr - InitialBuffer);
   }
 };
 

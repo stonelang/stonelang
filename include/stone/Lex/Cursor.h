@@ -6,6 +6,25 @@
 #include <cassert>
 
 namespace stone {
+class Cursor;
+class CursorRange {
+  const char *start = nullptr;
+  const char *end = nullptr;
+
+public:
+  explicit CursorRange(const char *start) : start(start), end(nullptr) {}
+
+  void Finish(const Cursor &cursor);
+
+  const char *Begin() const { return start; }
+  const char *End() const { return end; }
+
+  llvm::StringRef AsStringRef() const {
+    return llvm::StringRef(start, static_cast<size_t>(end - start));
+  }
+
+  bool IsValid() const { return start && end && start <= end; }
+};
 
 /// \brief Low-level byte stream navigator over a fixed buffer.
 ///
@@ -41,6 +60,13 @@ public:
     EOFBuffer = MaxBuffer;
   }
 
+  void Clear() {
+    InitialBuffer = nullptr;
+    MaxBuffer = nullptr;
+    EOFBuffer = nullptr;
+    CurPtr = nullptr;
+  }
+
   void Check() const {
     // Basic buffer invariants
     assert(InitialBuffer && "Cursor not initialized");
@@ -59,6 +85,18 @@ public:
     }
   }
 
+  const char *GetCurPtr() { return CurPtr; }
+  const char *GetInitialBuffer() { return InitialBuffer; }
+  const char *GetMaxBuffer() { return InitialBuffer; }
+  const char *GetEOFBuffer() { return EOFBuffer; }
+
+  void SkipUTF8BOM() {
+    if (HasUTF8BOM()) {
+      Advance();
+      Advance();
+      Advance();
+    }
+  }
   void Advance() {
     if (CurPtr < EOFBuffer)
       ++CurPtr;
@@ -196,6 +234,10 @@ public:
     EOFBuffer = end;
   }
 
+  CursorRange Mark() const {
+  return CursorRange(CurPtr);
+}
+
   //===--------------------------------------------------------------------===//
   // Character Category Queries
   //===--------------------------------------------------------------------===//
@@ -278,6 +320,8 @@ public:
   bool IsBracket() const { return IsAny('(', ')', '[', ']', '{', '}'); }
   bool IsDelimiter() const { return IsAny(',', ';', ':'); }
 };
+
+
 
 } // namespace stone
 
