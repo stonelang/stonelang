@@ -10,6 +10,7 @@ DIAG(note_suggest_alternative, 	"N0001", "consider using '%0' instead", (llvm::S
 
 
 DIAG(UTF16BOMMarker, 		"E0001", "error opening '%0' for output: %1", ())
+DIAG(HashbangNotAllowed, 		"E0001", "error opening '%0' for output: %1", ())
 
 
 #define UNDEFINE_DIAG_MACROS

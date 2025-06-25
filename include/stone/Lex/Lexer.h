@@ -9,7 +9,7 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SrcUnit.h"
 
-#include "stone/Lex/LexerBookmark.h"
+#include "stone/Lex/LexerState.h"
 
 #include "llvm/ADT/FunctionExtras.h"
 #include "llvm/ADT/SmallVector.h"
@@ -48,8 +48,9 @@ class Lexer final {
 
   SrcUnit &unit;
   SrcMgr &sm;
+  BufferState bs;
   Token nextToken;
-  LexerBookmark bookmark;
+  LexerState state;
   LexerObserver *observer = nullptr;
 
   const char *BufferStart;
@@ -67,14 +68,21 @@ class Lexer final {
   void Lex();
 
   void ComputeOffsetsForUnit(SrcUnit &unit);
-  void Init(SrcUnit &unit, SrcMgr &sm, unsigned curOffset, unsigned endOffset);
+
+  void ComputeOffsetsForUnit(SrcUnit &unit, const SrcMgr &sm,
+                             const LexerState &begin, const LexerState &end);
+
+  void Init(SrcUnit &unit, SrcMgr &sm);
 
 public:
   explicit Lexer(SrcUnit &unit, SrcMgr &sm);
-  explicit Lexer(Lexer &parent, LexerBookmark begin, LexerBookmark end);
+  explicit Lexer(Lexer &parent, LexerState begin, LexerState end);
 
   void SetObserver(LexerObserver *observer);
   LexerObserver *GetObserver() const;
+
+  SrcUnit &GetSrcUnit() { return unit; }
+  SrcMgr &GetSrcMgr() { return sm; }
 
 public:
   void Lex(Token &result);
@@ -82,21 +90,48 @@ public:
 
   const Token &PeekNext() const { return nextToken; }
   bool IsCodeCompletion() const { return CodeCompletionPtr != nullptr; }
-  LexerBookmark GetBookmark() const { return bookmark; }
+  LexerState GetBookmark() const { return state; }
 
   void SeekTo(size_t offset);
   size_t GetOffset() const;
   const char *GetPtrForLoc(SrcLoc loc) const;
 
+  //===----------------------------------------------------------------------===//
+  // Core Buffer Pointers
+  //===----------------------------------------------------------------------===//
+
+  BufferState &GetBufferState() const { return bs; }
+
+  // const char *GetBufferStart() const { return BufferStart; }
+  // void SetBufferStart(const char *ptr) { BufferStart = ptr; }
+
+  // const char *GetBufferEnd() const { return BufferEnd; }
+  // void SetBufferEnd(const char *ptr) { BufferEnd = ptr; }
+
+  // const char *GetContentStart() const { return ContentStart; }
+  // void SetContentStart(const char *ptr) { ContentStart = ptr; }
+
+  // const char *GetCurPtr() const { return CurPtr; }
+  // void SetCurPtr(const char *ptr) { CurPtr = ptr; }
+
+  // const char *GetArtificialEOF() const { return ArtificialEOF; }
+  // void SetArtificialEOF(const char *ptr) { ArtificialEOF = ptr; }
+
   void Track(diag::DiagID id) { unit.AddDiag(id); }
 
+  bool IsKeepingComments() {
+    return unit.commentRetentionMode != CommentRetentionMode::None;
+  }
+  bool IsHashbangAllowed() {
+    return unit.hashbangMode != HashbangMode::Disallowed;
+  }
   //===--------------------------------------------------------------------===//
   // Lexing routines (core forms)
   //===--------------------------------------------------------------------===//
 
   void LexHash();
   void LexIdentifier();
-  void LexOperatorIdentifier();
+  void LexOperator();
   void LexHexNumber();
   void LexNumber();
   void LexStringLiteral(unsigned customDelimiterLen = 0);

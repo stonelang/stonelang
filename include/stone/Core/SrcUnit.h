@@ -18,15 +18,12 @@ namespace stone {
 //===----------------------------------------------------------------------===//
 
 enum class HashbangMode : bool { Disallowed, Allowed };
-
 enum class CommentRetentionMode : uint8_t {
   None = 0,
   AttachToNextToken,
   ReturnAsTokens
 };
-
 enum class ConflictMarkerKind : uint8_t { Normal, Perforce };
-
 enum class LineDirectiveMode : uint8_t { Ignore, Parse, Error };
 
 enum class TriviaKind : uint8_t {
@@ -46,31 +43,25 @@ struct Trivia final {
 };
 
 //===----------------------------------------------------------------------===//
-// Source Unit
+// SrcUnit - Represents a source file for lexing and diagnostics
 //===----------------------------------------------------------------------===//
 
 class SrcUnit final {
-  unsigned bufferID = 0;
-  llvm::StringRef name;
+  unsigned bufferID = 0; ///< Assigned by SourceManager.
+  llvm::StringRef name;  ///< File name or "-" for stdin.
 
-  //--- Lexing Range ---
-  unsigned offset = 0;          ///< Where lexing begins (inclusive).
-  unsigned endOffset = 0;       ///< Where lexing ends (exclusive).
-  unsigned bufferEndOffset = 0; ///< Physical end of the buffer (full size).
-
-  //--- Output ---
-  llvm::SmallVector<diag::DiagID, 8> issues;
-  llvm::SmallVector<Token, 32> tokens;
-  llvm::SmallVector<Trivia, 32> trivia;
+  llvm::SmallVector<diag::DiagID, 8> issues; ///< Diagnostics encountered.
+  llvm::SmallVector<Token, 32> tokens;       ///< All produced tokens.
+  llvm::SmallVector<Trivia, 32> trivia;      ///< Detached trivia.
 
 public:
+  // Lexing configuration
   TriviaKind triviaKind = TriviaKind::None;
-  HashbangMode hashbangAllowed = HashbangMode::Disallowed;
+  HashbangMode hashbangMode = HashbangMode::Disallowed;
   ConflictMarkerKind conflictMarkerKind = ConflictMarkerKind::Normal;
   CommentRetentionMode commentRetentionMode = CommentRetentionMode::None;
   LineDirectiveMode lineDirectiveMode = LineDirectiveMode::Ignore;
 
-public:
   explicit SrcUnit(llvm::StringRef inputName, unsigned bufferID = 0)
       : bufferID(bufferID),
         name(inputName.equals("<stdin>") ? "-" : inputName) {
@@ -81,6 +72,7 @@ public:
                               "SrcUnit must represent a `.stone` file!");
   }
 
+  // File identity
   bool IsValid() const { return bufferID != 0; }
   bool IsStdin() const { return name == "-"; }
   explicit operator bool() const { return IsValid(); }
@@ -91,36 +83,25 @@ public:
     return IsStdin() ? "<stdin>" : name;
   }
 
-  /// Offset where lexing begins (inclusive).
-  unsigned GetOffset() const { return offset; }
-
-  /// Offset where lexing ends (exclusive). Used for artificial EOF.
-  unsigned GetEndOffset() const { return endOffset; }
-
-  /// Physical size of the buffer as reported by the source manager.
-  unsigned GetBufferEndOffset() const { return bufferEndOffset; }
-
-  void SetOffset(unsigned val) { offset = val; }
-  void SetEndOffset(unsigned val) { endOffset = val; }
-  void SetBufferEndOffset(unsigned val) { bufferEndOffset = val; }
-
-  void Clear();
-
-  //--- Diags ---
+  // Diagnostics
   void AddDiag(diag::DiagID diag) { issues.push_back(diag); }
   llvm::ArrayRef<diag::DiagID> GetDiags() const { return issues; }
   void ClearDiags() { issues.clear(); }
 
-  //--- Tokens ---
+  // Tokens
   void AddToken(const Token &tok) { tokens.push_back(tok); }
   llvm::ArrayRef<Token> GetTokens() const { return tokens; }
   void ClearTokens() { tokens.clear(); }
 
-  //--- Trivia ---
+  // Detached Trivia
   void AddTrivia(const Trivia &t) { trivia.push_back(t); }
   llvm::ArrayRef<Trivia> GetTrivia() const { return trivia; }
   void ClearTrivia() { trivia.clear(); }
 
+  // Reset state for a fresh lex
+  void Clear();
+
+  // Dump as `.stonelex`
   void Dump(llvm::raw_ostream &out, bool dumpTokens = true,
             bool dumpDiags = true, llvm::StringRef indent = "") const;
 };
