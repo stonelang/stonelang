@@ -9,6 +9,7 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SrcUnit.h"
 
+#include "stone/Lex/Cursor.h"
 #include "stone/Lex/LexerState.h"
 
 #include "llvm/ADT/FunctionExtras.h"
@@ -48,19 +49,11 @@ class Lexer final {
 
   SrcUnit &unit;
   SrcMgr &sm;
-  BufferState bs;
+  Cursor cursor;
   Token nextToken;
   LexerState state;
   LexerObserver *observer = nullptr;
-
-  const char *BufferStart;
-  const char *BufferEnd;
-  const char *ArtificialEOF = nullptr;
   const char *CodeCompletionPtr = nullptr;
-  const char *ContentStart;
-  const char *CurPtr;
-  const char *CommentStart = nullptr;
-  const char *LexerCutOffPoint = nullptr;
 
   Lexer(const Lexer &) = delete;
   void operator=(const Lexer &) = delete;
@@ -83,171 +76,154 @@ public:
 
   SrcUnit &GetSrcUnit() { return unit; }
   SrcMgr &GetSrcMgr() { return sm; }
+  Cursor &GetCursor() { return cursor; }
 
 public:
   void Lex(Token &result);
   void Lex(TokenCallback callback);
 
   const Token &PeekNext() const { return nextToken; }
-  bool IsCodeCompletion() const { return CodeCompletionPtr != nullptr; }
-  LexerState GetBookmark() const { return state; }
 
   void SeekTo(size_t offset);
   size_t GetOffset() const;
   const char *GetPtrForLoc(SrcLoc loc) const;
 
-  //===----------------------------------------------------------------------===//
-  // Core Buffer Pointers
-  //===----------------------------------------------------------------------===//
+  bool IsCodeCompletion() const { return CodeCompletionPtr != nullptr; }
+  LexerState GetState() const { return state; }
 
-  BufferState &GetBufferState() const { return bs; }
+  //   void Track(diag::DiagID id) { unit.AddDiag(id); }
 
-  // const char *GetBufferStart() const { return BufferStart; }
-  // void SetBufferStart(const char *ptr) { BufferStart = ptr; }
+  //   bool IsKeepingComments() {
+  //     return unit.commentRetentionMode != CommentRetentionMode::None;
+  //   }
+  //   bool IsHashbangAllowed() {
+  //     return unit.hashbangMode != HashbangMode::Disallowed;
+  //   }
+  //   //===--------------------------------------------------------------------===//
+  //   // Lexing routines (core forms)
+  //   //===--------------------------------------------------------------------===//
 
-  // const char *GetBufferEnd() const { return BufferEnd; }
-  // void SetBufferEnd(const char *ptr) { BufferEnd = ptr; }
+  //   void LexHash();
+  //   void LexIdentifier();
+  //   void LexOperator();
+  //   void LexHexNumber();
+  //   void LexNumber();
+  //   void LexStringLiteral(unsigned customDelimiterLen = 0);
+  //   void LexEscapedIdentifier();
+  //   void LexRegexLiteral(const char *tokStart);
+  //   void TryLexEditorPlaceholder();
 
-  // const char *GetContentStart() const { return ContentStart; }
-  // void SetContentStart(const char *ptr) { ContentStart = ptr; }
+  //   //===--------------------------------------------------------------------===//
+  //   // Token Formation
+  //   //===--------------------------------------------------------------------===//
 
-  // const char *GetCurPtr() const { return CurPtr; }
-  // void SetCurPtr(const char *ptr) { CurPtr = ptr; }
+  //   void FormToken(tok kind, const char *tokStart);
+  //   void FormEscapedIdentifierToken(const char *tokStart);
+  //   void FormStringLiteralToken(const char *tokStart, bool isMultilineString,
+  //                               unsigned customDelimiterLen);
 
-  // const char *GetArtificialEOF() const { return ArtificialEOF; }
-  // void SetArtificialEOF(const char *ptr) { ArtificialEOF = ptr; }
+  //   //===--------------------------------------------------------------------===//
+  //   // Trivia and Comments
+  //   //===--------------------------------------------------------------------===//
 
-  void Track(diag::DiagID id) { unit.AddDiag(id); }
+  //   Trivia LexTrivia(bool isForTrailingTrivia, const char *allTriviaStart);
 
-  bool IsKeepingComments() {
-    return unit.commentRetentionMode != CommentRetentionMode::None;
-  }
-  bool IsHashbangAllowed() {
-    return unit.hashbangMode != HashbangMode::Disallowed;
-  }
-  //===--------------------------------------------------------------------===//
-  // Lexing routines (core forms)
-  //===--------------------------------------------------------------------===//
+  //   static unsigned LexUnicodeEscape(const char *&curPtr, Issues &issues);
 
-  void LexHash();
-  void LexIdentifier();
-  void LexOperator();
-  void LexHexNumber();
-  void LexNumber();
-  void LexStringLiteral(unsigned customDelimiterLen = 0);
-  void LexEscapedIdentifier();
-  void LexRegexLiteral(const char *tokStart);
-  void TryLexEditorPlaceholder();
+  //   unsigned LexCharacter(const char *&curPtr, char stopQuote,
+  //                         bool isMultilineString = false,
+  //                         unsigned customDelimiterLen = 0);
 
-  //===--------------------------------------------------------------------===//
-  // Token Formation
-  //===--------------------------------------------------------------------===//
+  //   /// Advance to the end of the line.
+  //   /// If EatNewLine is true, CurPtr will be at end of newline character.
+  //   /// Otherwise, CurPtr will be at newline character.
+  //   void SkipToEndOfLine(bool EatNewline);
 
-  void FormToken(tok kind, const char *tokStart);
-  void FormEscapedIdentifierToken(const char *tokStart);
-  void FormStringLiteralToken(const char *tokStart, bool isMultilineString,
-                              unsigned customDelimiterLen);
+  //   /// Skip a #! hashbang line.
+  //   void SkipHashbang(bool EatNewline);
 
-  //===--------------------------------------------------------------------===//
-  // Trivia and Comments
-  //===--------------------------------------------------------------------===//
+  //   /// Skip to the end of the line of a // comment.
+  //   void SkipLineComment(bool EatNewline);
 
-  Trivia LexTrivia(bool isForTrailingTrivia, const char *allTriviaStart);
+  //   void SkipBlockComment();
 
-  static unsigned LexUnicodeEscape(const char *&curPtr, Issues &issues);
+  //   bool TryLexConflictMarker(bool eatNewline);
+  //   const char *FindEndOfCurlyQuoteStringLiteral(const char *start);
 
-  unsigned LexCharacter(const char *&curPtr, char stopQuote,
-                        bool isMultilineString = false,
-                        unsigned customDelimiterLen = 0);
+  //   NullCharacterKind GetNullCharacterKind(const char *ptr) const;
 
-  /// Advance to the end of the line.
-  /// If EatNewLine is true, CurPtr will be at end of newline character.
-  /// Otherwise, CurPtr will be at newline character.
-  void SkipToEndOfLine(bool EatNewline);
+  //   static void
+  //   GetStringLiteralSegments(const Token &str,
+  //                            llvm::SmallVectorImpl<StringSegment> &segments,
+  //                            Issues &issues);
 
-  /// Skip a #! hashbang line.
-  void SkipHashbang(bool EatNewline);
+  //   //===--------------------------------------------------------------------===//
+  //   // Optional Utility Functions
+  //   //===--------------------------------------------------------------------===//
 
-  /// Skip to the end of the line of a // comment.
-  void SkipLineComment(bool EatNewline);
+  //   static SrcLoc GetSrcLoc(const char *ptr) { return
+  //   SrcLoc::GetFromPtr(ptr); }
 
-  void SkipBlockComment();
+  //   static llvm::StringRef GetEncodedStringSegmentImpl(
+  //       llvm::StringRef str, llvm::SmallVectorImpl<char> &buffer,
+  //       bool isFirstSegment, bool isLastSegment, unsigned indentToStrip,
+  //       unsigned customDelimiterLen);
 
-  bool TryLexConflictMarker(bool eatNewline);
-  const char *FindEndOfCurlyQuoteStringLiteral(const char *start);
+  //   static std::optional<size_t> GetCutoffOffset(const char *cutoffPtr,
+  //                                                const char *bufferStart) {
+  //     if (cutoffPtr) {
+  //       return cutoffPtr - bufferStart;
+  //     }
+  //     return std::nullopt;
+  //   }
 
-  NullCharacterKind GetNullCharacterKind(const char *ptr) const;
+  //   void CutOffLexing();
 
-  static void
-  GetStringLiteralSegments(const Token &str,
-                           llvm::SmallVectorImpl<StringSegment> &segments,
-                           Issues &issues);
+  //   bool HasValidBufferBounds() {
+  //     return (CurPtr >= BufferStart && CurPtr <= BufferEnd);
+  //   }
 
-  //===--------------------------------------------------------------------===//
-  // Optional Utility Functions
-  //===--------------------------------------------------------------------===//
+  //   //===--------------------------------------------------------------------===//
+  //   // Static Utilities
+  //   //===--------------------------------------------------------------------===//
 
-  static SrcLoc GetSrcLoc(const char *ptr) { return SrcLoc::GetFromPtr(ptr); }
+  //   static Token GetTokenAtLocation(SrcMgr &sm, SrcLoc loc,
+  //                                   CommentRetentionMode crm);
 
-  static llvm::StringRef GetEncodedStringSegmentImpl(
-      llvm::StringRef str, llvm::SmallVectorImpl<char> &buffer,
-      bool isFirstSegment, bool isLastSegment, unsigned indentToStrip,
-      unsigned customDelimiterLen);
+  //   static SrcLoc GetLocForStartOfToken(SrcMgr &sm, unsigned bufferID,
+  //                                       unsigned offset);
+  //   static SrcLoc GetLocForStartOfToken(SrcMgr &sm, SrcLoc loc);
+  //   static SrcLoc GetLocForEndOfToken(SrcMgr &sm, SrcLoc loc);
+  //   static SrcLoc GetLocForStartOfLine(SrcMgr &sm, SrcLoc loc);
+  //   static SrcLoc GetLocForEndOfLine(SrcMgr &sm, SrcLoc loc);
 
-  static std::optional<size_t> GetCutoffOffset(const char *cutoffPtr,
-                                               const char *bufferStart) {
-    if (cutoffPtr) {
-      return cutoffPtr - bufferStart;
-    }
-    return std::nullopt;
-  }
+  //   static llvm::StringRef
+  //   GetIndentationForLine(SrcMgr &sm, SrcLoc loc,
+  //                         llvm::StringRef *extra = nullptr);
 
-  void CutOffLexing();
+  //   static bool IsIdentifier(llvm::StringRef ident);
+  //   static tok KindOfIdentifier(llvm::StringRef ident);
+  //   static bool IsOperator(llvm::StringRef op);
 
-  bool HasValidBufferBounds() {
-    return (CurPtr >= BufferStart && CurPtr <= BufferEnd);
-  }
+  //   static void LexUnit(SrcUnit &unit, SrcMgr &sm);
 
-  //===--------------------------------------------------------------------===//
-  // Static Utilities
-  //===--------------------------------------------------------------------===//
+  // private:
+  //   static bool IsValidIdentifierContinuationCodePoint(uint32_t c);
 
-  static Token GetTokenAtLocation(SrcMgr &sm, SrcLoc loc,
-                                  CommentRetentionMode crm);
+  //   static bool AdvanceIf(char const *&ptr, char const *end,
+  //                         bool (*predicate)(uint32_t));
 
-  static SrcLoc GetLocForStartOfToken(SrcMgr &sm, unsigned bufferID,
-                                      unsigned offset);
-  static SrcLoc GetLocForStartOfToken(SrcMgr &sm, SrcLoc loc);
-  static SrcLoc GetLocForEndOfToken(SrcMgr &sm, SrcLoc loc);
-  static SrcLoc GetLocForStartOfLine(SrcMgr &sm, SrcLoc loc);
-  static SrcLoc GetLocForEndOfLine(SrcMgr &sm, SrcLoc loc);
+  //   static bool AdvanceIfValidStartOfIdentifier(char const *&ptr,
+  //                                               char const *end);
 
-  static llvm::StringRef
-  GetIndentationForLine(SrcMgr &sm, SrcLoc loc,
-                        llvm::StringRef *extra = nullptr);
+  //   static bool AdvanceIfValidContinuationOfIdentifier(char const *&ptr,
+  //                                                      char const *end);
 
-  static bool IsIdentifier(llvm::StringRef ident);
-  static tok KindOfIdentifier(llvm::StringRef ident);
-  static bool IsOperator(llvm::StringRef op);
+  //   static bool AdvanceIfValidStartOfOperator(char const *&ptr, char const
+  //   *end);
 
-  static void LexUnit(SrcUnit &unit, SrcMgr &sm);
-
-private:
-  static bool IsValidIdentifierContinuationCodePoint(uint32_t c);
-
-  static bool AdvanceIf(char const *&ptr, char const *end,
-                        bool (*predicate)(uint32_t));
-
-  static bool AdvanceIfValidStartOfIdentifier(char const *&ptr,
-                                              char const *end);
-
-  static bool AdvanceIfValidContinuationOfIdentifier(char const *&ptr,
-                                                     char const *end);
-
-  static bool AdvanceIfValidStartOfOperator(char const *&ptr, char const *end);
-
-  static bool AdvanceIfValidContinuationOfOperator(char const *&ptr,
-                                                   char const *end);
+  //   static bool AdvanceIfValidContinuationOfOperator(char const *&ptr,
+  //                                                    char const *end);
 
 private:
 };

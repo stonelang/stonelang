@@ -20,108 +20,104 @@ using namespace stone::diag;
 // Lexer - Constructors
 //===----------------------------------------------------------------------===//
 
-void Lexer::ComputeOffsetsForUnit(SrcUnit &unit) {
-  assert(unit.IsValid() && "Invalid SrcUnit!");
+// void Lexer::ComputeOffsetsForUnit(SrcUnit &unit) {
+//   assert(unit.IsValid() && "Invalid SrcUnit!");
 
-  unsigned bufferID = unit.GetBufferID();
-  unsigned length = sm.getRangeForBuffer(bufferID).getByteLength();
+//   unsigned bufferID = unit.GetBufferID();
+//   unsigned length = sm.getRangeForBuffer(bufferID).getByteLength();
 
-  unit.SetBufferEndOffset(length);
-  // Can be changed later for lex-limiting
-  unit.SetEndOffset(length); // Default: lex full buffer
-}
+//   unit.SetBufferEndOffset(length);
+//   // Can be changed later for lex-limiting
+//   unit.SetEndOffset(length); // Default: lex full buffer
+// }
 
-void Lexer::ComputeOffsetsForUnit(SrcUnit &unit, const SrcMgr &sm,
-                                  const LexerBookmark &begin,
-                                  const LexerBookmark &end) {
-  assert(unit.IsValid() && "Invalid SrcUnit!");
+// void Lexer::ComputeOffsetsForUnit(SrcUnit &unit, const SrcMgr &sm,
+//                                   const LexerBookmark &begin,
+//                                   const LexerBookmark &end) {
+//   assert(unit.IsValid() && "Invalid SrcUnit!");
 
-  // Sanity checks to ensure bookmarks belong to this unit’s buffer
-  assert(sm.findBufferContainingLoc(begin.GetLoc()) == unit.GetBufferID() &&
-         "Begin location is not from the expected buffer!");
-  assert(sm.findBufferContainingLoc(end.GetLoc()) == unit.GetBufferID() &&
-         "End location is not from the expected buffer!");
+//   // Sanity checks to ensure bookmarks belong to this unit’s buffer
+//   assert(sm.findBufferContainingLoc(begin.GetLoc()) == unit.GetBufferID() &&
+//          "Begin location is not from the expected buffer!");
+//   assert(sm.findBufferContainingLoc(end.GetLoc()) == unit.GetBufferID() &&
+//          "End location is not from the expected buffer!");
 
-  // Compute physical byte offsets from source locations
-  unsigned beginOffset =
-      sm.getLocOffsetInBuffer(begin.GetLoc(), unit.GetBufferID());
-  unsigned endOffset =
-      sm.getLocOffsetInBuffer(end.GetLoc(), unit.GetBufferID());
+//   // Compute physical byte offsets from source locations
+//   unsigned beginOffset =
+//       sm.getLocOffsetInBuffer(begin.GetLoc(), unit.GetBufferID());
+//   unsigned endOffset =
+//       sm.getLocOffsetInBuffer(end.GetLoc(), unit.GetBufferID());
 
-  // Record offsets for lexing limits
-  unit.SetBeginOffset(beginOffset);
-  unit.SetLimitOffset(endOffset);
-}
+//   // Record offsets for lexing limits
+//   unit.SetBeginOffset(beginOffset);
+//   unit.SetLimitOffset(endOffset);
+// }
 
 void Lexer::Init(SrcUnit &unit, SrcMgr &sm) {
 
   // Extract and store length-based offsets
-  ComputeOffsetsForUnit(unit);
+  // ComputeOffsetsForUnit(unit);
 
-  llvm::StringRef contents =
-      sm.extractText(sm.getRangeForBuffer(unit.GetBufferID()));
+  // llvm::StringRef contents =
+  //     sm.extractText(sm.getRangeForBuffer(unit.GetBufferID()));
 
-  BufferStart = contents.data();
-  BufferEnd = BufferStart + contents.size();
+  // BufferStart = contents.data();
+  // BufferEnd = BufferStart + contents.size();
 
-  assert(BufferEnd > BufferStart && "Invalid or empty buffer.");
-  assert(BufferStart + unit.GetOffset() <= BufferEnd &&
-         "Start offset is out of bounds.");
-  assert(BufferStart + unit.GetEndOffset() <= BufferEnd &&
-         "End offset is out of bounds.");
+  // assert(BufferEnd > BufferStart && "Invalid or empty buffer.");
+  // assert(BufferStart + unit.GetOffset() <= BufferEnd &&
+  //        "Start offset is out of bounds.");
+  // assert(BufferStart + unit.GetEndOffset() <= BufferEnd &&
+  //        "End offset is out of bounds.");
 
-  ContentStart = llvm::StringRef(BufferStart, 3).equals("\xEF\xBB\xBF")
-                     ? BufferStart + 3
-                     : BufferStart;
+  // ContentStart = llvm::StringRef(BufferStart, 3).equals("\xEF\xBB\xBF")
+  //                    ? BufferStart + 3
+  //                    : BufferStart;
 
-  CurPtr = BufferStart + unit.GetOffset();
-  ArtificialEOF = BufferStart + unit.GetEndOffset();
+  // CurPtr = BufferStart + unit.GetOffset();
+  // ArtificialEOF = BufferStart + unit.GetEndOffset();
 
-  if (unit.GetBufferID() == sm.getCodeCompletionBufferID()) {
-    const char *Ptr = BufferStart + sm.getCodeCompletionOffset();
-    if (Ptr >= BufferStart && Ptr <= BufferEnd) {
-      CodeCompletionPtr = Ptr;
-    }
-  }
+  // if (unit.GetBufferID() == sm.getCodeCompletionBufferID()) {
+  //   const char *Ptr = BufferStart + sm.getCodeCompletionOffset();
+  //   if (Ptr >= BufferStart && Ptr <= BufferEnd) {
+  //     CodeCompletionPtr = Ptr;
+  //   }
+  // }
 
-  assert(nextToken.Is(tok::LAST));
-  Lex();
-  assert((nextToken.IsAtStartOfLine() || CurPtr != BufferStart) &&
-         "Token should begin on a fresh line or a non-zero offset.");
+  // assert(nextToken.Is(tok::LAST));
+  // Lex();
+  // assert((nextToken.IsAtStartOfLine() || CurPtr != BufferStart) &&
+  //        "Token should begin on a fresh line or a non-zero offset.");
 }
 
-Lexer::Lexer(SrcUnit &unit, SrcMgr &sm)
-    : unit(unit), sm(sm), BufferStart(nullptr), BufferEnd(nullptr),
-      ContentStart(nullptr), CurPtr(nullptr), CodeCompletionPtr(nullptr) {
-
+Lexer::Lexer(SrcUnit &unit, SrcMgr &sm) : unit(unit), sm(sm) {
   assert(unit && "SrcUnit has an invalid buffer-id!");
-
   // Proceed with lex setup
   Init(unit, sm);
 }
 
-Lexer::Lexer(Lexer &parent, LexerBookmark begin, LexerBookmark end)
-    : unit(parent.GetSrcUnit()), sm(parent.GetSrcMgr()) {
+// Lexer::Lexer(Lexer &parent, LexerBookmark begin, LexerBookmark end)
+//     : unit(parent.GetSrcUnit()), sm(parent.GetSrcMgr()) {
 
-  SetBufferStart(parent.GetBufferStart());
-  SetBufferEnd(parent.GetBufferEnd());
-  SetContentStart(parent.GetContentStart());
-  SetCurPtr(parent.GetCurPtr());
-  SetArtificialEOF(parent.GetArtificialEOF());
+//   SetBufferStart(parent.GetBufferStart());
+//   SetBufferEnd(parent.GetBufferEnd());
+//   SetContentStart(parent.GetContentStart());
+//   SetCurPtr(parent.GetCurPtr());
+//   SetArtificialEOF(parent.GetArtificialEOF());
 
-  ComputeOffsetsForUnit(parent.GetSrcUnit(), parent.GetSrcMgr(), begin, end);
+//   ComputeOffsetsForUnit(parent.GetSrcUnit(), parent.GetSrcMgr(), begin, end);
 
-  // Record offsets for future reference
-  unsigned beginOffset =
-      sm.getLocOffsetInBuffer(begin.GetLoc(), unit.GetBufferID());
-  unsigned endOffset =
-      sm.getLocOffsetInBuffer(end.GetLoc(), unit.GetBufferID());
+//   // Record offsets for future reference
+//   unsigned beginOffset =
+//       sm.getLocOffsetInBuffer(begin.GetLoc(), unit.GetBufferID());
+//   unsigned endOffset =
+//       sm.getLocOffsetInBuffer(end.GetLoc(), unit.GetBufferID());
 
-  unit.SetBeginOffset(beginOffset);
-  unit.SetEndOffset(endOffset);
+//   unit.SetBeginOffset(beginOffset);
+//   unit.SetEndOffset(endOffset);
 
-  nextToken.SetKind(tok::LAST);
-}
+//   nextToken.SetKind(tok::LAST);
+// }
 
 /// Pull API entrypoint
 void Lexer::Lex(Token &result) {
