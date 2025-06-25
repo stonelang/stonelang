@@ -40,6 +40,9 @@ struct Trivia final {
   TriviaKind kind;
   llvm::StringRef text;
   SrcLoc loc;
+  Trivia(TriviaKind kind = TriviaKind::None,
+         llvm::StringRef text = llvm::StringRef(), SrcLoc loc = SrcLoc())
+      : kind(kind), (text), loc(loc) {}
 };
 
 //===----------------------------------------------------------------------===//

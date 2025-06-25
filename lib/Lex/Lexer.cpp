@@ -341,26 +341,138 @@ void Lexer::Lex() {
 
 
 
-Trivia Lexer::LexTrivia(Cursor& cursor, bool isForTrailingTrivia){
+// Trivia Lexer::LexTrivia(Cursor& cursor, bool isForTrailingTrivia){
 
-   while (cursor.HasNext()) {
-    switch(cursor.Peek()){
-    case ' ':
-      return Trivia{TriviaKind::Space, llvm::StringRef(cursor.GetCurPtr(), 1)};
-    case '\t':
-      return Trivia{TriviaKind::Tab, llvm::StringRef(cursor.GetCurPtr(), 1)};
-    case '\v':
-    case '\f':
-      return Trivia{TriviaKind::Space, llvm::StringRef(cursor.GetCurPtr(), 1)};
-    case '\n':
-      if (!isForTrailingTrivia)
-        nextToken.SetAtStartOfLine(true);
-      return Trivia{TriviaKind::Newline, llvm::StringRef(cursor.GetCurPtr(), 1)};
+// while (cursor.HasNext()) {
+//   if (cursor.IsSpace() || cursor.IsVerticalTab() || cursor.IsFormFeed()) {
+//     return Trivia{TriviaKind::Space, llvm::StringRef(cursor.GetCurPtr(), 1)};
+//   }
+//   if (cursor.IsTab()) {
+//     return Trivia{TriviaKind::Tab, llvm::StringRef(cursor.GetCurPtr(), 1)};
+//   }
+//   if (cursor.IsNewline()) {
+//     if (!isForTrailingTrivia) {
+//       nextToken.SetAtStartOfLine(true);
+//     }
+//     return Trivia{TriviaKind::Newline, llvm::StringRef(cursor.GetCurPtr(), 1)};
+//   }
+//   if (cursor.IsCarriageReturn()) {
+//     if (!isForTrailingTrivia) {
+//       nextToken.SetAtStartOfLine(true);
+//     }
+//     // Mark position at \r
+//     cursor.MarkTmpPtr();
+//     cursor.Advance(); // consume \r
+//     if (cursor.IsNewline()) {
+//       cursor.Advance(); // consume \n
+//     }
+//     return Trivia{TriviaKind::Newline, cursor.GetTmpPtrRange()};
+//   }
+//   break; // no matching trivia
+// }
+// return Trivia{TriviaKind::None, llvm::StringRef()};
+// }
+
+
+Trivia LexTrivia(Cursor &cursor, bool isForTrailingTrivia) {
+  cursor.MarkTmpPtr();
+  while (cursor.HasNext()) {
+    // Advance by one byte
+    cursor.Advance();
+
+    if (cursor.IsSpace() || cursor.IsVerticalTab() || cursor.IsFormFeed()) {
+      return Trivia{TriviaKind::Space, cursor.GetTmpRange()};
     }
-   }
-return Trivia{TriviaKind::None, llvm::StringRef()};
 
+    if (cursor.IsTab()) {
+      return Trivia{TriviaKind::Tab, cursor.GetTmpRange()};
+    }
+
+    if (cursor.IsLineBreakStart()) {
+      if (!isForTrailingTrivia) {
+        nextToken.SetAtStartOfLine(true);
+      }
+      if (cursor.IsNewline()) {
+        cursor.Advance(); // absorb \n in case of \r\n
+      }
+      return Trivia{TriviaKind::Newline, cursor.GetTmpRange()};
+    }
+
+    if (cursor.IsSlash()) {
+      if (isForTrailingTrivia || IsKeepingComments()) {
+        break;
+      }
+
+      if (cursor.LookAhead(1).IsSlash()) {
+        bool isDoc = cursor.LookAhead(2).IsSlash();
+        cursor.Advance(); // consume second slash
+        cursor.SkipLineComment();
+        return Trivia{isDoc ? TriviaKind::DocComment : TriviaKind::LineComment,
+                      cursor.GetTmpRange()};
+      }
+
+      if (cursor.LookAhead(1).IsAsterisk()) {
+        bool isDoc = cursor.LookAhead(2).IsAsterisk();
+        cursor.Advance(); // consume '*'
+        cursor.SkipBlockComment();
+        return Trivia{isDoc ? TriviaKind::DocComment : TriviaKind::BlockComment,
+                      cursor.GetTmpRange()};
+      }
+
+      break;
+    }
+
+    if (cursor.IsHash()) {
+      if (cursor.GetTmpPtr() == cursor.GetInitialBuffer() &&
+          cursor.LookAhead(1).IsExclamation()) {
+        cursor.Retreat(); // rewind to '#'
+        if (!IsHashbangAllowed()) {
+          Diagnose(cursor.GetCurPtr(), DiagID::HashbangNotAllowed);
+        }
+        cursor.SkipLineComment();
+        return Trivia{TriviaKind::LineComment, cursor.GetTmpRange()};
+      }
+    }
+
+    if (cursor.Is('<') || cursor.Is('>')) {
+      if (TryLexConflictMarker(cursor, /*EatNewline=*/false)) {
+        return Trivia{TriviaKind::LineComment, cursor.GetTmpRange()};
+      }
+    }
+
+    if (cursor.IsNull()) {
+      switch (GetNullCharacterKind(cursor.LookBehind())) {
+      case NullCharacterKind::Embedded:
+        DiagnoseEmbeddedNul(cursor.LookBehind());
+        continue;
+      case NullCharacterKind::CodeCompletion:
+      case NullCharacterKind::BufferEnd:
+        break;
+      }
+    }
+
+    // Default case: unknown trivia or start of token
+    const char *tmp = cursor.GetCurPtr() - 1;
+    if (AdvanceIfValidStartOfIdentifier(tmp, cursor.GetEOFBuffer()) ||
+        AdvanceIfValidStartOfOperator(tmp, cursor.GetEOFBuffer())) {
+      break;
+    }
+
+    if (LexUnknown(cursor, /*track=*/false)) {
+      cursor.Reset(tmp);
+      return Trivia{TriviaKind::None,
+                    llvm::StringRef(cursor.GetTmpPtr(),
+                                    cursor.GetCurPtr() - cursor.GetTmpPtr())};
+    }
+
+    continue;
+  }
+
+  return Trivia();
 }
+
+
+
 //Trivia Lexer::LexTrivia(const char *allTriviaStart, bool isForTrailingTrivia) {
   //CommentStart = nullptr;
 

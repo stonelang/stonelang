@@ -6,6 +6,16 @@
 #include <cassert>
 
 namespace stone {
+
+/// Inline helpers for identifier classification
+inline bool IsStoneIdentHead(char c) {
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_');
+}
+
+inline bool IsStoneIdentBody(char c) {
+  return IsStoneIdentHead(c) || (c >= '0' && c <= '9');
+}
+
 class Cursor;
 class CursorRange {
   const char *start = nullptr;
@@ -26,32 +36,14 @@ public:
   bool IsValid() const { return start && end && start <= end; }
 };
 
-/// \brief Low-level byte stream navigator over a fixed buffer.
-///
-/// `Cursor` manages position tracking within a read-only character buffer.
-/// It exposes pointer navigation (`CurPtr`), and utility methods like
-/// lookahead, skipping, and comment handling.
-///
-/// === Notes ===
-/// - "Buffer": fixed memory range [InitialBuffer, MaxBuffer)
-/// - "Ptr":     a current position in the buffer
-/// - `EOFBuffer`: allows lexing logical slices
-///
 class Cursor final {
+  const char *TmpPtr = nullptr;
+
 public:
-  //===--------------------------------------------------------------------===//
-  // Buffer Bounds (Immutable after construction)
-  //===--------------------------------------------------------------------===//
-
-  const char *InitialBuffer = nullptr; ///< Start of memory buffer.
-  const char *MaxBuffer = nullptr;     ///< End of buffer (1 past last).
-  const char *EOFBuffer = nullptr;     ///< Optional logical cutoff.
-
-  //===--------------------------------------------------------------------===//
-  // Navigation State
-  //===--------------------------------------------------------------------===//
-
-  const char *CurPtr = nullptr; ///< Current pointer in buffer.
+  const char *InitialBuffer = nullptr;
+  const char *MaxBuffer = nullptr;
+  const char *EOFBuffer = nullptr;
+  const char *CurPtr = nullptr;
 
   void Init(const char *buf, size_t size) {
     InitialBuffer = buf;
@@ -68,27 +60,39 @@ public:
   }
 
   void Check() const {
-    // Basic buffer invariants
     assert(InitialBuffer && "Cursor not initialized");
     assert(MaxBuffer && "MaxBuffer is null");
     assert(InitialBuffer <= MaxBuffer && "Invalid buffer range");
-
-    // Pointer validity
     assert(CurPtr >= InitialBuffer && CurPtr <= MaxBuffer &&
            "CurPtr out of range");
     assert(EOFBuffer >= InitialBuffer && EOFBuffer <= MaxBuffer &&
            "EOFBuffer out of range");
 
-    // BOM check (optional)
     if (HasUTF8BOM()) {
       assert(CurPtr == InitialBuffer && "Unexpected BOM: CurPtr not at start");
     }
   }
 
-  const char *GetCurPtr() { return CurPtr; }
-  const char *GetInitialBuffer() { return InitialBuffer; }
-  const char *GetMaxBuffer() { return InitialBuffer; }
-  const char *GetEOFBuffer() { return EOFBuffer; }
+  const char *GetCurPtr() const { return CurPtr; }
+  const char *GetInitialBuffer() const { return InitialBuffer; }
+  const char *GetMaxBuffer() const { return MaxBuffer; }
+  const char *GetEOFBuffer() const { return EOFBuffer; }
+
+  void MarkTmpPtr() { TmpPtr = CurPtr; }
+  void ClearTmpPtr() { TmpPtr = nullptr; }
+  const char *GetTmpPtr() const { return TmpPtr; }
+  llvm::StringRef GetTmpPtrRange() const {
+    return llvm::StringRef(TmpPtr, static_cast<size_t>(CurPtr - TmpPtr));
+  }
+
+  size_t TmpLength() const {
+    assert(TmpPtr && "Tmp not marked");
+    return static_cast<size_t>(CurPtr - TmpPtr);
+  }
+
+  llvm::StringRef GetTmpRange() const {
+    return llvm::StringRef(TmpPtr, TmpLength());
+  }
 
   void SkipUTF8BOM() {
     if (HasUTF8BOM()) {
@@ -97,6 +101,7 @@ public:
       Advance();
     }
   }
+
   void Advance() {
     if (CurPtr < EOFBuffer)
       ++CurPtr;
@@ -117,7 +122,7 @@ public:
     return *CurPtr;
   }
 
-  char LookAhead(size_t lookahead) const {
+  char LookAhead(size_t lookahead = 1) const {
     const char *ptr = CurPtr + lookahead;
     return (ptr < EOFBuffer) ? *ptr : '\0';
   }
@@ -144,12 +149,6 @@ public:
     return static_cast<unsigned>(CurPtr - InitialBuffer);
   }
 
-  const char *GetCurPtr() const { return CurPtr; }
-
-  //===--------------------------------------------------------------------===//
-  // Matching & Skipping
-  //===--------------------------------------------------------------------===//
-
   bool AdvanceIf(char expected) {
     if (Is(expected)) {
       ++CurPtr;
@@ -169,17 +168,15 @@ public:
   bool Expect(char expected) const { return Is(expected); }
 
   template <typename Pred> void SkipWhile(Pred pred) {
-    while (CurPtr < EOFBuffer && pred(*CurPtr)) {
+    while (CurPtr < EOFBuffer && pred(*CurPtr))
       ++CurPtr;
-    }
   }
 
   void SkipWhitespace() { SkipWhile(clang::isWhitespace); }
 
   void SkipUntil(char target) {
-    while (!IsAtEnd() && Peek() != target) {
+    while (!IsAtEnd() && Peek() != target)
       ++CurPtr;
-    }
   }
 
   void SkipLineComment() {
@@ -212,14 +209,10 @@ public:
         SkipBlockComment();
         return true;
       }
-      Retreat(); // Undo
+      Retreat();
     }
     return false;
   }
-
-  //===--------------------------------------------------------------------===//
-  // Utilities
-  //===--------------------------------------------------------------------===//
 
   bool HasUTF8BOM() const {
     return (MaxBuffer - InitialBuffer >= 3) &&
@@ -234,13 +227,9 @@ public:
     EOFBuffer = end;
   }
 
-  CursorRange Mark() const {
-  return CursorRange(CurPtr);
-}
+  CursorRange Mark() const { return CursorRange(CurPtr); }
 
-  //===--------------------------------------------------------------------===//
-  // Character Category Queries
-  //===--------------------------------------------------------------------===//
+  // Character predicates
 
   bool Is(char c) const { return !IsAtEnd() && Peek() == c; }
   bool IsAny(char c) const { return Is(c); }
@@ -254,74 +243,96 @@ public:
     return ((current == chars) || ...);
   }
 
+  // Whitespace and line breaks
+
+  bool IsSpace() const { return Is(' '); }
+  bool IsTab() const { return Is('\t'); }
+  bool IsVerticalTab() const { return Is('\v'); }
+  bool IsFormFeed() const { return Is('\f'); }
+  bool IsCarriageReturn() const { return Is('\r'); }
   bool IsNewline() const { return IsAnyOf('\n', '\r'); }
+
   bool IsDigit() const { return !IsAtEnd() && clang::isDigit(Peek()); }
 
-  // bool IsIdentifierHead() const {
-  //   return !IsAtEnd() && llvm::isIdentifierHead(Peek());
-  // }
-  // bool IsIdentifierBody() const {
-  //   return !IsAtEnd() && llvm::isIdentifierBody(Peek());
-  // }
+  bool IsHorizontalWhitespace() const {
+    return !IsAtEnd() && (Peek() == ' ' || Peek() == '\t');
+  }
+
+  bool IsVerticalWhitespace() const {
+    return !IsAtEnd() && (Peek() == '\n' || Peek() == '\r');
+  }
+
+  bool IsWhitespace() const {
+    return IsHorizontalWhitespace() || IsVerticalWhitespace();
+  }
+
+  bool IsLineBreakStart() const { return Peek() == '\n' || Peek() == '\r'; }
+
+  // Brackets and delimiters
+
+  bool IsOpeningDelimiter() const { return IsAny('(', '{', '['); }
+  bool IsClosingDelimiter() const { return IsAny(')', '}', ']'); }
+  bool IsBracket() const { return IsAny('(', ')', '[', ']', '{', '}'); }
+
+  bool IsDelimiter() const {
+    return IsAny('@', '{', '[', '(', '}', ']', ')', ',', ';', ':', '\\');
+  }
+
+  // Operators and symbols
+
+  bool IsOp() const {
+    return IsAny('%', '>', '=', '-', '+', '*', '&', '|', '^', '~', '.');
+  }
+
+  bool IsPunctuator() const {
+    return !IsAtEnd() && clang::isPunctuation(Peek());
+  }
+
+  bool IsArithmeticOp() const { return IsAny('+', '-', '*', '/', '%'); }
+  bool IsBitwiseOp() const { return IsAny('&', '|', '^', '~'); }
+  bool IsAssignmentOp() const { return Is('='); }
+  bool IsComparisonOp() const { return IsAny('>', '<'); }
+  bool IsLogicalOp() const { return IsAny('&', '|', '!'); }
+
+  // Single-symbol checks
 
   bool IsLBracket() const { return Is('['); }
   bool IsRBracket() const { return Is(']'); }
-  bool AdvanceIfLBracket() { return AdvanceIf('['); }
-  bool AdvanceIfRBracket() { return AdvanceIf(']'); }
-
   bool IsOpenParen() const { return Is('('); }
   bool IsCloseParen() const { return Is(')'); }
   bool IsOpenBrace() const { return Is('{'); }
   bool IsCloseBrace() const { return Is('}'); }
-  bool IsOpenBracket() const { return Is('['); }
-  bool IsCloseBracket() const { return Is(']'); }
-
-  // Quotes
   bool IsQuote() const { return IsAny('"', '\''); }
   bool IsBacktick() const { return Is('`'); }
-
-  // Delimiters
   bool IsColon() const { return Is(':'); }
   bool IsSemicolon() const { return Is(';'); }
   bool IsComma() const { return Is(','); }
-
-  // Math / Operators
   bool IsPlus() const { return Is('+'); }
   bool IsMinus() const { return Is('-'); }
   bool IsStar() const { return Is('*'); }
   bool IsSlash() const { return Is('/'); }
   bool IsPercent() const { return Is('%'); }
-
   bool IsAmpersand() const { return Is('&'); }
   bool IsPipe() const { return Is('|'); }
   bool IsCaret() const { return Is('^'); }
-
   bool IsEqual() const { return Is('='); }
   bool IsBang() const { return Is('!'); }
-
   bool IsLess() const { return Is('<'); }
   bool IsGreater() const { return Is('>'); }
-
-  // Misc
   bool IsDot() const { return Is('.'); }
   bool IsHash() const { return Is('#'); }
   bool IsAtSign() const { return Is('@'); }
   bool IsBackslash() const { return Is('\\'); }
   bool IsUnderscore() const { return Is('_'); }
-  bool IsOpenDelimiter(char c) const {
-    return c == '(' || c == '[' || c == '{';
-  }
-  bool IsCloseDelimiter(char c) const {
-    return c == ')' || c == ']' || c == '}';
-  }
-  bool IsBinOpChar() const {
-    return IsAny('+', '-', '*', '/', '%', '&', '|', '^');
-  }
-  bool IsBracket() const { return IsAny('(', ')', '[', ']', '{', '}'); }
-  bool IsDelimiter() const { return IsAny(',', ';', ':'); }
+
+  // Identifier classification
+
+  bool IsIdentHead() const { return !IsAtEnd() && IsStoneIdentHead(Peek()); }
+
+  bool IsIdentBody() const { return !IsAtEnd() && IsStoneIdentBody(Peek()); }
+
+  bool IsIdent() const { return IsIdentHead(); }
 };
-
-
 
 } // namespace stone
 
